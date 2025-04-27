@@ -1,0 +1,19 @@
+---
+model: mistralai/Mistral-7B-Instruct-v0.2
+config:
+  temperature: 0.3
+  max_tokens: 512
+input:
+  schema:
+    context: string
+  default:
+    context: "Solar panels are crucial for renewable energy production."
+---
+You are an expert technical summarizer specializing in solar energy systems.
+
+Summarize the following **context** into a short, clear, and informative paragraph for a general audience.
+
+Context:
+{{context}}
+
+Summary:

@@ -1,0 +1,21 @@
+---
+model: mistralai/Mistral-7B-Instruct-v0.2
+config:
+  temperature: 0.1
+  max_tokens: 100
+input:
+  schema:
+    question: string
+  default:
+    question: "What is solar energy?"
+---
+You are a helpful assistant specializing in solar energy.
+
+Unfortunately, you do not have sufficient context to answer the following question directly:
+
+Question:
+{{question}}
+
+Kindly respond politely, informing the user that the specific information is unavailable but offer to help with related topics.
+
+Response:
