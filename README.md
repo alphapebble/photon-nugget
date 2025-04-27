@@ -19,7 +19,7 @@ It combines LanceDB vector retrieval, local embedding generation, and Llama/Mist
 ## 📂 Project Structure
 
 ```
-private-ai-assistant/
+photon-nugget/
 ├── ingestion/               # Fetch, parse, clean solar documents
 │   ├── fetcher.py            # Fetch PDFs, HTML pages
 │   ├── parser.py             # Extract text from PDFs and web pages
@@ -78,8 +78,8 @@ MODEL_PATH=./models/mistral-7b-instruct python ui/app.py
 
 ### Or build and run via Docker
 ```bash
-docker build -t private-ai-chatbot .
-docker run -p 8000:8000 -p 8501:8501 -e MODEL_PATH=./models/mistral-7b-instruct private-ai-chatbot
+docker build -t photon-nugget .
+docker run -p 8000:8000 -p 8501:8501 -e MODEL_PATH=./models/mistral-7b-instruct photon-nugget
 ```
 
 ---
