@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Usage:
-# bash download_model.sh <model_repo> <local_dir>
-
 set -e
 
 # Check if huggingface_hub is installed
@@ -10,6 +7,16 @@ if ! pip show huggingface_hub > /dev/null 2>&1; then
   echo "Installing huggingface_hub..."
   pip install huggingface_hub
 fi
+
+# Check if HF token is set
+if [ -z "$HF_TOKEN" ]; then
+  echo "Error: Huggingface token not set. Please run 'export HF_TOKEN=your_token_here'"
+  exit 1
+fi
+
+# Login using token
+echo "Logging into Huggingface using environment token..."
+huggingface-cli login --token "$HF_TOKEN"
 
 # Inputs
 MODEL_REPO=$1
