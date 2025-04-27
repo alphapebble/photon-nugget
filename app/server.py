@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from chatbot_engine import generate_response
+from model.chatbot_engine import generate_response
 
 app = FastAPI()
 
