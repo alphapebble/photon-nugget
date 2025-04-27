@@ -2,7 +2,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
 
 # Load model and tokenizer
-model_path = "path/to/your/local-model-folder"  # Example: "./models/llama-2-7b-chat"
+model_path = os.getenv("MODEL_PATH", "./models/mistral-7b-instruct")  # Default fallback if env not set
+
 tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
