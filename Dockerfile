@@ -8,16 +8,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY app/ ./app/
-COPY ui/ ./ui/
-COPY retriever.py .
-COPY chatbot_engine.py .
+# Copy application code and models
+COPY app/ ui/ retriever/ ingestion/ model/ models/ ./
 
-# Copy pre-downloaded models
-COPY models/ ./models/
-
-# Set environment to offline for transformers
+# Set transformers offline
 ENV TRANSFORMERS_OFFLINE=1
 
 # Expose ports (FastAPI backend and Gradio frontend)
