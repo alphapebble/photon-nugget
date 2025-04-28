@@ -9,7 +9,6 @@ import lancedb
 from ingestion.fetcher import extract_text_from_pdf
 from ingestion.parser import clean_and_split_text
 
-
 def download_pdf_to_temp(url):
     temp_dir = tempfile.mkdtemp()
     filename = url.split("/")[-1]
@@ -37,27 +36,17 @@ def is_valid_pdf(file_path):
 
 def embed_and_store(chunks, db_path="./data/lancedb", table_name="solar_knowledge", model_name="all-MiniLM-L6-v2"):
     db = lancedb.connect(db_path)
+    embedder = SentenceTransformer(model_name)
+    embeddings = embedder.encode(chunks, convert_to_numpy=True).tolist()
+    df = pd.DataFrame({"vector": embeddings, "text": chunks})
 
     try:
         table = db.open_table(table_name)
+        table.add(df)
+        print(f"Inserted {len(chunks)} chunks into existing table.")
     except Exception:
-        embedder = SentenceTransformer(model_name)
-        embeddings = embedder.encode(chunks, convert_to_numpy=True).tolist()
-
-        df = pd.DataFrame({"vector": embeddings, "text": chunks})
-
         table = db.create_table(table_name, data=df)
         print(f"Created new table and inserted {len(chunks)} chunks.")
-        return
-
-    # If table already exists, then insert more rows
-    embedder = SentenceTransformer(model_name)
-    embeddings = embedder.encode(chunks, convert_to_numpy=True).tolist()
-
-    df = pd.DataFrame({"vector": embeddings, "text": chunks})
-
-    table.add(df)
-    print(f"Inserted {len(chunks)} chunks into existing table.")
 
 
 def ingest_pdf_to_lancedb(source_path, db_path="./data/lancedb", table_name="solar_knowledge", model_name="all-MiniLM-L6-v2"):
