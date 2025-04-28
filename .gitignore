@@ -4,6 +4,9 @@ __pycache__/
 *.pyo
 *.pyd
 .env
+venv/
+data/
+ingestion/solar_links.txt
 
 # Model files
 models/*
@@ -17,4 +20,3 @@ models/*
 .ipynb_checkpoints/
 
 .idea/
-
