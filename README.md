@@ -59,14 +59,14 @@ photon-nugget/
 
 ## 🛠️ Tech Stack
 
-- **FastAPI** — API backend
-- **Gradio** — Chat frontend
-- **LanceDB** — Local vector database
-- **Sentence-Transformers** — Text embeddings
+- **FastAPI** — Lightweight Python API backend
+- **Gradio** — Frontend interface for interactive chat
+- **LanceDB** — Embedded vector database for fast document retrieval
+- **Sentence-Transformers** — For generating dense vector embeddings
 - **Transformers / Ollama / OpenAI** — Switchable LLM backend via unified interface
 - **Jinja2 + YAML** — Prompt templating system
+- **PyMuPDF** — Robust PDF parsing for document ingestion
 - **Docker** — Optional containerization for deployment
-- **PyMuPDF** — PDF parsing for ingestion
 
 ---
 
