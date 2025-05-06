@@ -1,9 +1,8 @@
-from ingestion.cleaner import clean_text
+import fitz  # PyMuPDF
 
-def clean_and_split_text(text, min_words=10):
+def extract_text_from_pdf(pdf_path: str) -> str:
     """
-    Clean extracted text and split into reasonable knowledge chunks.
+    Extract full text from a PDF using PyMuPDF.
     """
-    chunks = text.split("\n\n")  # Split by double line-breaks = paragraph breaks
-    clean_chunks = [chunk.strip().replace('\n', ' ') for chunk in chunks if len(chunk.split()) >= min_words]
-    return clean_chunks
+    with fitz.open(pdf_path) as doc:
+        return "\n".join(page.get_text() for page in doc)

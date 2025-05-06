@@ -7,12 +7,17 @@ It combines LanceDB vector retrieval, local embedding generation, and Llama/Mist
 
 ## 📚 Features
 
-- 🛡️ Completely offline, on-prem deployment
-- 🔍 LanceDB-based local vector retrieval
-- 🤖 Local Mistral / Llama model serving
-- 📝 Solar domain-specific knowledge ingestion
-- 🚀 FastAPI backend + Gradio frontend
-- 🐳 Dockerized deployment for easy scaling
+- 🛡️ Completely offline, on-premises deployment
+- 🔁 Switchable LLM backend (Ollama, Transformers, OpenAI-ready)
+- 📄 Structured prompt templates using YAML + Jinja2
+- 🧩 Modular design ready for agentic workflows and LangGraph integration
+- 🔍 LanceDB-powered local vector retrieval
+- 🤖 Local inference with Mistral / LLaMA models
+- 📝 Solar domain-specific document ingestion and embedding
+- 🚀 FastAPI backend with Gradio-based chatbot frontend
+- 🐳 Dockerized setup for reproducible, scalable deployment
+
+
 
 ---
 
@@ -58,7 +63,8 @@ photon-nugget/
 - **Gradio** — Chat frontend
 - **LanceDB** — Local vector database
 - **Sentence-Transformers** — Text embeddings
-- **Transformers / Huggingface** — Model loading
+- **Transformers / Ollama / OpenAI** — Switchable LLM backend via unified interface
+- **Jinja2 + YAML** — Prompt templating system
 - **Docker** — Optional containerization for deployment
 - **PyMuPDF** — PDF parsing for ingestion
 
