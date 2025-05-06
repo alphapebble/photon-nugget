@@ -1,202 +1,168 @@
-# 🌞 Private AI Assistant with Solar RAG Augmentation
+# 🌞 Photon-Nugget: Solar AI Assistant
 
-This project is a fully on-premises Retrieval-Augmented Generation (RAG) chatbot designed for solar energy knowledge queries.  
-It combines LanceDB vector retrieval, local embedding generation, and Llama/Mistral model-based generation, served through FastAPI and Gradio UI.
+Photon-Nugget is a user-friendly AI assistant that answers your questions about solar energy. It works completely on your own computer without needing to send your data to external services.
 
----
+![Photon-Nugget Screenshot](https://github.com/balijepalli/photon-nugget/raw/main/docs/images/screenshot.png)
 
-## 📚 Features
+## 🌟 What Can It Do?
 
-- 🛡️ Completely offline, on-premises deployment
-- 🔁 Switchable LLM backend (Ollama, Transformers, OpenAI-ready)
-- 📄 Structured prompt templates using YAML + Jinja2
-- 🧩 Modular design ready for agentic workflows and LangGraph integration
-- 🔍 LanceDB-powered local vector retrieval
-- 🤖 Local inference with Mistral / LLaMA models
-- 📝 Solar domain-specific document ingestion and embedding
-- 🚀 FastAPI backend with Gradio-based chatbot frontend
-- 🐳 Dockerized setup for reproducible, scalable deployment
+- Answer questions about solar panels, installation, and energy
+- Work completely offline on your computer
+- Provide accurate information from reliable solar energy sources
+- Remember your conversation history
+- Switch between light and dark mode for comfortable viewing
 
+## 🚀 Quick Start Guide (For Everyone)
 
+### Prerequisites
 
----
+Before you begin, make sure you have:
 
-## 📂 Project Structure
+1. **Python 3.9+** installed on your computer
+   - [Download Python](https://www.python.org/downloads/) if you don't have it
+
+2. **Git** to download the project
+   - [Download Git](https://git-scm.com/downloads) if you don't have it
+
+### Step 1: Download the Project
+
+Open your terminal (Command Prompt on Windows) and run:
+
+```bash
+git clone https://github.com/balijepalli/photon-nugget.git
+cd photon-nugget
+```
+
+### Step 2: Set Up the Environment
+
+Create a virtual environment and install the required packages:
+
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install required packages
+pip install -r requirements.txt
+```
+
+### Step 3: Start the Backend Server
+
+Open a new terminal window, navigate to the project folder, activate the virtual environment, and run:
+
+```bash
+# On Windows:
+set USE_OLLAMA=true
+set MODEL_NAME=mistral
+python -m app.server
+
+# On macOS/Linux:
+USE_OLLAMA=true MODEL_NAME=mistral python -m app.server
+```
+
+Keep this terminal window open while using the application.
+
+### Step 4: Start the User Interface
+
+Open another terminal window, navigate to the project folder, activate the virtual environment, and run:
+
+```bash
+python -m ui.app
+```
+
+This will start the web interface. You'll see a URL like `http://0.0.0.0:8502` or `http://127.0.0.1:8502` in the terminal.
+
+### Step 5: Use the Application
+
+1. Open your web browser and go to the URL shown in the terminal (usually http://127.0.0.1:8502)
+2. Type your solar energy question in the text box
+3. Click "Ask" or press Enter to get an answer
+4. Enjoy your conversation with the AI assistant!
+
+## 🔍 Using Advanced Features
+
+### Dark Mode
+
+Click the "Toggle Dark Mode" button to switch between light and dark themes.
+
+### Conversation History
+
+- **Save History**: Click "Save History" to save your current conversation
+- **Load History**: Click "Load History" to restore a previously saved conversation
+- **Clear Chat**: Click "Clear Chat" to start a new conversation
+
+### Feedback
+
+After receiving an answer, you can provide feedback by clicking:
+- 👍 Yes - if the answer was helpful
+- 👎 No - if the answer wasn't helpful
+
+## 🛠️ Troubleshooting
+
+### Common Issues and Solutions
+
+1. **"Connection Error" when asking a question**
+   - Make sure the backend server is running (Step 3)
+   - Check that you're using the correct URL in your browser
+
+2. **"Module not found" errors**
+   - Make sure you've activated the virtual environment
+   - Try reinstalling the requirements: `pip install -r requirements.txt`
+
+3. **Slow responses**
+   - The AI model needs time to think, especially on the first question
+   - Responses should get faster after the first few questions
+
+4. **Application crashes or freezes**
+   - Restart both the backend server and the UI
+   - Make sure your computer meets the minimum requirements
+
+### Getting Help
+
+If you encounter problems not covered here:
+1. Check the [GitHub Issues](https://github.com/balijepalli/photon-nugget/issues) page
+2. Create a new issue with details about your problem
+
+## 📚 For Developers
+
+If you're a developer interested in the technical details or want to contribute to the project, check out the [Developer Documentation](docs/DEVELOPERS.md).
+
+### Project Structure
 
 ```
 photon-nugget/
-├── ingestion/                # Fetch, parse, and clean solar documents (raw → chunks → vector store)
-│   ├── fetcher.py            # Download PDFs, HTML pages from various sources
-│   ├── parser.py             # Extract readable text from documents
-│   ├── cleaner.py            # Clean, split, and preprocess text into knowledge units
-│   └── ingestion_runner.py   # Orchestrates the full ingestion pipeline
-├── retriever/                # Vector search layer (e.g., using LanceDB, FAISS)
-│   └── retriever_lancedb.py  # Store and retrieve documents from LanceDB
-├── llm/                      # LLM backends (Ollama, Transformers, etc.)
-│   └── chatbot_engine.py     # Unified interface to load and run local models like Mistral/LLaMA
-├── app/                      # FastAPI server and request/response models
-│   └── server.py             # API routes and logic using Pydantic
-├── ui/                       # Frontend interface
-│   └── app.py                # Gradio-based UI for user interaction
-├── models/                   # Local pre-downloaded models (e.g., mistral-7b-instruct, gemma)
-├── data/                     # Input/output artifacts for the pipeline
-│   ├── lancedb/              # LanceDB vector database files
-│   ├── docs_raw/             # Raw source documents (e.g., PDFs)
-│   └── docs_clean/           # Cleaned and chunked text for embedding
-├── prompts/                  # YAML + Jinja2 structured prompt templates
-│   ├── solar_rag.prompt      # Example prompt with context and query variables
-│   └── utils/                # Template loader, renderer
-├── evaluation/               # (Optional) Evaluation scripts, metrics (BLEU, ROUGE, etc.)
-├── requirements.txt          # Python package dependencies
-├── Dockerfile                # Container definition for the app
-├── docker-compose.yml        # Multi-container orchestration (Ollama + app + DB)
-├── download_model.sh         # Script to download and cache model weights
-└── .env                      # Environment variables (MODEL_PATH, USE_OLLAMA, etc.)
-
+├── app/                # Backend server
+├── ui/                 # Frontend interface
+├── rag/                # Retrieval system
+├── llm/                # AI model integration
+├── retriever/          # Document retrieval
+├── models/             # AI models
+└── data/               # Knowledge database
 ```
 
----
+### Running with Different Models
 
-## 🛠️ Tech Stack
-
-- **FastAPI** — Lightweight Python API backend
-- **Gradio** — Frontend interface for interactive chat
-- **LanceDB** — Embedded vector database for fast document retrieval
-- **Sentence-Transformers** — For generating dense vector embeddings
-- **Transformers / Ollama / OpenAI** — Switchable LLM backend via unified interface
-- **Jinja2 + YAML** — Prompt templating system
-- **PyMuPDF** — Robust PDF parsing for document ingestion
-- **Docker** — Optional containerization for deployment
-
----
-## 🚀 How to Run
-
-### 1. Install Dependencies
+You can use different AI models by changing the `MODEL_NAME` parameter:
 
 ```bash
-pip install -r requirements.txt
-````
+# Using Mistral model
+USE_OLLAMA=true MODEL_NAME=mistral python -m app.server
 
----
-
-### 2. Start Ollama (Optional – for local LLMs like `mistral`)
-
-Install Ollama (if not already installed):
-
-```bash
-brew install ollama
+# Using Llama model
+USE_OLLAMA=true MODEL_NAME=llama python -m app.server
 ```
 
-Start the Ollama server and pull the model:
+## 📄 License
 
-```bash
-ollama serve
-ollama pull mistral
-```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Or run the helper script:
+## 🙏 Acknowledgments
 
-```bash
-./start_ollama.sh mistral
-```
-
----
-
-### 3. Start Backend (FastAPI)
-
-**For Ollama:**
-
-```bash
-USE_OLLAMA=true MODEL_NAME=mistral uvicorn app.server:app --host 0.0.0.0 --port 8000
-```
-
-**For Transformers:**
-
-```bash
-MODEL_PATH=./models/mistral-7b-instruct uvicorn app.server:app --host 0.0.0.0 --port 8000
-```
-
----
-
-### 4. Start Frontend (Gradio UI)
-
-**For Ollama:**
-
-```bash
-USE_OLLAMA=true MODEL_NAME=mistral python ui/app.py
-```
-
-**For Transformers:**
-
-```bash
-MODEL_PATH=./models/mistral-7b-instruct python ui/app.py
-```
-
----
-
-### 5. Or Build and Run via Docker
-
-```bash
-docker build -t photon-nugget .
-docker run -p 8000:8000 -p 8501:8501 \
-  -e USE_OLLAMA=true \
-  -e MODEL_NAME=mistral \
-  photon-nugget
-```
-
----
-
-### 6. Ingest Domain Knowledge (Optional)
-
-To ingest a PDF into the vector database:
-
-```bash
-python -m ingestion.run_ingestion "https://example.com/solar_doc.pdf"
-```
-
----
-
-### 7. Test CLI RAG Pipeline
-
-```bash
-python -m rag.rag_cli "What is the recommended tilt angle for solar panels?"
-```
-
----
-
-## 📚 Knowledge Ingestion (Solar Knowledge)
-
-To fetch and store domain-specific solar documents:
-
-```bash
-python ingestion/ingestion_runner.py
-```
-
-This will:
-- Fetch solar installation guides, policies, FAQs
-- Parse PDFs and web pages
-- Clean text into knowledge units
-- Store embeddings into LanceDB
-
----
-
-## 🌟 Future Enhancements
-
-- ✅ Add document metadata tracking (source, date)
-- ✅ Re-rank retrieved documents by relevance
-- ✅ Add answer summarization module
-- ✅ Integrate multi-turn conversation memory
-- ✅ Auto-schedule document refresh and re-ingestion
-
----
-
-# 🚀 About
-
-This project demonstrates a full **offline RAG pipeline** using open-source components  
-for secure, private, knowledge-grounded chatbots in the solar energy domain.
-
----
-
-# 🛡️ License
-
-MIT License or specify if using specific restricted datasets.
+- Built with [Gradio](https://gradio.app/) for the user interface
+- Powered by [Mistral AI](https://mistral.ai/) models
+- Uses [LanceDB](https://lancedb.github.io/lancedb/) for knowledge retrieval
