@@ -69,28 +69,97 @@ photon-nugget/
 - **Docker** — Optional containerization for deployment
 
 ---
-
 ## 🚀 How to Run
 
-### Install dependencies
+### 1. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
+````
+
+---
+
+### 2. Start Ollama (Optional – for local LLMs like `mistral`)
+
+Install Ollama (if not already installed):
+
+```bash
+brew install ollama
 ```
 
-### Start backend (FastAPI)
+Start the Ollama server and pull the model:
+
+```bash
+ollama serve
+ollama pull mistral
+```
+
+Or run the helper script:
+
+```bash
+./start_ollama.sh mistral
+```
+
+---
+
+### 3. Start Backend (FastAPI)
+
+**For Ollama:**
+
+```bash
+USE_OLLAMA=true MODEL_NAME=mistral uvicorn app.server:app --host 0.0.0.0 --port 8000
+```
+
+**For Transformers:**
+
 ```bash
 MODEL_PATH=./models/mistral-7b-instruct uvicorn app.server:app --host 0.0.0.0 --port 8000
 ```
 
-### Start frontend (Gradio)
+---
+
+### 4. Start Frontend (Gradio UI)
+
+**For Ollama:**
+
+```bash
+USE_OLLAMA=true MODEL_NAME=mistral python ui/app.py
+```
+
+**For Transformers:**
+
 ```bash
 MODEL_PATH=./models/mistral-7b-instruct python ui/app.py
 ```
 
-### Or build and run via Docker
+---
+
+### 5. Or Build and Run via Docker
+
 ```bash
 docker build -t photon-nugget .
-docker run -p 8000:8000 -p 8501:8501 -e MODEL_PATH=./models/mistral-7b-instruct photon-nugget
+docker run -p 8000:8000 -p 8501:8501 \
+  -e USE_OLLAMA=true \
+  -e MODEL_NAME=mistral \
+  photon-nugget
+```
+
+---
+
+### 6. Ingest Domain Knowledge (Optional)
+
+To ingest a PDF into the vector database:
+
+```bash
+python -m ingestion.run_ingestion "https://example.com/solar_doc.pdf"
+```
+
+---
+
+### 7. Test CLI RAG Pipeline
+
+```bash
+python -m rag.rag_cli "What is the recommended tilt angle for solar panels?"
 ```
 
 ---
