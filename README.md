@@ -20,29 +20,34 @@ It combines LanceDB vector retrieval, local embedding generation, and Llama/Mist
 
 ```
 photon-nugget/
-├── ingestion/               # Fetch, parse, clean solar documents
-│   ├── fetcher.py            # Fetch PDFs, HTML pages
-│   ├── parser.py             # Extract text from PDFs and web pages
-│   ├── cleaner.py            # Split and clean text into knowledge units
-│   └── ingestion_runner.py   # Run full ingestion pipeline
-├── retriever/                
-│   └── retriever_lancedb.py   # Store and retrieve documents using LanceDB
-├── model/
-│   └── chatbot_engine.py      # Load and run local Llama/Mistral model
-├── app/
-│   └── server.py              # FastAPI backend API
-├── ui/
-│   └── app.py                 # Gradio UI frontend
-├── models/                    # Pre-downloaded local models (Llama, Mistral)
-├── data/
-│   ├── lancedb/               # LanceDB vector database files
-│   ├── docs_raw/              # Raw fetched documents
-│   └── docs_clean/            # Cleaned and processed knowledge text
-├── requirements.txt           # Python dependencies
-├── Dockerfile                 # Dockerfile to containerize the app
-├── docker-compose.yml         # (optional) Docker orchestration
-├── download_model.sh          # Script to download model locally
-└── .env                       # Environment variables (MODEL_PATH, etc.)
+├── ingestion/                # Fetch, parse, and clean solar documents (raw → chunks → vector store)
+│   ├── fetcher.py            # Download PDFs, HTML pages from various sources
+│   ├── parser.py             # Extract readable text from documents
+│   ├── cleaner.py            # Clean, split, and preprocess text into knowledge units
+│   └── ingestion_runner.py   # Orchestrates the full ingestion pipeline
+├── retriever/                # Vector search layer (e.g., using LanceDB, FAISS)
+│   └── retriever_lancedb.py  # Store and retrieve documents from LanceDB
+├── llm/                      # LLM backends (Ollama, Transformers, etc.)
+│   └── chatbot_engine.py     # Unified interface to load and run local models like Mistral/LLaMA
+├── app/                      # FastAPI server and request/response models
+│   └── server.py             # API routes and logic using Pydantic
+├── ui/                       # Frontend interface
+│   └── app.py                # Gradio-based UI for user interaction
+├── models/                   # Local pre-downloaded models (e.g., mistral-7b-instruct, gemma)
+├── data/                     # Input/output artifacts for the pipeline
+│   ├── lancedb/              # LanceDB vector database files
+│   ├── docs_raw/             # Raw source documents (e.g., PDFs)
+│   └── docs_clean/           # Cleaned and chunked text for embedding
+├── prompts/                  # YAML + Jinja2 structured prompt templates
+│   ├── solar_rag.prompt      # Example prompt with context and query variables
+│   └── utils/                # Template loader, renderer
+├── evaluation/               # (Optional) Evaluation scripts, metrics (BLEU, ROUGE, etc.)
+├── requirements.txt          # Python package dependencies
+├── Dockerfile                # Container definition for the app
+├── docker-compose.yml        # Multi-container orchestration (Ollama + app + DB)
+├── download_model.sh         # Script to download and cache model weights
+└── .env                      # Environment variables (MODEL_PATH, USE_OLLAMA, etc.)
+
 ```
 
 ---

@@ -1,14 +1,10 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from model.chatbot_engine import generate_response
+from app.prompt import ChatRequest, ChatResponse
+from rag.runner import rag_answer  # changed from chatbot_engine
 
 app = FastAPI()
 
-# Define a request body
-class ChatRequest(BaseModel):
-    prompt: str
-
-@app.post("/chat")
+@app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    response = generate_response(request.prompt)
-    return {"response": response}
+    answer = rag_answer(request.query)
+    return {"response": answer}
