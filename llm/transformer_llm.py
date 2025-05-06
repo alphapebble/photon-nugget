@@ -1,7 +1,7 @@
 import os
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
-from model.base import LLMInterface
+from llm.base import LLMInterface
 
 class TransformersLLM(LLMInterface):
     def __init__(self):

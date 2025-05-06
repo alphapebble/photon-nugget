@@ -1,6 +1,6 @@
 import os
 import requests
-from model.base import LLMInterface
+from llm.base import LLMInterface
 
 class OllamaLLM(LLMInterface):
     def __init__(self):
