@@ -7,7 +7,9 @@ def load_structured_prompt(prompt_name, prompts_dir="prompts"):
     Load a structured .prompt file (YAML config + prompt body).
     Returns a tuple (config_dict, prompt_body_str).
     """
-    prompt_path = os.path.join(prompts_dir, f"{prompt_name}.prompt")
+    prompt_dir = os.path.dirname(__file__)  # this is rag/prompts/
+    prompt_path = os.path.join(prompt_dir, f"{prompt_name}.prompt")
+
     with open(prompt_path, "r", encoding="utf-8") as f:
         content = f.read()
 
