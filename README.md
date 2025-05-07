@@ -1,8 +1,8 @@
-# 🌞 Photon-Nugget: Solar AI Assistant
+# 🌞 Solar-Sage: Intelligent Solar Energy Assitant
 
-Photon-Nugget is a user-friendly AI assistant that answers your questions about solar energy. It works completely on your own computer without needing to send your data to external services.
+Solar-Sage is a user-friendly AI assistant that answers your questions about solar energy. It works completely on your own computer without needing to send your data to external services.
 
-![Photon-Nugget Screenshot](https://github.com/balijepalli/photon-nugget/raw/main/docs/images/screenshot.png)
+![Solar-Sage Screenshot](https://github.com/balijepalli/solar-sage/raw/main/docs/images/screenshot.png)
 
 ## 🌟 What Can It Do?
 
@@ -29,8 +29,8 @@ Before you begin, make sure you have:
 Open your terminal (Command Prompt on Windows) and run:
 
 ```bash
-git clone https://github.com/balijepalli/photon-nugget.git
-cd photon-nugget
+git clone https://github.com/balijepalli/solar-sage.git
+cd solar-sage
 ```
 
 ### Step 2: Set Up the Environment
@@ -125,7 +125,7 @@ After receiving an answer, you can provide feedback by clicking:
 ### Getting Help
 
 If you encounter problems not covered here:
-1. Check the [GitHub Issues](https://github.com/balijepalli/photon-nugget/issues) page
+1. Check the [GitHub Issues](https://github.com/balijepalli/solar-sage/issues) page
 2. Create a new issue with details about your problem
 
 ## 📚 For Developers
@@ -135,7 +135,7 @@ If you're a developer interested in the technical details or want to contribute 
 ### Project Structure
 
 ```
-photon-nugget/
+solar-sage/
 ├── app/                # Backend server
 ├── ui/                 # Frontend interface
 ├── rag/                # Retrieval system
