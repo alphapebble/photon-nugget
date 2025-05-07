@@ -14,7 +14,7 @@ from ui.config import (
     KNOWLEDGE_INFO,
     GITHUB_LINK
 )
-from ui.api import ask_model
+from api import get_model_response
 from ui.theme import css_styles
 from ui.messages import format_html_message, format_thinking_animation
 from ui.template_loader import render_template, load_js_bundle
@@ -40,7 +40,7 @@ def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str
     yield "", history, format_thinking_animation(), -1, ""
 
     # Get response from model
-    reply = ask_model(message, history)
+    reply = get_model_response(message, history)
 
     # Update history and clear status
     history.append((message, reply))
