@@ -1,6 +1,6 @@
 # 🌞 Solar-Sage: Intelligent Solar Energy Assistant
 
-Solar-Sage is a user-friendly AI assistant that answers your questions about solar energy. It works completely on your own computer without needing to send your data to external services.
+Solar-Sage is a domain-aware AI assistant designed to support engineers, site operators, and analysts in the solar energy lifecycle — from site planning to QA audits and performance diagnostics. Powered by LLMs and integrated with geospatial pipelines (e.g., point cloud analysis, CAD deviation detection, thermal anomaly classification), it answers questions, explains results, and guides workflows through a conversational interface.
 
 ![Solar-Sage Screenshot](https://github.com/balijepalli/solar-sage/raw/main/docs/images/screenshot.png)
 
