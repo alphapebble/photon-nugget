@@ -18,6 +18,7 @@ from api import get_model_response
 from ui.theme import css_styles
 from ui.messages import format_html_message, format_thinking_animation
 from ui.template_loader import render_template, load_js_bundle
+from ui.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
 
 
 def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str, List[Tuple[str, str]], str, int, str], None, None]:
@@ -59,7 +60,7 @@ def create_ui() -> gr.Blocks:
     """
     with gr.Blocks(theme=gr.themes.Soft()) as app:
         # Add JavaScript for client-side functionality
-        gr.HTML(load_js_bundle("theme.js", "history.js", "tabs.js", "feedback.js"))
+        gr.HTML(load_js_bundle("theme.js", "history.js", "tabs.js", "feedback.js", "uppy.js"))
 
         # State variables for feedback
         current_response_index = gr.State(-1)
@@ -179,9 +180,46 @@ def create_ui() -> gr.Blocks:
                                     elem_id="send_btn"
                                 )
 
-            # SCADA Upload Tab (Placeholder)
+            # SCADA Upload Tab
             with gr.Tab("SCADA Upload"):
-                gr.HTML(render_template("components/placeholder_scada.html"))
+                with gr.Row():
+                    # Left sidebar with instructions and uploader
+                    with gr.Column(scale=1, elem_id="scada_sidebar"):
+                        # Include Uppy.js uploader
+                        gr.HTML(render_template("components/uppy_upload.html"))
+
+                        with gr.Group(elem_id="scada_upload_card"):
+                            # Process button
+                            process_btn = gr.Button(
+                                "Process Data",
+                                variant="primary",
+                                elem_id="process_btn"
+                            )
+
+                            # Status indicator
+                            scada_status = gr.Markdown("", elem_id="scada_status")
+
+                            # Hidden file upload component (for Gradio backend)
+                            file_upload = gr.File(
+                                label="Upload SCADA CSV",
+                                file_types=[".csv", ".xlsx"],
+                                type="binary",
+                                visible=False
+                            )
+
+                    # Main visualization area
+                    with gr.Column(scale=3, elem_id="scada_viz_column"):
+                        with gr.Group(elem_id="scada_viz_card"):
+                            # Tabs for different visualizations
+                            with gr.Tabs(elem_id="viz_tabs"):
+                                with gr.Tab("Daily Profile"):
+                                    daily_profile_plot = gr.Plot(label="Daily Power Profile")
+
+                                with gr.Tab("Monthly Heatmap"):
+                                    monthly_heatmap_plot = gr.Plot(label="Power Output Heatmap")
+
+                            # Performance metrics
+                            performance_metrics = gr.HTML("", elem_id="performance_metrics")
 
             # Tilt Optimization Tab (Placeholder)
             with gr.Tab("Tilt Optimization"):
@@ -202,6 +240,59 @@ def create_ui() -> gr.Blocks:
             fn=respond,
             inputs=[user_input, chatbot],
             outputs=[user_input, chatbot, status_indicator, current_response_index, feedback_header]
+        )
+
+        # SCADA data processing function
+        def process_scada_data(file_obj):
+            if file_obj is None:
+                return (
+                    "<div class='error-message'><i class='fas fa-exclamation-circle'></i> Please upload a file first.</div>",
+                    None,
+                    None,
+                    ""
+                )
+
+            try:
+                # Process the CSV file
+                df, status_message = process_csv(file_obj)
+
+                if df is None:
+                    return (
+                        f"<div class='error-message'><i class='fas fa-exclamation-circle'></i> {status_message}</div>",
+                        None,
+                        None,
+                        ""
+                    )
+
+                # Create visualizations
+                daily_plot = create_daily_profile_plot(df)
+                monthly_plot = create_monthly_heatmap(df)
+
+                # Calculate performance metrics
+                metrics = create_performance_summary(df)
+                metrics_html = format_performance_html(metrics)
+
+                return (
+                    f"<div class='success-message'><i class='fas fa-check-circle'></i> {status_message}</div>",
+                    daily_plot,
+                    monthly_plot,
+                    metrics_html
+                )
+            except Exception as e:
+                # Handle any errors
+                error_message = str(e)
+                return (
+                    f"<div class='error-message'><i class='fas fa-exclamation-circle'></i> Error processing file: {error_message}</div>",
+                    None,
+                    None,
+                    ""
+                )
+
+        # Connect SCADA processing function to UI
+        process_btn.click(
+            fn=process_scada_data,
+            inputs=[file_upload],
+            outputs=[scada_status, daily_profile_plot, monthly_heatmap_plot, performance_metrics]
         )
 
         # Theme toggle - using a custom JavaScript function

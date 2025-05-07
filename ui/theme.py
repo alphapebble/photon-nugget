@@ -486,7 +486,7 @@ body {
 }
 
 /* Control buttons styling */
-#clear_btn, #save_btn, #load_btn {
+#clear_btn, #save_btn, #load_btn, #process_btn {
     width: 100%;
     border-radius: var(--border-radius);
     transition: all 0.3s;
@@ -498,10 +498,160 @@ body {
     padding: var(--spacing-sm) var(--spacing-md);
     display: flex;
     align-items: center;
+}
+
+/* SCADA Upload styling */
+.scada-container {
+    padding: var(--spacing-md);
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-md);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.scada-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.scada-header h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-xs);
+    color: var(--primary-color);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.scada-header p {
+    margin: 0;
+    color: var(--status-color);
+    font-size: 14px;
+}
+
+.upload-instructions {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.upload-instructions h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.upload-instructions ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.upload-instructions li {
+    margin-bottom: var(--spacing-xs);
+}
+
+.upload-instructions i {
+    margin-right: var(--spacing-xs);
+    color: var(--primary-color);
+}
+
+/* Performance metrics styling */
+.performance-summary {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: var(--card-bg-color);
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.performance-summary h3 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-md);
+    color: var(--primary-color);
+    font-size: 18px;
+    text-align: center;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+}
+
+.metric-card {
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    text-align: center;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.metric-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.metric-label {
+    font-size: 14px;
+    color: var(--status-color);
+}
+
+/* Uppy uploader styling */
+.uppy-container {
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.uppy-Dashboard-inner {
+    background-color: var(--card-bg-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.dark .uppy-Dashboard-inner {
+    background-color: var(--card-bg-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.uppy-Dashboard-AddFiles-title {
+    color: var(--text-color) !important;
+}
+
+.uppy-Dashboard-AddFiles-info {
+    color: var(--status-color) !important;
+}
+
+.uppy-Dashboard-browse {
+    color: var(--primary-color) !important;
+}
+
+.uppy-Dashboard-dropFilesHereHint {
+    border: 2px dashed var(--border-color) !important;
+    color: var(--status-color) !important;
+}
+
+.uppy-Dashboard-Item-name {
+    color: var(--text-color) !important;
+}
+
+.uppy-Dashboard-Item-statusSize {
+    color: var(--status-color) !important;
+}
+
+#clear_btn, #save_btn, #load_btn, #process_btn {
     justify-content: center;
 }
 
-#clear_btn i, #save_btn i, #load_btn i {
+#clear_btn i, #save_btn i, #load_btn i, #process_btn i {
     margin-right: var(--spacing-sm);
 }
 
