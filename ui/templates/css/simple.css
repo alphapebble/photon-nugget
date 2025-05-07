@@ -1,0 +1,207 @@
+/* Simple CSS for Photon-Nugget UI */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #333333;
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+}
+
+.app-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-title h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.app-title p {
+    font-size: 0.9rem;
+    color: #666666;
+    margin: 0;
+}
+
+.model-badge {
+    background-color: #f8f9fa;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+/* Footer styles */
+.footer {
+    text-align: center;
+    padding: 16px;
+    color: #666666;
+    font-size: 0.8rem;
+    border-top: 1px solid #e0e0e0;
+    background-color: #f8f9fa;
+}
+
+/* Main content */
+.main-content {
+    padding: 24px;
+    display: flex;
+    gap: 24px;
+}
+
+/* Tab styling */
+.tab-nav {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0 24px;
+}
+
+.tab-nav button {
+    padding: 10px 20px;
+    margin-right: 5px;
+    border: none;
+    background-color: #f5f5f5;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tab-nav button.selected {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* Tab content management */
+.tabitem {
+    display: none;
+}
+
+.tabitem.active {
+    display: block !important;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.sidebar-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.sidebar-card h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Chat area */
+.chat-area {
+    flex-grow: 1;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    align-items: center;
+}
+
+/* Button styling */
+.button-primary {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.button-primary:hover {
+    background-color: #1976d2;
+}
+
+/* SCADA Upload styling */
+.scada-container {
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.scada-header h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.upload-instructions {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: rgba(33, 150, 243, 0.1);
+    border-radius: 4px;
+}
+
+/* Tilt optimization styling */
+.tilt-container {
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+}
+
+/* Fix for Gradio's container */
+.gradio-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Fix for Gradio's elements */
+.gr-box, .gr-form, .gr-panel {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.gr-padded {
+    padding: 0 !important;
+}
+
+.gr-button {
+    border-radius: 4px !important;
+}
