@@ -15,12 +15,7 @@ from ui.config import (
     GITHUB_LINK
 )
 from ui.api import ask_model
-from ui.theme import js_functions, css_styles, toggle_theme
-from ui.history import (
-    clear_chat,
-    save_chat_history,
-    load_chat_history_from_storage
-)
+from ui.theme import js_functions, css_styles
 
 
 def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str, List[Tuple[str, str]], str, int, str], None, None]:
@@ -67,10 +62,26 @@ def create_ui() -> gr.Blocks:
         <script>
         {js_functions}
         </script>
+        <script>
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', function() {{
+            // Check if user has a saved theme preference
+            const savedTheme = localStorage.getItem('solarbot_theme');
+
+            // Check if system prefers dark mode
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            // Apply dark theme if user prefers it or system prefers it (and user hasn't set a preference)
+            if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {{
+                document.documentElement.classList.add('dark');
+            }} else {{
+                document.documentElement.classList.remove('dark');
+            }}
+        }});
+        </script>
         """)
 
-        # State variables for theme and feedback
-        theme_state = gr.State("light")
+        # State variables for feedback
         current_response_index = gr.State(-1)
 
         # Header with app info and theme toggle
@@ -87,8 +98,8 @@ def create_ui() -> gr.Blocks:
                 </div>
                 """)
 
-            # Theme toggle button with icon
-            theme_btn = gr.Button(
+            # Theme toggle button with icon (will be controlled by JavaScript)
+            gr.Button(
                 "Toggle Theme",
                 elem_id="theme_toggle",
                 variant="secondary",
@@ -143,21 +154,22 @@ def create_ui() -> gr.Blocks:
                         with gr.Group(elem_id="controls_card"):
                             gr.HTML("""<h3 class="card-title">Conversation</h3>""")
 
-                            clear_btn = gr.Button(
+                            # Buttons will be controlled by JavaScript
+                            gr.Button(
                                 "Clear Chat",
                                 elem_id="clear_btn",
                                 variant="secondary",
                                 size="sm"
                             )
 
-                            save_btn = gr.Button(
+                            gr.Button(
                                 "Save History",
                                 elem_id="save_btn",
                                 variant="secondary",
                                 size="sm"
                             )
 
-                            load_btn = gr.Button(
+                            gr.Button(
                                 "Load History",
                                 elem_id="load_btn",
                                 variant="secondary",
@@ -272,48 +284,227 @@ def create_ui() -> gr.Blocks:
             outputs=[user_input, chatbot, status_indicator, current_response_index, feedback_header]
         )
 
-        # Theme toggle - using a normal function since _js is not supported
-        theme_btn.click(
-            fn=toggle_theme,
-            inputs=[theme_state],
-            outputs=[theme_state]
-        )
+        # Theme toggle - using a custom JavaScript function
+        gr.HTML("""
+        <script>
+        // Create a direct event listener for the theme toggle button
+        function setupThemeToggle() {
+            const themeBtn = document.getElementById('theme_toggle');
+            if (!themeBtn) {
+                setTimeout(setupThemeToggle, 100);
+                return;
+            }
 
-        # History management with improved feedback
-        def clear_chat_and_feedback():
-            # Clear chat and hide feedback components
-            chat_result, _, idx, _ = clear_chat()
-            # Return empty string for feedback header to hide it
-            return chat_result, "<div class='success-message'><i class='fas fa-check-circle'></i> Chat cleared successfully!</div>", idx, ""
+            // Remove any existing event listeners
+            const newBtn = themeBtn.cloneNode(true);
+            themeBtn.parentNode.replaceChild(newBtn, themeBtn);
 
-        def save_history_with_feedback(history):
-            if not history:
-                return "<div class='warning-message'><i class='fas fa-exclamation-triangle'></i> No messages to save. Try asking a question first!</div>"
-            result = save_chat_history(history)
-            return f"<div class='success-message'><i class='fas fa-check-circle'></i> {result}</div>"
+            // Add click event listener
+            newBtn.addEventListener('click', function() {
+                // Toggle the dark class on the document element
+                document.documentElement.classList.toggle('dark');
 
-        def load_history_with_feedback():
-            history, message = load_chat_history_from_storage()
-            if not history:
-                return history, "<div class='warning-message'><i class='fas fa-exclamation-triangle'></i> No saved history found. Start a new conversation!</div>"
-            return history, f"<div class='success-message'><i class='fas fa-check-circle'></i> {message}</div>"
+                // Save the theme preference to localStorage
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('solarbot_theme', isDark ? 'dark' : 'light');
 
-        clear_btn.click(
-            fn=clear_chat_and_feedback,
-            outputs=[chatbot, status_indicator, current_response_index, feedback_header],
-            api_name="clear"
-        )
+                // Update the button text based on the theme
+                this.innerHTML = isDark ?
+                    '<i class="fas fa-sun"></i> Light Mode' :
+                    '<i class="fas fa-moon"></i> Dark Mode';
+            });
 
-        save_btn.click(
-            fn=save_history_with_feedback,
-            inputs=[chatbot],
-            outputs=[status_indicator]
-        )
+            // Set initial button text based on current theme
+            const isDark = document.documentElement.classList.contains('dark');
+            newBtn.innerHTML = isDark ?
+                '<i class="fas fa-sun"></i> Light Mode' :
+                '<i class="fas fa-moon"></i> Dark Mode';
+        }
 
-        load_btn.click(
-            fn=load_history_with_feedback,
-            outputs=[chatbot, status_indicator]
-        )
+        // Set up the theme toggle when the page loads
+        document.addEventListener('DOMContentLoaded', setupThemeToggle);
+        // Also try to set up when the page changes
+        setInterval(setupThemeToggle, 1000);
+        </script>
+        """)
+
+        # History management with browser localStorage
+        gr.HTML("""
+        <script>
+        // Function to save chat history to localStorage
+        function saveHistory() {
+            const chatbot = document.querySelector('#chatbot');
+            if (!chatbot) {
+                showMessage('warning', 'Could not find chat history to save.');
+                return;
+            }
+
+            // Extract messages from the DOM
+            const messages = [];
+            const userMessages = chatbot.querySelectorAll('.user-message');
+            const botMessages = chatbot.querySelectorAll('.bot-message');
+
+            for (let i = 0; i < userMessages.length; i++) {
+                if (botMessages[i]) {
+                    messages.push([
+                        userMessages[i].textContent.trim(),
+                        botMessages[i].textContent.trim()
+                    ]);
+                }
+            }
+
+            if (messages.length === 0) {
+                showMessage('warning', 'No messages to save. Try asking a question first!');
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('solarbot_history', JSON.stringify(messages));
+            showMessage('success', 'Chat history saved successfully!');
+        }
+
+        // Function to load chat history from localStorage
+        function loadHistory() {
+            const saved = localStorage.getItem('solarbot_history');
+            if (!saved) {
+                showMessage('warning', 'No saved history found. Start a new conversation!');
+                return;
+            }
+
+            try {
+                const messages = JSON.parse(saved);
+                if (messages.length === 0) {
+                    showMessage('warning', 'Saved history is empty.');
+                    return;
+                }
+
+                // Clear current chat
+                clearChat();
+
+                // Add a small delay to ensure chat is cleared
+                setTimeout(() => {
+                    // Simulate typing each message to recreate the conversation
+                    simulateConversation(messages);
+                    showMessage('success', 'Chat history loaded successfully!');
+                }, 100);
+            } catch (e) {
+                showMessage('error', 'Error loading chat history: ' + e.message);
+            }
+        }
+
+        // Function to clear chat
+        function clearChat() {
+            // Find the clear button in the Gradio interface and click it
+            const clearBtn = document.querySelector('#clear_btn');
+            if (clearBtn) {
+                clearBtn.click();
+                showMessage('success', 'Chat cleared successfully!');
+            } else {
+                // Fallback: Try to clear the chatbot directly
+                const chatbot = document.querySelector('#chatbot');
+                if (chatbot) {
+                    while (chatbot.firstChild) {
+                        chatbot.removeChild(chatbot.firstChild);
+                    }
+                    showMessage('success', 'Chat cleared successfully!');
+                } else {
+                    showMessage('error', 'Could not clear chat.');
+                }
+            }
+
+            // Also clear from localStorage
+            localStorage.removeItem('solarbot_history');
+        }
+
+        // Function to simulate a conversation by typing messages
+        function simulateConversation(messages) {
+            const userInput = document.querySelector('#user_input textarea');
+            const sendBtn = document.querySelector('#send_btn');
+
+            if (!userInput || !sendBtn) {
+                showMessage('error', 'Could not find input elements.');
+                return;
+            }
+
+            let i = 0;
+
+            function typeNextMessage() {
+                if (i >= messages.length) return;
+
+                const [userMsg, _] = messages[i];
+
+                // Type user message
+                userInput.value = userMsg;
+
+                // Trigger input event to make sure Gradio recognizes the change
+                userInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+                // Click send button
+                sendBtn.click();
+
+                // Move to next message after a delay
+                i++;
+                if (i < messages.length) {
+                    setTimeout(typeNextMessage, 1000); // Wait for response
+                }
+            }
+
+            // Start typing messages
+            typeNextMessage();
+        }
+
+        // Function to show status messages
+        function showMessage(type, text) {
+            const statusIndicator = document.querySelector('#status_indicator');
+            if (!statusIndicator) return;
+
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'warning') icon = 'exclamation-triangle';
+            if (type === 'error') icon = 'exclamation-circle';
+
+            statusIndicator.innerHTML = `<div class='${type}-message'><i class='fas fa-${icon}'></i> ${text}</div>`;
+
+            // Clear message after 5 seconds
+            setTimeout(() => {
+                if (statusIndicator.querySelector(`.${type}-message`)) {
+                    statusIndicator.innerHTML = '';
+                }
+            }, 5000);
+        }
+
+        // Set up event listeners for the history buttons
+        function setupHistoryButtons() {
+            const saveBtn = document.querySelector('#save_btn');
+            const loadBtn = document.querySelector('#load_btn');
+            const clearBtn = document.querySelector('#clear_btn');
+
+            if (!saveBtn || !loadBtn || !clearBtn) {
+                setTimeout(setupHistoryButtons, 100);
+                return;
+            }
+
+            // Remove existing listeners
+            const newSaveBtn = saveBtn.cloneNode(true);
+            const newLoadBtn = loadBtn.cloneNode(true);
+            const newClearBtn = clearBtn.cloneNode(true);
+
+            saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+            loadBtn.parentNode.replaceChild(newLoadBtn, loadBtn);
+            clearBtn.parentNode.replaceChild(newClearBtn, clearBtn);
+
+            // Add new listeners
+            newSaveBtn.addEventListener('click', saveHistory);
+            newLoadBtn.addEventListener('click', loadHistory);
+            newClearBtn.addEventListener('click', clearChat);
+        }
+
+        // Set up the history buttons when the page loads
+        document.addEventListener('DOMContentLoaded', setupHistoryButtons);
+        // Also try to set up when the page changes
+        setInterval(setupHistoryButtons, 1000);
+        </script>
+        """)
 
         # Add JavaScript for tab navigation
         gr.HTML("""
@@ -370,7 +561,7 @@ if __name__ == "__main__":
     # Use a different port to avoid conflicts
     ui.launch(
         server_name=SERVER_NAME,
-        server_port=8502,  # Explicitly set port
+        server_port=8503,  # Explicitly set port
         share=False,
         show_error=True
     )
