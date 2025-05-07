@@ -89,6 +89,10 @@ body {
     background: linear-gradient(135deg, #1565c0 0%, #3a86c8 100%);
     position: relative;
     overflow: hidden;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .footer::before {
@@ -134,39 +138,88 @@ body {
 }
 
 .tabitem {
-    min-height: 500px; /* Set a minimum height for tab content */
+    min-height: 600px; /* Set a larger minimum height for tab content */
+}
+
+/* Ensure all tab content has the same minimum height */
+#chat-tab-content, #scada-tab-content, #tilt-tab-content {
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix for the tilt optimization tab specifically */
+#tilt-tab-content .main-content {
+    flex: 1;
+    min-height: 500px;
 }
 
 /* Tab styling */
 .tab-nav {
     display: flex;
     margin-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 2px solid #e0e0e0;
     padding: 0 24px;
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .tab-nav button {
-    padding: 10px 20px;
-    margin-right: 5px;
+    padding: 12px 24px;
+    margin-right: 8px;
+    margin-bottom: -2px;
     border: none;
-    background-color: #f5f5f5;
-    border-radius: 4px 4px 0 0;
+    background-color: transparent;
+    border-radius: 8px 8px 0 0;
     cursor: pointer;
     font-weight: 500;
+    color: #666;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.tab-nav button:hover {
+    background-color: rgba(21, 101, 192, 0.05);
+    color: #1565c0;
 }
 
 .tab-nav button.selected {
-    background-color: #2196F3;
+    background-color: #1565c0;
     color: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tab-nav button.selected::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #1565c0;
+    border-radius: 3px 3px 0 0;
 }
 
 /* Tab content management */
 .tabitem {
     display: none;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin: 0 24px 24px 24px;
+    transition: all 0.3s ease;
 }
 
 .tabitem.active {
     display: block !important;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Sidebar */
@@ -178,8 +231,16 @@ body {
 .sidebar-card {
     background-color: #f8f9fa;
     border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.sidebar-card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .sidebar-card h3 {
@@ -207,13 +268,22 @@ body {
 /* Chat area */
 .chat-area {
     flex-grow: 1;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border: 1px solid #e0e0e0;
 }
 
 .chat-input-container {
     display: flex;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 16px;
+    margin-top: 20px;
     align-items: center;
+    background-color: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
 /* Specific styling for the Send button - using multiple selectors for higher specificity */
@@ -316,6 +386,21 @@ div[id^="component"] #send-btn button:hover,
     max-width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+}
+
+/* Ensure the main content takes up available space */
+.gradio-container > div:nth-child(2) {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Ensure the footer stays at the bottom */
+.gradio-container > div:last-child {
+    margin-top: auto !important;
 }
 
 /* Fix for Gradio's elements */

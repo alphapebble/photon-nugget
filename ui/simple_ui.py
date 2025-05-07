@@ -155,7 +155,10 @@ def create_ui() -> gr.Blocks:
                                     "Send",
                                     elem_id="send-btn",
                                     elem_classes="button-primary",
-                                    variant="primary"
+                                    variant="primary",
+                                    scale=1,
+                                    min_width=100,
+                                    size="lg"
                                 )
 
             # SCADA Upload Tab

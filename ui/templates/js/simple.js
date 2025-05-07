@@ -20,6 +20,24 @@ function setupTabs() {
         return;
     }
 
+    // Fix for consistent heights across tabs
+    let maxHeight = 0;
+    tabItems.forEach(item => {
+        // Get the computed height
+        const height = item.offsetHeight;
+        if (height > maxHeight) {
+            maxHeight = height;
+        }
+    });
+
+    // Set a minimum height for all tabs
+    if (maxHeight > 0) {
+        console.log(`Setting minimum height of ${maxHeight}px for all tabs`);
+        tabItems.forEach(item => {
+            item.style.minHeight = `${Math.max(600, maxHeight)}px`;
+        });
+    }
+
     // Initially hide all tab content except the first one
     tabItems.forEach((item, index) => {
         if (index === 0) {
@@ -41,20 +59,37 @@ function setupTabs() {
         newButton.addEventListener('click', function() {
             console.log(`Tab ${index} clicked`);
 
-            // Update active class on buttons
-            tabButtons.forEach(btn => btn.classList.remove('selected'));
-            newButton.classList.add('selected');
+            // Update active class on buttons with smooth transition
+            tabButtons.forEach(btn => {
+                btn.classList.remove('selected');
+                // Remove any lingering styles
+                btn.style.transform = '';
+                btn.style.boxShadow = '';
+            });
 
-            // Show the corresponding tab content
+            // Add selected class with subtle animation
+            newButton.classList.add('selected');
+            newButton.style.transform = 'translateY(-2px)';
+
+            // Show the corresponding tab content with animation
+            // First hide all tabs
             tabItems.forEach((item, i) => {
-                if (i === index) {
-                    item.style.display = 'block';
-                    item.classList.add('active');
-                } else {
+                if (i !== index) {
                     item.style.display = 'none';
                     item.classList.remove('active');
                 }
             });
+
+            // Then show the selected tab with animation
+            const selectedContent = tabItems[index];
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+
+                // Force a reflow to ensure animation works
+                void selectedContent.offsetWidth;
+
+                selectedContent.classList.add('active');
+            }
         });
     });
 
@@ -415,6 +450,46 @@ setTimeout(() => {
         sendBtn.style.color = 'white';
     }
 }, 3000);
+
+// Fix for the footer jumping issue
+setTimeout(() => {
+    console.log('Running footer fix');
+
+    // Find all tab content elements
+    const tabItems = document.querySelectorAll('.tabitem');
+    if (tabItems.length > 0) {
+        // Get the height of the tallest tab
+        let maxHeight = 0;
+        tabItems.forEach(item => {
+            const height = item.scrollHeight;
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+        });
+
+        // Set a minimum height for all tabs
+        if (maxHeight > 0) {
+            console.log(`Setting minimum height of ${maxHeight}px for all tabs`);
+            tabItems.forEach(item => {
+                item.style.minHeight = `${Math.max(600, maxHeight)}px`;
+            });
+        }
+
+        // Specific fix for the tilt tab
+        const tiltTab = document.getElementById('tilt-tab-content');
+        if (tiltTab) {
+            tiltTab.style.minHeight = `${Math.max(600, maxHeight)}px`;
+
+            // Find the main content in the tilt tab
+            const tiltContent = tiltTab.querySelector('.main-content');
+            if (tiltContent) {
+                tiltContent.style.flex = '1';
+                tiltContent.style.display = 'flex';
+                tiltContent.style.flexDirection = 'column';
+            }
+        }
+    }
+}, 2000);
 
 // Add a mutation observer to detect when Gradio adds new elements
 const observer = new MutationObserver(function(mutations) {
