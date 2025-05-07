@@ -10,11 +10,12 @@ from ui.config import (
     APP_TITLE,
     APP_DESCRIPTION,
     MODEL_INFO,
-    KNOWLEDGE_INFO
+    KNOWLEDGE_INFO,
+    GITHUB_LINK
 )
 from api import get_model_response
 from ui.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
-from ui.template_loader import render_template, load_template
+from ui.template_loader import render_template, load_template, load_icon
 
 def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str, List[Tuple[str, str]]], None, None]:
     """Process user message and get response from the model."""
@@ -104,7 +105,9 @@ def create_ui() -> gr.Blocks:
         gr.HTML(render_template("components/simple_header.html", {
             "APP_TITLE": APP_TITLE,
             "APP_DESCRIPTION": APP_DESCRIPTION,
-            "MODEL_INFO": MODEL_INFO
+            "MODEL_INFO": MODEL_INFO,
+            "SUN_ICON": load_icon("sun"),
+            "CPU_ICON": load_icon("cpu")
         }))
 
         # Main content with tabs
@@ -117,7 +120,12 @@ def create_ui() -> gr.Blocks:
                         # Model info and actions
                         gr.HTML(render_template("components/simple_sidebar.html", {
                             "MODEL_INFO": MODEL_INFO,
-                            "KNOWLEDGE_INFO": KNOWLEDGE_INFO
+                            "KNOWLEDGE_INFO": KNOWLEDGE_INFO,
+                            "CPU_ICON": load_icon("cpu"),
+                            "BOOK_ICON": load_icon("book"),
+                            "TRASH_ICON": load_icon("trash"),
+                            "SAVE_ICON": load_icon("save"),
+                            "DOWNLOAD_ICON": load_icon("download")
                         }))
 
                     # Chat area
@@ -160,7 +168,7 @@ def create_ui() -> gr.Blocks:
                                 <h3>SCADA Data Upload</h3>
                                 <p>Upload your SCADA data files to visualize and analyze solar performance metrics.</p>
                             </div>
-                            
+
                             <div class="upload-instructions">
                                 <h4>Supported File Formats</h4>
                                 <ul>
@@ -218,7 +226,7 @@ def create_ui() -> gr.Blocks:
                         <div class="tilt-container">
                             <h3>Tilt Angle Optimization</h3>
                             <p>Calculate the optimal tilt angle for your solar panels based on your location.</p>
-                            
+
                             <div class="upload-instructions">
                                 <h4>How it works</h4>
                                 <p>Enter the angle in degrees and click Calculate to get the optimal orientation.</p>
@@ -249,7 +257,8 @@ def create_ui() -> gr.Blocks:
         # Footer
         gr.HTML(render_template("components/simple_footer.html", {
             "CURRENT_YEAR": datetime.datetime.now().year,
-            "APP_TITLE": APP_TITLE
+            "APP_TITLE": APP_TITLE,
+            "GITHUB_LINK": GITHUB_LINK
         }))
 
         # Load JavaScript

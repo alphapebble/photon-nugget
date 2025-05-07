@@ -21,8 +21,8 @@ SERVER_PORT = int(os.getenv("GRADIO_SERVER_PORT", 8504))
 
 # UI Configuration
 CHATBOT_HEIGHT = 450
-APP_TITLE = "Photon-Nugget"
-APP_DESCRIPTION = "Private Solar AI Assistant"
+APP_TITLE = "SolarSage"
+APP_DESCRIPTION = "Intelligent Solar Energy Assistant"
 MODEL_INFO = "Mistral via Ollama"
 KNOWLEDGE_INFO = "Custom Ingested Solar Docs"
 GITHUB_LINK = "https://github.com/balijepalli/photon-nugget"
