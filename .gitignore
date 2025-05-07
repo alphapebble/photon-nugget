@@ -20,3 +20,7 @@ models/*
 .ipynb_checkpoints/
 
 .idea/
+docs/journals/2025_05_07.md
+docs/logseq/config.edn
+docs/logseq/custom.css
+docs/pages/contents.md
