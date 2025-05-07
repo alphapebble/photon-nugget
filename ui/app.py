@@ -16,6 +16,7 @@ from ui.config import (
 )
 from ui.api import ask_model
 from ui.theme import js_functions, css_styles
+from ui.messages import format_html_message, format_thinking_animation
 
 
 def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str, List[Tuple[str, str]], str, int, str], None, None]:
@@ -31,11 +32,11 @@ def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str
         response index, and feedback header content
     """
     if not message.strip():
-        yield "", history, "<div class='error-message'><i class='fas fa-exclamation-circle'></i> Please enter a question.</div>", -1, ""
+        yield "", history, format_html_message("empty_input", "error"), -1, ""
         return
 
     # Show thinking status with a more professional look
-    yield "", history, "<div class='thinking-indicator'><div class='thinking-dots'><span></span><span></span><span></span></div><div class='thinking-text'>Thinking...</div></div>", -1, ""
+    yield "", history, format_thinking_animation(), -1, ""
 
     # Get response from model
     reply = ask_model(message, history)
@@ -45,8 +46,7 @@ def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str
     response_idx = len(history) - 1
 
     # Return updated state and show feedback components
-    # Use "### Was this response helpful?" for feedback_header to make it visible
-    yield "", history, "", response_idx, "### Was this response helpful?"
+    yield "", history, "", response_idx, f"### {format_html_message('feedback_prompt')}"
 
 
 def create_ui() -> gr.Blocks:
@@ -561,7 +561,7 @@ if __name__ == "__main__":
     # Use a different port to avoid conflicts
     ui.launch(
         server_name=SERVER_NAME,
-        server_port=8503,  # Explicitly set port
+        server_port=8504,  # Explicitly set port
         share=False,
         show_error=True
     )
