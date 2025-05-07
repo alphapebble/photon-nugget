@@ -1,4 +1,4 @@
-# 🌞 Solar-Sage: Intelligent Solar Energy Assitant
+# 🌞 Solar-Sage: Intelligent Solar Energy Assistant
 
 Solar-Sage is a user-friendly AI assistant that answers your questions about solar energy. It works completely on your own computer without needing to send your data to external services.
 
