@@ -15,16 +15,28 @@ from ui.config import (
 )
 from api import get_model_response
 from ui.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
+from ui.weather_dashboard import create_weather_dashboard_ui, update_weather_dashboard
 from ui.template_loader import render_template, load_template, load_icon
 
-def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str, List[Tuple[str, str]]], None, None]:
+def respond(message: str, history: List[Tuple[str, str]], location_input: str = None) -> Generator[Tuple[str, List[Tuple[str, str]]], None, None]:
     """Process user message and get response from the model."""
     if not message.strip():
         yield "", history
         return
 
-    # Get response from model
-    reply = get_model_response(message, history)
+    # Process location if provided
+    lat, lon = None, None
+    if location_input:
+        try:
+            parts = location_input.strip().split(',')
+            if len(parts) == 2:
+                lat = float(parts[0].strip())
+                lon = float(parts[1].strip())
+        except ValueError:
+            pass  # Invalid location format, ignore
+
+    # Get response from model with weather context if location is provided
+    reply = get_model_response(message, history, lat, lon)
 
     # Update history
     history.append((message, reply))
@@ -97,8 +109,10 @@ def calculate_tilt(angle_input):
 
 def create_ui() -> gr.Blocks:
     """Create the UI with simple design."""
-    # Load CSS from file
+    # Load CSS from files
     css = load_template("css/simple.css")
+    weather_css = load_template("css/weather_dashboard.css")
+    css = css + "\n" + weather_css
 
     with gr.Blocks(css=css) as app:
         # Header
@@ -139,6 +153,21 @@ def create_ui() -> gr.Blocks:
                             height=400,
                             show_label=False
                         )
+
+                        # Weather location input (hidden by default, toggled by JavaScript)
+                        with gr.Row(elem_id="weather-location-container", visible=False):
+                            chat_location_input = gr.Textbox(
+                                label="Your Location (latitude,longitude)",
+                                placeholder="37.7749,-122.4194",
+                                elem_id="chat-location-input",
+                                elem_classes="location-input"
+                            )
+
+                            location_toggle = gr.Checkbox(
+                                label="Include weather data",
+                                elem_id="location-toggle",
+                                value=False
+                            )
 
                         # Input area with improved styling
                         with gr.Row(elem_classes="chat-input-container"):
@@ -221,6 +250,24 @@ def create_ui() -> gr.Blocks:
 
                             # Performance metrics
                             performance_metrics = gr.HTML("", elem_id="performance_metrics")
+
+            # Weather Dashboard Tab
+            with gr.TabItem("Weather Dashboard", elem_id="weather-dashboard-tab-content"):
+                with gr.Row(elem_id="main-content", elem_classes="main-content"):
+                    # Location input and update button
+                    with gr.Row(elem_classes="location-container"):
+                        location_input, update_btn, current_conditions, forecast_plot, insights_card = create_weather_dashboard_ui()
+
+                    # Weather visualization grid
+                    with gr.Row(elem_classes="weather-grid"):
+                        with gr.Column():
+                            gr.HTML(elem_id="current-conditions-container")
+
+                        with gr.Column():
+                            gr.HTML(elem_id="insights-container")
+
+                    with gr.Row():
+                        gr.HTML(elem_id="forecast-container")
 
             # Tilt Optimization Tab
             with gr.TabItem("Tilt Optimization", elem_id="tilt-tab-content"):
@@ -310,8 +357,56 @@ def create_ui() -> gr.Blocks:
         """)
 
         # Connect the input and button to the chatbot
-        submit_btn.click(respond, [msg, chatbot], [msg, chatbot])
-        msg.submit(respond, [msg, chatbot], [msg, chatbot])
+        submit_btn.click(respond, [msg, chatbot, chat_location_input], [msg, chatbot])
+        msg.submit(respond, [msg, chatbot, chat_location_input], [msg, chatbot])
+
+        # Add JavaScript to toggle weather location input visibility
+        gr.HTML("""
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add weather toggle button to the chat interface
+            const chatInputContainer = document.querySelector('.chat-input-container');
+            if (chatInputContainer) {
+                const toggleBtn = document.createElement('button');
+                toggleBtn.innerHTML = '🌤️';
+                toggleBtn.className = 'weather-toggle-btn';
+                toggleBtn.title = 'Toggle weather data';
+                toggleBtn.onclick = function(e) {
+                    e.preventDefault();
+                    const container = document.getElementById('weather-location-container');
+                    if (container) {
+                        container.style.display = container.style.display === 'none' ? 'flex' : 'none';
+                    }
+                };
+                chatInputContainer.appendChild(toggleBtn);
+            }
+
+            // Initialize weather location container as hidden
+            const weatherContainer = document.getElementById('weather-location-container');
+            if (weatherContainer) {
+                weatherContainer.style.display = 'none';
+            }
+        });
+        </script>
+        <style>
+        .weather-toggle-btn {
+            position: absolute;
+            right: 120px;
+            bottom: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        #weather-location-container {
+            padding: 10px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        </style>
+        """)
 
         # Connect SCADA processing function to UI
         process_btn.click(

@@ -91,33 +91,65 @@ class ApiClient:
             logger.error(f"Error in API request: {str(e)}")
             raise
 
-    def chat(self, message: str) -> Dict[str, Any]:
+    def chat(self, message: str, lat: float = None, lon: float = None, include_weather: bool = False) -> Dict[str, Any]:
         """
         Send a chat message to the API.
 
         Args:
             message: User's message
+            lat: Latitude (optional)
+            lon: Longitude (optional)
+            include_weather: Whether to include weather context
 
         Returns:
             API response as a dictionary
         """
-        return self._make_request("POST", BACKEND_CHAT_ENDPOINT, {"query": message})
+        data = {
+            "query": message
+        }
 
-def get_model_response(user_message: str, history: List[Tuple[str, str]]) -> str:
+        # Add weather parameters if provided
+        if include_weather and lat is not None and lon is not None:
+            data["lat"] = lat
+            data["lon"] = lon
+            data["include_weather"] = True
+
+        return self._make_request("POST", BACKEND_CHAT_ENDPOINT, data)
+
+def get_model_response(user_message: str, history: List[Tuple[str, str]],
+                   lat: float = None, lon: float = None) -> str:
     """
     Get a response from the model via the API.
 
     Args:
         user_message: The user's input message
         history: Chat history
+        lat: Latitude (optional)
+        lon: Longitude (optional)
 
     Returns:
         The model's response or an error message
     """
     client = ApiClient()
 
+    # Check if the query is weather-related
+    weather_keywords = [
+        "weather", "cloud", "rain", "sunny", "forecast",
+        "today", "tomorrow", "week", "production", "output",
+        "efficiency", "performance", "expect", "prediction",
+        "humidity", "temperature", "hot", "cold", "wind"
+    ]
+
+    # Determine if we should include weather data
+    include_weather = any(keyword in user_message.lower() for keyword in weather_keywords)
+
     try:
-        response = client.chat(user_message)
+        response = client.chat(
+            message=user_message,
+            lat=lat,
+            lon=lon,
+            include_weather=include_weather
+        )
         return response["response"]
     except Exception as e:
         return format_api_error(e)
