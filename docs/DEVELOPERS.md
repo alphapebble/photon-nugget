@@ -1,11 +1,11 @@
-# Developer Documentation for Photon-Nugget
+# Developer Documentation for Solar-Sage
 
-This document provides technical details for developers who want to understand, modify, or contribute to the Photon-Nugget project.
+This document provides technical details for developers who want to understand, modify, or contribute to the Solar-Sage project.
 
 ## 📂 Project Structure
 
 ```
-photon-nugget/
+solar-sage/
 ├── ingestion/                # Fetch, parse, and clean solar documents (raw → chunks → vector store)
 │   ├── fetcher.py            # Download PDFs, HTML pages from various sources
 │   ├── parser.py             # Extract readable text from documents
@@ -165,10 +165,10 @@ For production deployment, use Docker:
 
 ```bash
 # Build the Docker image
-docker build -t photon-nugget .
+docker build -t solar-sage .
 
 # Run the container
-docker run -p 8000:8000 -p 8502:8502 photon-nugget
+docker run -p 8000:8000 -p 8502:8502 solar-sage
 ```
 
 ## 📄 License
