@@ -36,11 +36,11 @@ def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str
         response index, and feedback header content
     """
     if not message.strip():
-        yield "", history, "Please enter a question.", -1, ""
+        yield "", history, "<div class='error-message'><i class='fas fa-exclamation-circle'></i> Please enter a question.</div>", -1, ""
         return
 
-    # Show thinking status
-    yield "", history, "🤔 Thinking...", -1, ""
+    # Show thinking status with a more professional look
+    yield "", history, "<div class='thinking-indicator'><div class='thinking-dots'><span></span><span></span><span></span></div><div class='thinking-text'>Thinking...</div></div>", -1, ""
 
     # Get response from model
     reply = ask_model(message, history)
@@ -75,76 +75,185 @@ def create_ui() -> gr.Blocks:
 
         # Header with app info and theme toggle
         with gr.Row(equal_height=True):
-            with gr.Column(scale=1):
-                gr.Markdown(f"### ☀️ **{APP_TITLE}**")
-                gr.Markdown(f"_{APP_DESCRIPTION}_")
-                gr.Markdown(f"📦 Model: `{MODEL_INFO}`")
-                gr.Markdown(f"🧠 Knowledge: {KNOWLEDGE_INFO}")
-
-                # Theme toggle button
-                theme_btn = gr.Button("🌓 Toggle Dark Mode", elem_id="theme_toggle")
-
-                gr.Markdown(f"🔗 [GitHub]({GITHUB_LINK})")
-
-            # Main chat interface
-            with gr.Column(scale=4):
-                # Chatbot component with increased height for better mobile experience
-                chatbot = gr.Chatbot(
-                    label="Ask SolarBot 🌞",
-                    height=CHATBOT_HEIGHT,
-                    elem_id="chatbot"
-                )
-
-                # Input area
-                with gr.Row():
-                    user_input = gr.Textbox(
-                        placeholder="Ask a question about solar...",
-                        show_label=False,
-                        container=False,
-                        scale=12,
-                        elem_id="user_input"
-                    )
-                    send_btn = gr.Button("🚀", variant="primary", scale=1)
-
-                # Controls row with improved styling
-                with gr.Row(equal_height=True):
-                    with gr.Column(scale=1):
-                        clear_btn = gr.Button(
-                            "🧹 Clear Chat",
-                            size="sm",
-                            elem_id="clear_btn",
-                            variant="secondary"
-                        )
-                    with gr.Column(scale=1):
-                        save_btn = gr.Button(
-                            "💾 Save History",
-                            size="sm",
-                            elem_id="save_btn",
-                            variant="secondary"
-                        )
-                    with gr.Column(scale=1):
-                        load_btn = gr.Button(
-                            "📂 Load History",
-                            size="sm",
-                            elem_id="load_btn",
-                            variant="secondary"
-                        )
-
-                # Status indicator and feedback area
-                with gr.Row():
-                    status_indicator = gr.Markdown("", elem_id="status_indicator")
-
-                # Feedback section - using a container div for visibility control
-                with gr.Column(elem_id="feedback_container"):
-                    feedback_header = gr.Markdown("", elem_id="feedback_header")
-                    # Use HTML for the buttons and status to avoid component issues
-                    gr.HTML("""
-                    <div id="feedback_buttons_container">
-                        <button id="thumbs_up" class="feedback-btn">👍 Yes</button>
-                        <button id="thumbs_down" class="feedback-btn">👎 No</button>
+            with gr.Column():
+                # Modern header with logo and title
+                gr.HTML(f"""
+                <div class="app-header">
+                    <div class="app-logo"><i class="fas fa-sun"></i></div>
+                    <div>
+                        <h2 class="app-title">{APP_TITLE}</h2>
+                        <p class="app-description">{APP_DESCRIPTION}</p>
                     </div>
-                    <div id="feedback_status"></div>
-                    """)
+                </div>
+                """)
+
+            # Theme toggle button with icon
+            theme_btn = gr.Button(
+                "Toggle Theme",
+                elem_id="theme_toggle",
+                variant="secondary",
+                size="sm"
+            )
+
+        # Create tabs using Gradio's Tabs component
+        with gr.Tabs():
+            # Chat Tab
+            with gr.Tab("Chat"):
+                # Add icon to tab via JavaScript
+                gr.HTML("""
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Add icon to Chat tab
+                    const tabLabels = document.querySelectorAll('.tabs > .tab-nav > button');
+                    if (tabLabels.length > 0) {
+                        tabLabels[0].innerHTML = '<i class="fas fa-comments"></i> ' + tabLabels[0].innerHTML;
+                        if (tabLabels.length > 1) {
+                            tabLabels[1].innerHTML = '<i class="fas fa-upload"></i> ' + tabLabels[1].innerHTML;
+                        }
+                        if (tabLabels.length > 2) {
+                            tabLabels[2].innerHTML = '<i class="fas fa-sliders"></i> ' + tabLabels[2].innerHTML;
+                        }
+                    }
+                });
+                </script>
+                """)
+
+                with gr.Row():
+                    # Sidebar with info and controls
+                    with gr.Column(scale=1, elem_id="sidebar"):
+                        # Info card
+                        with gr.Group(elem_id="info_card"):
+                            gr.HTML(f"""
+                            <h3 class="card-title">Information</h3>
+                            <div class="info-item">
+                                <i class="fas fa-microchip"></i>
+                                <span>Model: {MODEL_INFO}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-brain"></i>
+                                <span>Knowledge: {KNOWLEDGE_INFO}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-github"></i>
+                                <a href="{GITHUB_LINK}" target="_blank">GitHub</a>
+                            </div>
+                            """)
+
+                        # Controls card
+                        with gr.Group(elem_id="controls_card"):
+                            gr.HTML("""<h3 class="card-title">Conversation</h3>""")
+
+                            clear_btn = gr.Button(
+                                "Clear Chat",
+                                elem_id="clear_btn",
+                                variant="secondary",
+                                size="sm"
+                            )
+
+                            save_btn = gr.Button(
+                                "Save History",
+                                elem_id="save_btn",
+                                variant="secondary",
+                                size="sm"
+                            )
+
+                            load_btn = gr.Button(
+                                "Load History",
+                                elem_id="load_btn",
+                                variant="secondary",
+                                size="sm"
+                            )
+
+                            # Add icons to buttons via JavaScript
+                            gr.HTML("""
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Add icons to buttons
+                                const clearBtn = document.getElementById('clear_btn');
+                                const saveBtn = document.getElementById('save_btn');
+                                const loadBtn = document.getElementById('load_btn');
+
+                                if (clearBtn) {
+                                    clearBtn.innerHTML = '<i class="fas fa-broom"></i> ' + clearBtn.innerHTML;
+                                }
+
+                                if (saveBtn) {
+                                    saveBtn.innerHTML = '<i class="fas fa-save"></i> ' + saveBtn.innerHTML;
+                                }
+
+                                if (loadBtn) {
+                                    loadBtn.innerHTML = '<i class="fas fa-folder-open"></i> ' + loadBtn.innerHTML;
+                                }
+                            });
+                            </script>
+                            """)
+
+                    # Main chat interface
+                    with gr.Column(scale=3, elem_id="chat_column"):
+                        with gr.Group(elem_id="chat_card"):
+                            # Chatbot component
+                            chatbot = gr.Chatbot(
+                                label="Solar Assistant",
+                                height=CHATBOT_HEIGHT,
+                                elem_id="chatbot"
+                            )
+
+                            # Status indicator
+                            status_indicator = gr.Markdown("", elem_id="status_indicator")
+
+                            # Feedback section
+                            with gr.Column(elem_id="feedback_container", visible=False):
+                                feedback_header = gr.Markdown("", elem_id="feedback_header")
+                                # Use HTML for the buttons and status to avoid component issues
+                                gr.HTML("""
+                                <div id="feedback_buttons_container">
+                                    <button id="thumbs_up" class="feedback-btn">
+                                        <i class="fas fa-thumbs-up"></i> Yes
+                                    </button>
+                                    <button id="thumbs_down" class="feedback-btn">
+                                        <i class="fas fa-thumbs-down"></i> No
+                                    </button>
+                                </div>
+                                <div id="feedback_status"></div>
+                                """)
+
+                            # Input area
+                            with gr.Row(elem_id="input_row"):
+                                user_input = gr.Textbox(
+                                    placeholder="Ask a question about solar...",
+                                    show_label=False,
+                                    container=False,
+                                    scale=20,
+                                    elem_id="user_input"
+                                )
+                                send_btn = gr.Button(
+                                    "Send",
+                                    variant="primary",
+                                    scale=1,
+                                    elem_id="send_btn"
+                                )
+
+            # SCADA Upload Tab (Placeholder)
+            with gr.Tab("SCADA Upload"):
+                gr.HTML("""
+                <div class="placeholder-container">
+                    <i class="fas fa-upload placeholder-icon"></i>
+                    <h3>SCADA Data Upload</h3>
+                    <p>This feature will allow you to upload SCADA data for analysis.</p>
+                    <p class="coming-soon">Coming Soon</p>
+                </div>
+                """)
+
+            # Tilt Optimization Tab (Placeholder)
+            with gr.Tab("Tilt Optimization"):
+                gr.HTML("""
+                <div class="placeholder-container">
+                    <i class="fas fa-sliders placeholder-icon"></i>
+                    <h3>Solar Panel Tilt Optimization</h3>
+                    <p>This feature will help you calculate the optimal tilt angle for your solar panels.</p>
+                    <p class="coming-soon">Coming Soon</p>
+                </div>
+                """)
 
         # Connect UI components to functions
 
@@ -170,60 +279,24 @@ def create_ui() -> gr.Blocks:
             outputs=[theme_state]
         )
 
-        # Add JavaScript for feedback buttons
-        gr.HTML("""
-        <script>
-        // Function to set up feedback button handlers
-        function setupFeedbackButtons() {
-            // Check if buttons exist
-            const thumbsUpBtn = document.getElementById('thumbs_up');
-            const thumbsDownBtn = document.getElementById('thumbs_down');
-
-            if (!thumbsUpBtn || !thumbsDownBtn) {
-                // If buttons don't exist yet, try again in 500ms
-                setTimeout(setupFeedbackButtons, 500);
-                return;
-            }
-
-            // Add click handlers for feedback buttons
-            thumbsUpBtn.addEventListener('click', function() {
-                document.getElementById('feedback_header').innerHTML = "";
-                document.getElementById('feedback_buttons_container').style.display = "none";
-                document.getElementById('feedback_status').innerHTML = "Thank you for your positive feedback! ✅";
-            });
-
-            thumbsDownBtn.addEventListener('click', function() {
-                document.getElementById('feedback_header').innerHTML = "";
-                document.getElementById('feedback_buttons_container').style.display = "none";
-                document.getElementById('feedback_status').innerHTML = "Thank you for your negative feedback! We'll work to improve. ✅";
-            });
-        }
-
-        // Set up the feedback buttons when the page loads
-        document.addEventListener('DOMContentLoaded', setupFeedbackButtons);
-        // Also try to set up when the page changes
-        setInterval(setupFeedbackButtons, 2000);
-        </script>
-        """)
-
         # History management with improved feedback
         def clear_chat_and_feedback():
             # Clear chat and hide feedback components
             chat_result, _, idx, _ = clear_chat()
             # Return empty string for feedback header to hide it
-            return chat_result, "Chat cleared successfully! ✨", idx, ""
+            return chat_result, "<div class='success-message'><i class='fas fa-check-circle'></i> Chat cleared successfully!</div>", idx, ""
 
         def save_history_with_feedback(history):
             if not history:
-                return "No messages to save. Try asking a question first! 📝"
+                return "<div class='warning-message'><i class='fas fa-exclamation-triangle'></i> No messages to save. Try asking a question first!</div>"
             result = save_chat_history(history)
-            return f"{result} ✅"
+            return f"<div class='success-message'><i class='fas fa-check-circle'></i> {result}</div>"
 
         def load_history_with_feedback():
             history, message = load_chat_history_from_storage()
             if not history:
-                return history, "No saved history found. Start a new conversation! 🆕"
-            return history, f"{message} ✅"
+                return history, "<div class='warning-message'><i class='fas fa-exclamation-triangle'></i> No saved history found. Start a new conversation!</div>"
+            return history, f"<div class='success-message'><i class='fas fa-check-circle'></i> {message}</div>"
 
         clear_btn.click(
             fn=clear_chat_and_feedback,
@@ -241,6 +314,45 @@ def create_ui() -> gr.Blocks:
             fn=load_history_with_feedback,
             outputs=[chatbot, status_indicator]
         )
+
+        # Add JavaScript for tab navigation
+        gr.HTML("""
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Get the tab name
+                    const tabName = this.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to current button
+                    this.classList.add('active');
+
+                    // Add active class to corresponding content
+                    document.getElementById(tabName + '-tab').classList.add('active');
+
+                    // Save active tab to localStorage
+                    localStorage.setItem('active_tab', tabName);
+                });
+            });
+
+            // Load active tab from localStorage
+            const activeTab = localStorage.getItem('active_tab');
+            if (activeTab) {
+                const activeButton = document.querySelector(`.tab-button[data-tab="${activeTab}"]`);
+                if (activeButton) {
+                    activeButton.click();
+                }
+            }
+        });
+        </script>
+        """)
 
         # Add custom CSS for styling, dark mode, and mobile responsiveness
         gr.HTML(f"""
