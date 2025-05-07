@@ -299,6 +299,38 @@ function fixButtonStyling() {
         document.querySelector('#tilt-btn button')
     ];
 
+    // Special fix for the Send button which is often problematic
+    const sendBtn = document.querySelector('#send-btn button');
+    if (sendBtn) {
+        console.log('Found Send button, applying direct styling');
+        sendBtn.style.backgroundColor = '#1565c0';
+        sendBtn.style.color = 'white';
+        sendBtn.style.border = 'none';
+        sendBtn.style.borderRadius = '4px';
+        sendBtn.style.padding = '10px 20px';
+        sendBtn.style.fontWeight = '500';
+        sendBtn.style.cursor = 'pointer';
+        sendBtn.style.transition = 'background-color 0.2s ease';
+
+        // Add hover effect
+        sendBtn.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#0d47a1';
+        });
+
+        sendBtn.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '#1565c0';
+        });
+    } else {
+        console.log('Send button not found, will try again later');
+        setTimeout(() => {
+            const retryBtn = document.querySelector('#send-btn button');
+            if (retryBtn) {
+                retryBtn.style.backgroundColor = '#1565c0';
+                retryBtn.style.color = 'white';
+            }
+        }, 1000);
+    }
+
     // Apply styling to each button
     primaryButtons.forEach(button => {
         if (button) {
@@ -360,6 +392,29 @@ setTimeout(initializeUI, 300);
 setTimeout(initializeUI, 500);
 setTimeout(initializeUI, 1000);
 setTimeout(initializeUI, 2000);
+
+// Special fix for the Send button that runs after everything else
+setTimeout(() => {
+    console.log('Running special Send button fix');
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(button => {
+        // Check if this is the Send button by its text content or parent ID
+        if (button.textContent.trim() === 'Send' ||
+            button.parentElement.id === 'send-btn' ||
+            button.closest('#send-btn')) {
+            console.log('Found Send button via text content or parent ID');
+            button.style.backgroundColor = '#1565c0';
+            button.style.color = 'white';
+        }
+    });
+
+    // Also try direct selector
+    const sendBtn = document.querySelector('#send-btn button');
+    if (sendBtn) {
+        sendBtn.style.backgroundColor = '#1565c0';
+        sendBtn.style.color = 'white';
+    }
+}, 3000);
 
 // Add a mutation observer to detect when Gradio adds new elements
 const observer = new MutationObserver(function(mutations) {

@@ -154,7 +154,8 @@ def create_ui() -> gr.Blocks:
                                 submit_btn = gr.Button(
                                     "Send",
                                     elem_id="send-btn",
-                                    elem_classes="button-primary"
+                                    elem_classes="button-primary",
+                                    variant="primary"
                                 )
 
             # SCADA Upload Tab
@@ -266,6 +267,42 @@ def create_ui() -> gr.Blocks:
         <script src="https://releases.transloadit.com/uppy/v3.21.0/uppy.min.js"></script>
         <script>
         {load_template("js/simple.js")}
+        </script>
+        """)
+
+        # Add direct style fix for Send button
+        gr.HTML("""
+        <!-- Direct style fix for Send button -->
+        <style>
+        #send-btn button,
+        button#send-btn,
+        div[id^="component"] #send-btn button,
+        .gradio-container #send-btn button {
+            background-color: #1565c0 !important;
+            color: white !important;
+        }
+        </style>
+
+        <!-- Inline script to fix Send button -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix for Send button
+            function fixSendButton() {
+                const sendBtn = document.querySelector('#send-btn button');
+                if (sendBtn) {
+                    sendBtn.style.backgroundColor = '#1565c0';
+                    sendBtn.style.color = 'white';
+                    console.log('Fixed Send button via inline script');
+                } else {
+                    setTimeout(fixSendButton, 500);
+                }
+            }
+
+            // Run immediately and after a delay
+            fixSendButton();
+            setTimeout(fixSendButton, 1000);
+            setTimeout(fixSendButton, 2000);
+        });
         </script>
         """)
 

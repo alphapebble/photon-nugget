@@ -216,8 +216,17 @@ body {
     align-items: center;
 }
 
-/* Specific styling for the Send button */
-#send-btn button {
+/* Specific styling for the Send button - using multiple selectors for higher specificity */
+#send-btn button,
+button#send-btn,
+.gradio-container #send-btn button,
+#chat-tab-content #send-btn button,
+div[id^="component"] #send-btn button,
+#msg ~ #send-btn button,
+.chat-input-container #send-btn button,
+.chat-area #send-btn button,
+#send-btn > button,
+#send-btn button.gr-button {
     background-color: #1565c0 !important;
     color: white !important;
     border: none !important;
@@ -228,7 +237,16 @@ body {
     transition: background-color 0.2s ease !important;
 }
 
-#send-btn button:hover {
+#send-btn button:hover,
+button#send-btn:hover,
+.gradio-container #send-btn button:hover,
+#chat-tab-content #send-btn button:hover,
+div[id^="component"] #send-btn button:hover,
+#msg ~ #send-btn button:hover,
+.chat-input-container #send-btn button:hover,
+.chat-area #send-btn button:hover,
+#send-btn > button:hover,
+#send-btn button.gr-button:hover {
     background-color: #0d47a1 !important;
 }
 
