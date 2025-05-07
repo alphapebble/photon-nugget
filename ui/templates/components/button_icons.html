@@ -1,0 +1,20 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add icons to buttons
+    const clearBtn = document.getElementById('clear_btn');
+    const saveBtn = document.getElementById('save_btn');
+    const loadBtn = document.getElementById('load_btn');
+    
+    if (clearBtn) {
+        clearBtn.innerHTML = '<i class="fas fa-broom"></i> ' + clearBtn.innerHTML;
+    }
+    
+    if (saveBtn) {
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> ' + saveBtn.innerHTML;
+    }
+    
+    if (loadBtn) {
+        loadBtn.innerHTML = '<i class="fas fa-folder-open"></i> ' + loadBtn.innerHTML;
+    }
+});
+</script>

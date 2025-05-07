@@ -15,8 +15,9 @@ from ui.config import (
     GITHUB_LINK
 )
 from ui.api import ask_model
-from ui.theme import js_functions, css_styles
+from ui.theme import css_styles
 from ui.messages import format_html_message, format_thinking_animation
+from ui.template_loader import render_template, load_js_bundle
 
 
 def respond(message: str, history: List[Tuple[str, str]]) -> Generator[Tuple[str, List[Tuple[str, str]], str, int, str], None, None]:
@@ -58,28 +59,7 @@ def create_ui() -> gr.Blocks:
     """
     with gr.Blocks(theme=gr.themes.Soft()) as app:
         # Add JavaScript for client-side functionality
-        gr.HTML(f"""
-        <script>
-        {js_functions}
-        </script>
-        <script>
-        // Initialize theme on page load
-        document.addEventListener('DOMContentLoaded', function() {{
-            // Check if user has a saved theme preference
-            const savedTheme = localStorage.getItem('solarbot_theme');
-
-            // Check if system prefers dark mode
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-            // Apply dark theme if user prefers it or system prefers it (and user hasn't set a preference)
-            if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {{
-                document.documentElement.classList.add('dark');
-            }} else {{
-                document.documentElement.classList.remove('dark');
-            }}
-        }});
-        </script>
-        """)
+        gr.HTML(load_js_bundle("theme.js", "history.js", "tabs.js", "feedback.js"))
 
         # State variables for feedback
         current_response_index = gr.State(-1)
@@ -88,15 +68,10 @@ def create_ui() -> gr.Blocks:
         with gr.Row(equal_height=True):
             with gr.Column():
                 # Modern header with logo and title
-                gr.HTML(f"""
-                <div class="app-header">
-                    <div class="app-logo"><i class="fas fa-sun"></i></div>
-                    <div>
-                        <h2 class="app-title">{APP_TITLE}</h2>
-                        <p class="app-description">{APP_DESCRIPTION}</p>
-                    </div>
-                </div>
-                """)
+                gr.HTML(render_template("components/header.html", {
+                    "APP_TITLE": APP_TITLE,
+                    "APP_DESCRIPTION": APP_DESCRIPTION
+                }))
 
             # Theme toggle button with icon (will be controlled by JavaScript)
             gr.Button(
@@ -134,21 +109,11 @@ def create_ui() -> gr.Blocks:
                     with gr.Column(scale=1, elem_id="sidebar"):
                         # Info card
                         with gr.Group(elem_id="info_card"):
-                            gr.HTML(f"""
-                            <h3 class="card-title">Information</h3>
-                            <div class="info-item">
-                                <i class="fas fa-microchip"></i>
-                                <span>Model: {MODEL_INFO}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-brain"></i>
-                                <span>Knowledge: {KNOWLEDGE_INFO}</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-github"></i>
-                                <a href="{GITHUB_LINK}" target="_blank">GitHub</a>
-                            </div>
-                            """)
+                            gr.HTML(render_template("components/info_card.html", {
+                                "MODEL_INFO": MODEL_INFO,
+                                "KNOWLEDGE_INFO": KNOWLEDGE_INFO,
+                                "GITHUB_LINK": GITHUB_LINK
+                            }))
 
                         # Controls card
                         with gr.Group(elem_id="controls_card"):
@@ -177,28 +142,7 @@ def create_ui() -> gr.Blocks:
                             )
 
                             # Add icons to buttons via JavaScript
-                            gr.HTML("""
-                            <script>
-                            document.addEventListener('DOMContentLoaded', function() {
-                                // Add icons to buttons
-                                const clearBtn = document.getElementById('clear_btn');
-                                const saveBtn = document.getElementById('save_btn');
-                                const loadBtn = document.getElementById('load_btn');
-
-                                if (clearBtn) {
-                                    clearBtn.innerHTML = '<i class="fas fa-broom"></i> ' + clearBtn.innerHTML;
-                                }
-
-                                if (saveBtn) {
-                                    saveBtn.innerHTML = '<i class="fas fa-save"></i> ' + saveBtn.innerHTML;
-                                }
-
-                                if (loadBtn) {
-                                    loadBtn.innerHTML = '<i class="fas fa-folder-open"></i> ' + loadBtn.innerHTML;
-                                }
-                            });
-                            </script>
-                            """)
+                            gr.HTML(render_template("components/button_icons.html"))
 
                     # Main chat interface
                     with gr.Column(scale=3, elem_id="chat_column"):
@@ -217,17 +161,7 @@ def create_ui() -> gr.Blocks:
                             with gr.Column(elem_id="feedback_container", visible=False):
                                 feedback_header = gr.Markdown("", elem_id="feedback_header")
                                 # Use HTML for the buttons and status to avoid component issues
-                                gr.HTML("""
-                                <div id="feedback_buttons_container">
-                                    <button id="thumbs_up" class="feedback-btn">
-                                        <i class="fas fa-thumbs-up"></i> Yes
-                                    </button>
-                                    <button id="thumbs_down" class="feedback-btn">
-                                        <i class="fas fa-thumbs-down"></i> No
-                                    </button>
-                                </div>
-                                <div id="feedback_status"></div>
-                                """)
+                                gr.HTML(render_template("components/feedback.html"))
 
                             # Input area
                             with gr.Row(elem_id="input_row"):
@@ -247,25 +181,11 @@ def create_ui() -> gr.Blocks:
 
             # SCADA Upload Tab (Placeholder)
             with gr.Tab("SCADA Upload"):
-                gr.HTML("""
-                <div class="placeholder-container">
-                    <i class="fas fa-upload placeholder-icon"></i>
-                    <h3>SCADA Data Upload</h3>
-                    <p>This feature will allow you to upload SCADA data for analysis.</p>
-                    <p class="coming-soon">Coming Soon</p>
-                </div>
-                """)
+                gr.HTML(render_template("components/placeholder_scada.html"))
 
             # Tilt Optimization Tab (Placeholder)
             with gr.Tab("Tilt Optimization"):
-                gr.HTML("""
-                <div class="placeholder-container">
-                    <i class="fas fa-sliders placeholder-icon"></i>
-                    <h3>Solar Panel Tilt Optimization</h3>
-                    <p>This feature will help you calculate the optimal tilt angle for your solar panels.</p>
-                    <p class="coming-soon">Coming Soon</p>
-                </div>
-                """)
+                gr.HTML(render_template("components/placeholder_tilt.html"))
 
         # Connect UI components to functions
 
