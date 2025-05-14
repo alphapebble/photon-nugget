@@ -6,8 +6,6 @@ Solar-Sage is a domain-aware AI assistant designed to support engineers, site op
 
 Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides information but can also take actions, make decisions, and interact with external systems. By integrating weather data with RAG systems, it offers solar recommendations, insights, alerts, degradation estimates, and automation workflows. See the [Agentic RAG documentation](#agentic-rag-chatbot) for implementation details.
 
-![Solar-Sage Screenshot](https://github.com/balijepalli/solar-sage/raw/main/docs/images/screenshot.png)
-
 ## 🌟 What Can It Do?
 
 ### Current Capabilities
