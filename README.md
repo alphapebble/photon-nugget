@@ -153,25 +153,45 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
-- [Chunking Strategy Pattern](docs/chunking_strategy_pattern.md) - Flexible document chunking strategies for RAG
+- [Chunking Strategy Implementation](ingestion/chunking_strategy.py) - Flexible document chunking strategies for RAG
 
 ### Project Structure
 
 ```
 solar-sage/
 ├── agents/             # Agent components
-│   ├── weather_agent.py      # Weather data fetching
+│   ├── agent_engine.py        # Core agent logic
+│   ├── initialize.py          # Agent setup
+│   ├── memory_system.py       # Conversation memory
+│   ├── tool_registry.py       # Tool management
+│   ├── weather_agent.py       # Weather data fetching
 │   └── weather_integration.py # Weather processing
 ├── app/                # Backend server
+│   └── agent_endpoints.py     # Agent API endpoints
 ├── docs/               # Documentation
 │   ├── DEVELOPERS.md          # Developer guide
 │   ├── agentic_rag_chatbot.md # Agentic architecture
-│   └── agent_implementation_guide.md # Implementation guide
+│   ├── agent_implementation_guide.md # Implementation guide
+│   ├── agentic_rag_roadmap.md # Project roadmap
+│   ├── implementation_status.md # Current status
+│   └── agentic_quickstart.md  # Quick start guide
+├── ingestion/          # Document ingestion
+│   ├── chunking_strategy.py   # Chunking strategy pattern
+│   └── enhanced_pipeline.py   # Enhanced ingestion pipeline
 ├── rag/                # Retrieval system
+│   ├── agent_enhanced_rag.py  # Agent-enhanced RAG
 │   ├── rag_engine.py          # Basic RAG
 │   └── weather_enhanced_rag.py # Weather-enhanced RAG
 ├── tools/              # Agent tools
+│   ├── integration_tools.py   # External system integration
+│   ├── notification_tools.py  # Alerts and notifications
+│   ├── performance_tools.py   # Performance analysis
+│   ├── system_tools.py        # System configuration
 │   └── weather_tools.py       # Weather-related tools
+├── tests/              # Test suite
+│   ├── agents/               # Tests for agent components
+│   ├── ingestion/            # Tests for ingestion components
+│   └── tools/                # Tests for agent tools
 ├── ui/                 # Frontend interface
 ├── llm/                # AI model integration
 ├── retriever/          # Document retrieval

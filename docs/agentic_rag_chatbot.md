@@ -35,7 +35,30 @@ The Agentic RAG Chatbot builds upon the existing Solar Sage architecture, extend
 
 ## Core Components
 
-### 1. Agent Engine
+### 1. RAG System with Strategy Pattern
+
+The RAG (Retrieval Augmented Generation) system uses a Strategy Pattern for document chunking, allowing flexible and interchangeable chunking algorithms:
+
+```python
+class ChunkingStrategy(ABC):
+    """Abstract base class for document chunking strategies."""
+
+    @abstractmethod
+    def chunk_document(self, text: str, metadata: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        """Split a document into chunks according to the strategy."""
+        pass
+```
+
+The system includes several chunking strategies:
+- **Word Count Chunking**: Splits documents into chunks of fixed word count
+- **Semantic Chunking**: Respects paragraph and section boundaries
+- **Sliding Window Chunking**: Uses overlapping windows for better context preservation
+
+The Strategy Pattern allows selecting the optimal chunking approach based on document type or specific requirements, improving the quality and relevance of retrieved context.
+
+For implementation details, see the [Chunking Strategy Implementation](../ingestion/chunking_strategy.py) and [Enhanced Pipeline](../ingestion/enhanced_pipeline.py).
+
+### 2. Agent Engine
 
 The Agent Engine is the central component that orchestrates the agentic capabilities:
 
@@ -45,7 +68,7 @@ class AgentEngine:
         self.llm = llm
         self.tool_registry = tool_registry
         self.memory_system = memory_system
-        
+
     def process_query(self, query, user_context):
         # 1. Analyze query to determine if it requires tool use
         # 2. If tool use is needed, select appropriate tool
@@ -63,19 +86,19 @@ The Tool Registry manages the available tools and their specifications:
 class ToolRegistry:
     def __init__(self):
         self.tools = {}
-        
+
     def register_tool(self, tool_name, tool_function, tool_description, required_params):
         self.tools[tool_name] = {
             "function": tool_function,
             "description": tool_description,
             "required_params": required_params
         }
-        
+
     def get_tool(self, tool_name):
         return self.tools.get(tool_name)
-        
+
     def list_tools(self):
-        return [{"name": name, "description": tool["description"]} 
+        return [{"name": name, "description": tool["description"]}
                 for name, tool in self.tools.items()]
 ```
 
@@ -87,15 +110,15 @@ The Memory System maintains conversation history and user preferences:
 class MemorySystem:
     def __init__(self, storage_backend):
         self.storage = storage_backend
-        
+
     def add_interaction(self, user_id, query, response, tools_used=None):
         # Store interaction in memory
         pass
-        
+
     def get_recent_interactions(self, user_id, limit=5):
         # Retrieve recent interactions
         pass
-        
+
     def store_user_preference(self, user_id, preference_key, preference_value):
         # Store user preference
         pass
@@ -109,15 +132,15 @@ Enhanced weather integration for solar-specific insights:
 class WeatherToolkit:
     def __init__(self, weather_api_client):
         self.weather_client = weather_api_client
-        
+
     def get_production_forecast(self, lat, lon, system_capacity_kw=5.0):
         # Get weather data and calculate production forecast
         pass
-        
+
     def get_maintenance_recommendations(self, lat, lon):
         # Generate maintenance recommendations based on weather
         pass
-        
+
     def get_optimal_production_times(self, lat, lon, days_ahead=7):
         # Identify optimal production times based on forecast
         pass
@@ -188,7 +211,7 @@ System: [Identifies query as requiring the Weather Analysis Tool]
 [Executes weather forecast tool with user's location]
 [Generates production forecast]
 
-Response: Based on the weather forecast for your location (37.7749, -122.4194), 
+Response: Based on the weather forecast for your location (37.7749, -122.4194),
 I estimate your 5kW system will produce:
 - Today: 22.4 kWh (90% of optimal) - Sunny conditions
 - Tomorrow: 18.7 kWh (75% of optimal) - Partly cloudy
@@ -206,9 +229,9 @@ System: [Identifies query as requiring the Weather Analysis Tool]
 [Retrieves user's maintenance history from memory]
 [Executes maintenance recommendation tool]
 
-Response: Based on your location's weather forecast, I don't recommend cleaning 
-your panels this week. There's rain expected on Thursday which will naturally 
-clean your panels. Your last recorded cleaning was 3 weeks ago, and the current 
+Response: Based on your location's weather forecast, I don't recommend cleaning
+your panels this week. There's rain expected on Thursday which will naturally
+clean your panels. Your last recorded cleaning was 3 weeks ago, and the current
 dust accumulation is likely minimal. I'll remind you to check again in 2 weeks.
 ```
 
