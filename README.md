@@ -2,15 +2,29 @@
 
 Solar-Sage is a domain-aware AI assistant designed to support engineers, site operators, and analysts in the solar energy lifecycle — from site planning to QA audits and performance diagnostics. Powered by LLMs and integrated with geospatial pipelines (e.g., point cloud analysis, CAD deviation detection, thermal anomaly classification), it answers questions, explains results, and guides workflows through a conversational interface.
 
+## 🤖 Agentic RAG Chatbot
+
+Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides information but can also take actions, make decisions, and interact with external systems. By integrating weather data with RAG systems, it offers solar recommendations, insights, alerts, degradation estimates, and automation workflows. See the [Agentic RAG documentation](#agentic-rag-chatbot) for implementation details.
+
 ![Solar-Sage Screenshot](https://github.com/balijepalli/solar-sage/raw/main/docs/images/screenshot.png)
 
 ## 🌟 What Can It Do?
 
+### Current Capabilities
 - Answer questions about solar panels, installation, and energy
+- Provide weather-enhanced solar insights
 - Work completely offline on your computer
 - Provide accurate information from reliable solar energy sources
 - Remember your conversation history
 - Switch between light and dark mode for comfortable viewing
+
+### Upcoming Agentic Capabilities
+- Generate solar production forecasts based on weather data
+- Provide maintenance recommendations based on weather conditions
+- Identify optimal times for solar production
+- Analyze performance data and detect issues
+- Schedule alerts and notifications
+- Connect with smart home systems and inverter monitoring APIs
 
 ## 🚀 Quick Start Guide (For Everyone)
 
@@ -132,13 +146,34 @@ If you encounter problems not covered here:
 
 If you're a developer interested in the technical details or want to contribute to the project, check out the [Developer Documentation](docs/DEVELOPERS.md).
 
+### Agentic RAG Chatbot
+
+Solar Sage is being extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. Check out the following documentation:
+
+- [Agentic RAG Chatbot Architecture](docs/agentic_rag_chatbot.md) - Overview of the agentic architecture
+- [Implementation Guide](docs/agent_implementation_guide.md) - Detailed implementation instructions
+- [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
+- [Implementation Status](docs/implementation_status.md) - Current status and next steps
+- [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
+
 ### Project Structure
 
 ```
 solar-sage/
+├── agents/             # Agent components
+│   ├── weather_agent.py      # Weather data fetching
+│   └── weather_integration.py # Weather processing
 ├── app/                # Backend server
-├── ui/                 # Frontend interface
+├── docs/               # Documentation
+│   ├── DEVELOPERS.md          # Developer guide
+│   ├── agentic_rag_chatbot.md # Agentic architecture
+│   └── agent_implementation_guide.md # Implementation guide
 ├── rag/                # Retrieval system
+│   ├── rag_engine.py          # Basic RAG
+│   └── weather_enhanced_rag.py # Weather-enhanced RAG
+├── tools/              # Agent tools
+│   └── weather_tools.py       # Weather-related tools
+├── ui/                 # Frontend interface
 ├── llm/                # AI model integration
 ├── retriever/          # Document retrieval
 ├── models/             # AI models
