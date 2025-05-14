@@ -63,27 +63,35 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Step 3: Start the Backend Server
+### Step 3: Start the Application
 
-Open a new terminal window, navigate to the project folder, activate the virtual environment, and run:
+You can run the application using the CLI:
 
 ```bash
+# Run the API server
+python -m cli.main server
+
+# Run the UI
+python -m cli.main ui
+```
+
+Keep the terminal windows open while using the application.
+
+### Alternative: Start Components Separately
+
+If you prefer to start the components separately:
+
+```bash
+# Start the backend server
 # On Windows:
-set USE_OLLAMA=true
-set MODEL_NAME=mistral
+set SOLAR_SAGE_LLM_PROVIDER=ollama
+set SOLAR_SAGE_LLM_MODEL=mistral
 python -m app.server
 
 # On macOS/Linux:
-USE_OLLAMA=true MODEL_NAME=mistral python -m app.server
-```
+SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral python -m app.server
 
-Keep this terminal window open while using the application.
-
-### Step 4: Start the User Interface
-
-Open another terminal window, navigate to the project folder, activate the virtual environment, and run:
-
-```bash
+# Start the UI in another terminal
 python -m ui.app
 ```
 
@@ -157,59 +165,167 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 
 ### Project Structure
 
+The codebase follows a modular structure:
+
 ```
 solar-sage/
-├── agents/             # Agent components
+├── agents/            # Agent components
 │   ├── agent_engine.py        # Core agent logic
 │   ├── initialize.py          # Agent setup
 │   ├── memory_system.py       # Conversation memory
 │   ├── tool_registry.py       # Tool management
 │   ├── weather_agent.py       # Weather data fetching
 │   └── weather_integration.py # Weather processing
-├── app/                # Backend server
+├── api/               # API client and routes
+├── app/               # Application server
 │   └── agent_endpoints.py     # Agent API endpoints
-├── docs/               # Documentation
-│   ├── DEVELOPERS.md          # Developer guide
+├── cli/               # Command-line interface
+│   ├── commands/             # CLI commands
+│   └── main.py               # CLI entry point
+├── config/            # Configuration
+│   ├── environments/         # Environment-specific settings
+│   ├── default.py            # Default configuration
+│   └── __init__.py           # Configuration loader
+├── core/              # Core functionality
+│   ├── config.py             # Configuration utilities
+│   ├── exceptions.py         # Custom exceptions
+│   ├── logging.py            # Logging setup
+│   └── utils/                # Shared utilities
+├── data/              # Knowledge database
+├── deployment/        # Deployment configuration
+│   ├── docker/               # Docker configuration
+│   ├── kubernetes/           # Kubernetes configuration
+│   └── scripts/              # Deployment scripts
+├── docs/              # Documentation
+│   ├── DEVELOPERS.md         # Developer guide
 │   ├── agentic_rag_chatbot.md # Agentic architecture
 │   ├── agent_implementation_guide.md # Implementation guide
 │   ├── agentic_rag_roadmap.md # Project roadmap
 │   ├── implementation_status.md # Current status
-│   └── agentic_quickstart.md  # Quick start guide
-├── ingestion/          # Document ingestion
-│   ├── chunking_strategy.py   # Chunking strategy pattern
-│   └── enhanced_pipeline.py   # Enhanced ingestion pipeline
-├── rag/                # Retrieval system
-│   ├── agent_enhanced_rag.py  # Agent-enhanced RAG
-│   ├── rag_engine.py          # Basic RAG
+│   └── agentic_quickstart.md # Quick start guide
+├── ingestion/         # Document ingestion
+│   ├── chunking_strategy.py  # Chunking strategy pattern
+│   └── enhanced_pipeline.py  # Enhanced ingestion pipeline
+├── llm/               # LLM integration
+├── models/            # AI models
+├── rag/               # Retrieval system
+│   ├── agent_enhanced_rag.py # Agent-enhanced RAG
+│   ├── rag_engine.py         # Basic RAG
 │   └── weather_enhanced_rag.py # Weather-enhanced RAG
-├── tools/              # Agent tools
-│   ├── integration_tools.py   # External system integration
-│   ├── notification_tools.py  # Alerts and notifications
-│   ├── performance_tools.py   # Performance analysis
-│   ├── system_tools.py        # System configuration
-│   └── weather_tools.py       # Weather-related tools
-├── tests/              # Test suite
-│   ├── agents/               # Tests for agent components
-│   ├── ingestion/            # Tests for ingestion components
-│   └── tools/                # Tests for agent tools
-├── ui/                 # Frontend interface
-├── llm/                # AI model integration
-├── retriever/          # Document retrieval
-├── models/             # AI models
-└── data/               # Knowledge database
+├── retriever/         # Document retrieval
+├── scripts/           # Utility scripts
+├── tests/             # Test suite
+│   ├── unit/                # Unit tests
+│   ├── integration/         # Integration tests
+│   └── e2e/                 # End-to-end tests
+├── tools/             # Agent tools
+│   ├── integration_tools.py  # External system integration
+│   ├── notification_tools.py # Alerts and notifications
+│   ├── performance_tools.py  # Performance analysis
+│   ├── system_tools.py       # System configuration
+│   └── weather_tools.py      # Weather-related tools
+├── ui/                # Frontend interface
+├── .env.example       # Example environment variables
+├── main.py            # Main entry point
+├── pyproject.toml     # Python project configuration
+└── README.md          # Project README
 ```
+
+### Command-Line Interface
+
+Solar Sage provides a command-line interface (CLI) for common tasks:
+
+```bash
+# Run the API server
+python -m cli.main server [--host HOST] [--port PORT]
+
+# Run the UI
+python -m cli.main ui [--port PORT]
+
+# Ingest a document
+python -m cli.main ingest SOURCE [--db-path DB_PATH] [--table TABLE] [--model MODEL] [--strategy STRATEGY]
+
+# List ingested documents
+python -m cli.main list [--db-path DB_PATH] [--table TABLE]
+```
+
+For help on any command:
+
+```bash
+python -m cli.main --help
+python -m cli.main COMMAND --help
+```
+
+### Configuration System
+
+Solar Sage uses a flexible configuration system that supports:
+
+1. **Environment Variables**: Set variables with the `SOLAR_SAGE_` prefix
+2. **Configuration Files**: Environment-specific settings in `config/environments/`
+3. **Default Values**: Fallback values defined in `config/default.py`
+
+To configure the application:
+
+1. Copy `.env.example` to `.env` and customize settings:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit the `.env` file with your preferred settings:
+   ```
+   SOLAR_SAGE_ENV=development
+   SOLAR_SAGE_LOG_LEVEL=INFO
+   SOLAR_SAGE_API_HOST=0.0.0.0
+   SOLAR_SAGE_API_PORT=8000
+   SOLAR_SAGE_UI_PORT=8502
+   SOLAR_SAGE_LLM_PROVIDER=ollama
+   SOLAR_SAGE_LLM_MODEL=mistral
+   ```
+
+3. Access configuration in code:
+   ```python
+   from core.config import get_config
+
+   # Get a configuration value with a default fallback
+   api_port = get_config("api_port", 8000)
+   ```
 
 ### Running with Different Models
 
-You can use different AI models by changing the `MODEL_NAME` parameter:
+You can use different AI models by setting the appropriate environment variables:
 
 ```bash
 # Using Mistral model
-USE_OLLAMA=true MODEL_NAME=mistral python -m app.server
+SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral python -m cli.main server
 
 # Using Llama model
-USE_OLLAMA=true MODEL_NAME=llama python -m app.server
+SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=llama python -m cli.main server
 ```
+
+Or by editing your `.env` file:
+
+```
+SOLAR_SAGE_LLM_PROVIDER=ollama
+SOLAR_SAGE_LLM_MODEL=mistral
+```
+
+### Docker Deployment
+
+You can deploy Solar Sage using Docker:
+
+```bash
+# Build and run with Docker Compose
+docker-compose -f deployment/docker/docker-compose.yml up -d
+
+# Or use the deployment script
+bash deployment/scripts/deploy.sh
+```
+
+The Docker setup includes:
+- API server container
+- UI container
+- Ollama container for local LLM support
+- Shared volume for data persistence
 
 ## 📄 License
 

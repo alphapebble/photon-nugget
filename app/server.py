@@ -1,6 +1,15 @@
 from fastapi import FastAPI
+import uvicorn
+from typing import Optional
+
 from app.prompt import ChatRequest, ChatResponse
 from rag.rag_engine import rag_answer
+from core.config import get_config
+from core.logging import get_logger, setup_logging
+
+# Set up logging
+setup_logging()
+logger = get_logger(__name__)
 
 # Import weather-enhanced RAG if available, otherwise use a fallback
 try:
@@ -8,11 +17,11 @@ try:
     WEATHER_RAG_AVAILABLE = True
 except ImportError:
     WEATHER_RAG_AVAILABLE = False
-    
+
     # Fallback functions if weather_enhanced_rag is not available
     def is_weather_related_query(query: str) -> bool:
         return False
-        
+
     def weather_enhanced_rag_answer(user_query: str, lat=None, lon=None, include_weather=False):
         answer = rag_answer(user_query)
         return {
@@ -27,20 +36,20 @@ app = FastAPI()
 async def chat(request: ChatRequest):
     """
     Process a chat request and return a response.
-    
+
     If weather data is requested and coordinates are provided,
     use the weather-enhanced RAG system.
     """
     # Check if we should use weather-enhanced RAG
     use_weather = (
         hasattr(request, 'include_weather') and
-        request.include_weather and 
+        request.include_weather and
         hasattr(request, 'lat') and
-        request.lat is not None and 
+        request.lat is not None and
         hasattr(request, 'lon') and
         request.lon is not None
     )
-    
+
     # Use weather-enhanced RAG if requested or if query is weather-related
     if WEATHER_RAG_AVAILABLE and (use_weather or is_weather_related_query(request.query)):
         result = weather_enhanced_rag_answer(
@@ -66,3 +75,26 @@ async def chat(request: ChatRequest):
 @app.get("/")
 async def root():
     return {"message": "Solar Sage API is running"}
+
+
+def run_server(host: Optional[str] = None, port: Optional[int] = None) -> None:
+    """
+    Run the API server.
+
+    Args:
+        host: Host to run the server on
+        port: Port to run the server on
+    """
+    # Get configuration
+    server_host = host or get_config("api_host", "0.0.0.0")
+    server_port = port or int(get_config("api_port", "8000"))
+
+    logger.info(f"Starting API server on {server_host}:{server_port}")
+
+    # Run the server
+    uvicorn.run(
+        "app.server:app",
+        host=server_host,
+        port=server_port,
+        reload=get_config("debug", "False").lower() == "true"
+    )

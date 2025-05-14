@@ -3,19 +3,38 @@
 UI application entry point for Solar Sage.
 """
 import gradio as gr
-from ui.config import SERVER_NAME, SERVER_PORT
-from ui.simple_ui import create_ui
+from typing import Optional
 
-def main():
-    """Main entry point for the UI application."""
+from ui.simple_ui import create_ui
+from core.config import get_config
+from core.logging import get_logger, setup_logging
+
+# Set up logging
+setup_logging()
+logger = get_logger(__name__)
+
+def run_ui(port: Optional[int] = None, share: bool = False) -> None:
+    """
+    Run the UI application.
+
+    Args:
+        port: Port to run the UI on
+        share: Whether to create a public link for sharing
+    """
+    # Get configuration
+    server_name = get_config("ui_host", "0.0.0.0")
+    server_port = port or int(get_config("ui_port", "8502"))
+
+    logger.info(f"Starting UI on {server_name}:{server_port}")
+
     # Create and launch the UI
     ui = create_ui()
     ui.launch(
-        server_name=SERVER_NAME,
-        server_port=SERVER_PORT,
-        share=False,
+        server_name=server_name,
+        server_port=server_port,
+        share=share,
         show_error=True
     )
 
 if __name__ == "__main__":
-    main()
+    run_ui()

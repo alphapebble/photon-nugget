@@ -5,14 +5,69 @@ import time
 import requests
 from typing import Dict, Any, Optional, List, Tuple
 
-from api.config import (
-    BACKEND_URL,
-    BACKEND_CHAT_ENDPOINT,
-    MAX_RETRIES,
-    RETRY_DELAY,
-    logger
-)
-from api.errors import format_api_error
+from core.config import get_config
+from core.logging import get_logger
+from core.exceptions import APIError
+
+# Get logger
+logger = get_logger(__name__)
+
+# API configuration
+BACKEND_URL = get_config("api_url", "http://localhost:8000")
+BACKEND_CHAT_ENDPOINT = "/chat"
+MAX_RETRIES = int(get_config("api_max_retries", "3"))
+RETRY_DELAY = int(get_config("api_retry_delay", "1"))
+
+# Error messages by exception type
+ERROR_MESSAGES: Dict[type, str] = {
+    requests.ConnectionError: "Connection Error: Could not connect to the server. Please check if the server is running.",
+    requests.Timeout: "Timeout Error: The server took too long to respond. Please try again later.",
+    requests.RequestException: "Request Error: There was an error making the request to the server.",
+}
+
+# HTTP status code error messages
+HTTP_ERROR_MESSAGES: Dict[int, str] = {
+    400: "Bad Request: The server could not understand the request.",
+    401: "Unauthorized: Authentication is required to access this resource.",
+    403: "Forbidden: You don't have permission to access this resource.",
+    404: "Not Found: The requested endpoint was not found.",
+    429: "Too Many Requests: You've sent too many requests. Please wait and try again later.",
+    500: "Internal Server Error: The server encountered an unexpected condition.",
+    502: "Bad Gateway: The server received an invalid response from an upstream server.",
+    503: "Service Unavailable: The server is temporarily unable to handle the request.",
+    504: "Gateway Timeout: The upstream server failed to send a response in time."
+}
+
+
+def format_api_error(error: Exception) -> str:
+    """
+    Format API error messages in a user-friendly way.
+
+    Args:
+        error: The exception that occurred
+
+    Returns:
+        A user-friendly error message
+    """
+    # Check for specific exception types
+    for error_type, message in ERROR_MESSAGES.items():
+        if isinstance(error, error_type):
+            return f"⚠️ {message}"
+
+    # Check for HTTP errors
+    if isinstance(error, requests.HTTPError) and error.response is not None:
+        status_code = error.response.status_code
+        if status_code in HTTP_ERROR_MESSAGES:
+            return f"⚠️ Server Error: {HTTP_ERROR_MESSAGES[status_code]}"
+        else:
+            return f"⚠️ HTTP Error: The server returned status code {status_code}."
+
+    # Check for JSON parsing errors
+    if isinstance(error, ValueError) and "JSON" in str(error):
+        return "⚠️ Response Error: The server response was not in the expected format."
+
+    # Generic error message
+    return f"⚠️ Error: {str(error)}"
 
 class ApiClient:
     """
@@ -59,7 +114,7 @@ class ApiClient:
             API response as a dictionary
 
         Raises:
-            Exception: If the request fails after all retries
+            APIError: If the request fails after all retries
         """
         url = f"{self.base_url}{endpoint}"
 
@@ -86,12 +141,16 @@ class ApiClient:
                 return self._make_request(method, endpoint, data, retry_count + 1)
             else:
                 logger.error(f"Max retries reached. Error: {str(e)}")
-                raise
+                raise APIError(f"API request failed after {self.max_retries} retries: {str(e)}")
+        except requests.HTTPError as e:
+            status_code = e.response.status_code if e.response else 500
+            logger.error(f"HTTP error in API request: {str(e)}")
+            raise APIError(f"HTTP error: {str(e)}", status_code=status_code)
         except Exception as e:
             logger.error(f"Error in API request: {str(e)}")
-            raise
+            raise APIError(f"API request failed: {str(e)}")
 
-    def chat(self, message: str, lat: float = None, lon: float = None, include_weather: bool = False) -> Dict[str, Any]:
+    def chat(self, message: str, lat: Optional[float] = None, lon: Optional[float] = None, include_weather: bool = False) -> Dict[str, Any]:
         """
         Send a chat message to the API.
 
@@ -117,7 +176,7 @@ class ApiClient:
         return self._make_request("POST", BACKEND_CHAT_ENDPOINT, data)
 
 def get_model_response(user_message: str, history: List[Tuple[str, str]],
-                   lat: float = None, lon: float = None) -> str:
+                   lat: Optional[float] = None, lon: Optional[float] = None) -> str:
     """
     Get a response from the model via the API.
 

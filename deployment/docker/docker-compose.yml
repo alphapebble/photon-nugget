@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../../data:/app/data
+    environment:
+      - SOLAR_SAGE_ENV=production
+      - SOLAR_SAGE_API_HOST=0.0.0.0
+      - SOLAR_SAGE_API_PORT=8000
+    command: python -m cli.main server
+
+  ui:
+    build:
+      context: ../..
+      dockerfile: deployment/docker/Dockerfile
+    ports:
+      - "8502:8502"
+    volumes:
+      - ../../data:/app/data
+    environment:
+      - SOLAR_SAGE_ENV=production
+      - SOLAR_SAGE_UI_PORT=8502
+    command: python -m cli.main ui
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
