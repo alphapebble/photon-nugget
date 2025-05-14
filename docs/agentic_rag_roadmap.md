@@ -59,7 +59,16 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Integrate with existing RAG system
 - [ ] Write unit tests for Agent Engine
 
-#### 1.4 Agent Initialization
+#### 1.4 RAG Chunking Strategy Pattern
+- [ ] Create abstract `ChunkingStrategy` class
+- [ ] Implement concrete strategy classes (WordCount, Semantic, SlidingWindow)
+- [ ] Create `DocumentChunker` context class
+- [ ] Implement `ChunkingStrategyFactory`
+- [ ] Update ingestion pipeline to use the strategy pattern
+- [ ] Add configuration options to select strategies
+- [ ] Write unit tests for chunking strategies
+
+#### 1.5 Agent Initialization
 - [ ] Create `agents/initialize.py` for agent setup
 - [ ] Implement configuration loading
 - [ ] Add environment variable support for agent options
