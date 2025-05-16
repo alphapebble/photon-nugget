@@ -1,0 +1,22 @@
+---
+model: mistralai/Mistral-7B-Instruct-v0.2
+config:
+  temperature: 0.7
+  top_p: 0.9
+input:
+  schema:
+    context: string
+    query: string
+  default:
+    context: "Solar panels convert sunlight into electricity."
+    query: "How does solar energy work?"
+---
+Use the following context to answer the query.
+
+Context:
+{{ context }}
+
+Query:
+{{ query }}
+
+Answer:
