@@ -5,12 +5,21 @@ from llm.base import LLMInterface
 
 class TransformersLLM(LLMInterface):
     def __init__(self):
-        model_path = os.getenv("MODEL_PATH", "./models/mistral-7b-instruct")
+        # Get models directory from environment variable with fallback to default
+        models_dir = os.getenv("SOLAR_SAGE_MODELS_DIR", "./models")
+        model_name = os.getenv("SOLAR_SAGE_LLM_MODEL", "mistral-7b-instruct")
+
+        # Construct the full model path
+        model_path = os.path.join(models_dir, model_name)
+
+        print(f"Loading model from: {model_path}")
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
         self.model = AutoModelForCausalLM.from_pretrained(
             model_path,
             torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-            device_map="auto"
+            device_map="auto",
+            local_files_only=True
         )
 
     def generate(self, prompt: str, max_new_tokens: int = 200) -> str:
