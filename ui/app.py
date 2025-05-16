@@ -30,8 +30,18 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
 
     logger.info(f"Starting UI server on {server_name}:{server_port}")
 
+    # Get CSS from both UIs
+    from ui.template_loader import load_template
+
+    # Load CSS from files
+    main_css = load_template("css/simple.css")
+    eval_css = load_template("css/evaluation.css")
+
+    # Combine CSS
+    combined_css = main_css + eval_css
+
     # Create a unified interface that can switch between modes
-    with gr.Blocks(title="Solar Sage") as app:
+    with gr.Blocks(title="Solar Sage", css=combined_css) as app:
         # Create state for the current mode
         current_mode = gr.State(value=mode)
 
