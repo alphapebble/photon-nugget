@@ -410,6 +410,34 @@ python -m unittest discover tests/integration
 
 # Run dual-agent architecture tests
 python tests/run_dual_agent_tests.py
+
+# Run tests with evaluation (may take longer)
+python tests/run_dual_agent_tests.py --with-evaluation
+```
+
+#### RAG Evaluation System
+
+Solar Sage includes a specialized RAG evaluation system that measures the quality of responses using multiple metrics:
+
+- **Basic Metrics**: Keyword matching, response time, response length
+- **RAGAS Metrics**: Faithfulness, answer relevancy, context relevancy, context precision/recall
+- **NLP Metrics**: BLEU, ROUGE, cosine similarity
+
+You can run the evaluation from the command line:
+
+```bash
+# Run evaluation with default settings
+python -m src.cli.main evaluate
+
+# Run with specific options
+python -m src.cli.main evaluate --csv path/to/questions.csv --references path/to/answers.json --no-dual-agent --weather
+```
+
+To view evaluation results in a dashboard:
+
+```bash
+# Launch the evaluation dashboard
+python -m src.cli.main ui --mode evaluation
 ```
 
 #### AI Testing with Giskard
