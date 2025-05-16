@@ -24,7 +24,8 @@ def is_weather_related_query(query: str) -> bool:
         "today", "tomorrow", "week", "production", "output",
         "efficiency", "performance", "expect", "prediction",
         "humidity", "temperature", "hot", "cold", "wind",
-        "storm", "snow", "fog", "dust", "heatwave"
+        "storm", "snow", "fog", "dust", "heatwave", "winter",
+        "summer", "spring", "fall", "autumn", "season"
     ]
 
     query_lower = query.lower()
