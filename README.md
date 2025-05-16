@@ -329,6 +329,8 @@ docker-compose -f deployment/docker/docker-compose.yml up -d
 bash deployment/scripts/deploy.sh
 ```
 
+> **Note:** The Docker Compose file is located in the `deployment/docker/` directory. There is no Docker Compose file in the root directory.
+
 The Docker setup includes:
 - API server container
 - UI container
