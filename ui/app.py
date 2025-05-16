@@ -12,7 +12,7 @@ from core.config import get_config
 from core.logging import get_logger, setup_logging
 
 # Set up logging
-setup_logging()
+setup_logging(log_file="./logs/ui_server.log")
 logger = get_logger(__name__)
 
 def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") -> None:
@@ -30,15 +30,16 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
 
     logger.info(f"Starting UI in {mode} mode on {server_name}:{server_port}")
 
-    # Create and launch the appropriate UI
+    # Create the appropriate UI based on the mode
     if mode == "evaluation":
-        ui = create_evaluation_dashboard()
+        app = create_evaluation_dashboard()
         logger.info("Launching RAG Evaluation Dashboard")
     else:
-        ui = create_ui()
+        app = create_ui()
         logger.info("Launching main Solar Sage UI")
 
-    ui.launch(
+    # Launch the combined app
+    app.launch(
         server_name=server_name,
         server_port=server_port,
         share=share,
@@ -52,6 +53,7 @@ if __name__ == "__main__":
     parser.add_argument("--share", action="store_true", help="Create a public link for sharing")
     parser.add_argument("--mode", choices=["main", "evaluation"], default="main",
                       help="UI mode to run (main or evaluation)")
+    parser.add_argument("--view", help="View parameter from URL (for internal use)")
 
     args = parser.parse_args()
 

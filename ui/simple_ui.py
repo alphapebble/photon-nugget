@@ -13,15 +13,19 @@ from ui.config import (
     KNOWLEDGE_INFO,
     GITHUB_LINK
 )
-from api import get_model_response
+try:
+    from api import get_model_response
+except ImportError:
+    # Try to import from the src directory
+    from ui.api import get_model_response
 from ui.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
 from ui.weather_dashboard import create_weather_dashboard_ui, update_weather_dashboard
 from ui.template_loader import render_template, load_template, load_icon
 
-def respond(message: str, history: List[Tuple[str, str]], location_input: str = None) -> Generator[Tuple[str, List[Tuple[str, str]]], None, None]:
+def respond(message: str, history: List[Tuple[str, str]], location_input: str = None, notification_html: gr.HTML = None) -> Generator[Tuple[str, List[Tuple[str, str]], str], None, None]:
     """Process user message and get response from the model."""
     if not message.strip():
-        yield "", history
+        yield "", history, ""
         return
 
     # Process location if provided
@@ -36,12 +40,30 @@ def respond(message: str, history: List[Tuple[str, str]], location_input: str = 
             pass  # Invalid location format, ignore
 
     # Get response from model with weather context if location is provided
-    reply = get_model_response(message, history, lat, lon)
+    try:
+        reply = get_model_response(message, history, lat, lon)
+    except Exception as e:
+        # Handle API connection errors gracefully
+        error_message = str(e)
+        if "Connection refused" in error_message:
+            reply = "⚠️ I'm sorry, but I can't connect to the API server right now. Please make sure the API server is running by executing `./start_solar_sage.sh --api-only` in a separate terminal."
+        else:
+            reply = f"⚠️ I'm sorry, but an error occurred: {error_message}"
 
     # Update history
     history.append((message, reply))
 
-    yield "", history
+    # Show evaluation notification
+    eval_notification = """
+    <div class="eval-notification">
+        <span class="eval-icon">📊</span>
+        <span>Want to see how well the system is performing? Check out the
+        <a href="/?mode=evaluation" class="eval-link">Evaluation Dashboard</a>
+        </span>
+    </div>
+    """
+
+    yield "", history, eval_notification
 
 def process_scada_data(file_obj):
     """Process SCADA data file and generate visualizations."""
@@ -152,6 +174,12 @@ def create_ui() -> gr.Blocks:
                             elem_id="chatbot",
                             height=400,
                             show_label=False
+                        )
+
+                        # Evaluation notification area
+                        notification_html = gr.HTML(
+                            "",
+                            elem_id="eval-notification-area"
                         )
 
                         # Weather location input (hidden by default, toggled by JavaScript)
@@ -305,7 +333,7 @@ def create_ui() -> gr.Blocks:
                             interactive=False
                         )
 
-        # Footer
+        # Footer with evaluation dashboard link
         gr.HTML(render_template("components/simple_footer.html", {
             "CURRENT_YEAR": datetime.datetime.now().year,
             "APP_TITLE": APP_TITLE,
@@ -322,7 +350,7 @@ def create_ui() -> gr.Blocks:
 
         # Add direct style fix for Send button
         gr.HTML("""
-        <!-- Direct style fix for Send button -->
+        <!-- Direct style fixes -->
         <style>
         #send-btn button,
         button#send-btn,
@@ -330,6 +358,22 @@ def create_ui() -> gr.Blocks:
         .gradio-container #send-btn button {
             background-color: #1565c0 !important;
             color: white !important;
+        }
+
+        .footer-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #1565c0;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .footer-link:hover {
+            background-color: #0d47a1;
         }
         </style>
 
@@ -357,8 +401,8 @@ def create_ui() -> gr.Blocks:
         """)
 
         # Connect the input and button to the chatbot
-        submit_btn.click(respond, [msg, chatbot, chat_location_input], [msg, chatbot])
-        msg.submit(respond, [msg, chatbot, chat_location_input], [msg, chatbot])
+        submit_btn.click(respond, [msg, chatbot, chat_location_input], [msg, chatbot, notification_html])
+        msg.submit(respond, [msg, chatbot, chat_location_input], [msg, chatbot, notification_html])
 
         # Add JavaScript to toggle weather location input visibility
         gr.HTML("""

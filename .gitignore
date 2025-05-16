@@ -11,8 +11,7 @@ ingestion/solar_links.txt
 # Model files
 models/*
 !models/.gitkeep
-src/models/*
-!src/models/.gitkeep
+# No longer using src/models
 
 # Evaluation results
 evaluation/results/
