@@ -17,6 +17,7 @@ from unit.agents.test_response_generator_agent import TestResponseGeneratorAgent
 from unit.agents.test_orchestrator import TestAgentOrchestrator
 from unit.rag.test_rag_engine import TestRagEngine
 from unit.rag.test_weather_enhanced_rag import TestWeatherEnhancedRag
+from evaluation.test_rag_evaluation import TestRAGEvaluation
 
 def run_tests():
     """Run all the dual-agent architecture tests."""
@@ -34,6 +35,12 @@ def run_tests():
     # Add tests from the rag package
     suite.addTests(loader.loadTestsFromTestCase(TestRagEngine))
     suite.addTests(loader.loadTestsFromTestCase(TestWeatherEnhancedRag))
+
+    # Add evaluation tests (optional based on command line flag)
+    include_eval = "--with-evaluation" in sys.argv
+    if include_eval:
+        print("Including RAG evaluation tests (may take longer to run)")
+        suite.addTests(loader.loadTestsFromTestCase(TestRAGEvaluation))
 
     # Create a test runner
     runner = unittest.TextTestRunner(verbosity=2)

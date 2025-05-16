@@ -1,4 +1,7 @@
 question,expected_answer_keywords
-What is solar net metering?,grid,credits,electricity
-How often should solar panels be cleaned?,dust,rain,efficiency
-What is the recommended tilt angle?,latitude,angle,sun
+What is solar net metering?,grid,credits,electricity,billing,mechanism,utility
+How often should solar panels be cleaned?,dust,rain,efficiency,maintenance,frequency
+What is the recommended tilt angle?,latitude,angle,sun,seasonal,production
+How do solar panels work?,photovoltaic,silicon,electrons,inverter,DC,AC
+What factors affect solar panel efficiency?,temperature,shading,orientation,tilt,dust,technology
+How does weather impact solar production?,sunlight,clouds,temperature,seasonal,snow,rain
