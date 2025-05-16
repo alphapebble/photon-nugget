@@ -8,6 +8,14 @@ venv/
 data/
 ingestion/solar_links.txt
 
+# Logs
+logs/
+*.log
+
+# macOS
+.DS_Store
+**/.DS_Store
+
 # Model files
 models/*
 !models/.gitkeep
@@ -26,8 +34,14 @@ summary_metrics_*.csv
 # Jupyter notebooks cache
 .ipynb_checkpoints/
 
+# IDE and OS files
 .idea/
+.DS_Store
+**/.DS_Store
+
+# Documentation specific files
 docs/journals/2025_05_07.md
 docs/logseq/config.edn
 docs/logseq/custom.css
 docs/pages/contents.md
+logs/api_server.log

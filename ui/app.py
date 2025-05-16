@@ -61,6 +61,8 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
             # Extract mode from query parameters if available
             if hasattr(ctx, 'request') and ctx.request:
                 query_params = getattr(ctx.request, 'query_params', None)
+                logger.info(f"Query params: {query_params}")
+
                 if query_params and 'mode' in query_params:
                     requested_mode = query_params['mode']
                     logger.info(f"Mode requested via URL: {requested_mode}")
@@ -72,9 +74,15 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
             # Update visibility based on mode
             if mode_to_use == "evaluation":
                 logger.info("Showing evaluation dashboard")
+                # Make sure the evaluation dashboard is visible and the main UI is hidden
+                main_ui.visible = False
+                eval_ui.visible = True
                 return {main_ui: gr.update(visible=False), eval_ui: gr.update(visible=True)}
             else:
                 logger.info("Showing main UI")
+                # Make sure the main UI is visible and the evaluation dashboard is hidden
+                main_ui.visible = True
+                eval_ui.visible = False
                 return {main_ui: gr.update(visible=True), eval_ui: gr.update(visible=False)}
 
     # Launch the combined app
