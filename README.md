@@ -68,7 +68,54 @@ pip install -r requirements.txt
 
 ### Step 3: Start the Application
 
-You can run the application using the CLI:
+You can run the application using our convenient startup script:
+
+```bash
+# Start all components (API, Ollama, UI)
+./solar_sage.sh start
+
+# Or start components individually
+./solar_sage.sh api start 8000  # Start API server on port 8000
+./solar_sage.sh ui start 8502   # Start UI on port 8502
+./solar_sage.sh ollama start    # Start Ollama
+
+# Check status of all components
+./solar_sage.sh status
+
+# Stop all components
+./solar_sage.sh stop
+
+# Get help on all available commands
+./solar_sage.sh help
+```
+
+You can also run each component script independently:
+
+```bash
+# Start the API server directly
+./scripts/api_server.sh start 8000
+
+# Start the UI directly
+./scripts/ui_manager.sh start 8502 main
+
+# Manage Ollama directly
+./scripts/ollama_manager.sh start
+./scripts/ollama_manager.sh pull llama3
+
+# Download models from Hugging Face
+./scripts/download_hf.sh mistralai/Mistral-7B-Instruct-v0.2 models/mistral-7b
+
+# Kill all running processes
+./scripts/kill_all.sh
+```
+
+Keep the terminal windows open while using the application.
+
+> **Note:** All scripts automatically set up the Python path and environment variables for you. If you need to customize settings, you can create a `.env` file in the project root.
+
+### Alternative: Start Components Using CLI
+
+If you prefer to use the CLI directly:
 
 ```bash
 # First, add src to your Python path
@@ -81,29 +128,6 @@ python -m cli.main server
 
 # Run the UI
 python -m cli.main ui
-```
-
-Keep the terminal windows open while using the application.
-
-> **Note:** The commands above assume you're running from the project root directory and have added the `src` directory to your Python path. See the [Setting Up Your Development Environment](#setting-up-your-development-environment) section for more details.
-
-### Alternative: Start Components Separately
-
-If you prefer to start the components separately:
-
-```bash
-# Start the backend server
-# On Windows:
-set SOLAR_SAGE_LLM_PROVIDER=ollama
-set SOLAR_SAGE_LLM_MODEL=mistral
-set PYTHONPATH=%PYTHONPATH%;%cd%\src
-python -m app.server
-
-# On macOS/Linux:
-SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral PYTHONPATH=$PYTHONPATH:$(pwd)/src python -m app.server
-
-# Start the UI in another terminal
-python -m ui.app
 ```
 
 This will start the web interface. You'll see a URL like `http://0.0.0.0:8502` or `http://127.0.0.1:8502` in the terminal.
@@ -282,6 +306,12 @@ solar-sage/
 │   └── agentic_quickstart.md # Quick start guide
 ├── evaluation/        # Evaluation scripts and data
 ├── scripts/           # Utility scripts
+│   ├── api_server.sh         # API server management
+│   ├── download_hf.sh        # Hugging Face model download
+│   ├── kill_all.sh           # Process management
+│   ├── ollama_manager.sh     # Ollama management
+│   ├── ui_manager.sh         # UI management
+│   └── utils.sh              # Shared utilities
 ├── tests/             # Test suite
 │   ├── unit/                # Unit tests
 │   ├── integration/         # Integration tests
@@ -289,7 +319,8 @@ solar-sage/
 ├── .env.example       # Example environment variables
 ├── main.py            # Main entry point
 ├── pyproject.toml     # Python project configuration
-└── README.md          # Project README
+├── README.md          # Project README
+└── solar_sage.sh      # Main startup script
 ```
 
 ### Command-Line Interface
