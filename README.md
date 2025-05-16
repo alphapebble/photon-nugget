@@ -69,10 +69,10 @@ You can run the application using the CLI:
 
 ```bash
 # Run the API server
-python -m cli.main server
+python -m src.cli.main server
 
 # Run the UI
-python -m cli.main ui
+python -m src.cli.main ui
 ```
 
 Keep the terminal windows open while using the application.
@@ -152,6 +152,38 @@ If you encounter problems not covered here:
 
 If you're a developer interested in the technical details or want to contribute to the project, check out the [Developer Documentation](docs/DEVELOPERS.md).
 
+### Setting Up Your Development Environment
+
+#### Marking the Source Root
+
+The project uses a `src` directory as the source root. You should mark this directory as a source root in your IDE:
+
+**PyCharm:**
+1. Right-click on the `src` directory
+2. Select "Mark Directory as" > "Sources Root"
+
+**VS Code:**
+1. Add this to your `.vscode/settings.json`:
+   ```json
+   {
+     "python.analysis.extraPaths": ["./src"]
+   }
+   ```
+2. If using a virtual environment, make sure to select it as your Python interpreter
+
+**Command Line:**
+If you're not using an IDE, you can add the `src` directory to your Python path:
+```bash
+# Linux/macOS
+export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+
+# Windows (Command Prompt)
+set PYTHONPATH=%PYTHONPATH%;%cd%\src
+
+# Windows (PowerShell)
+$env:PYTHONPATH += ";$(Get-Location)\src"
+```
+
 ### Agentic RAG Chatbot
 
 Solar Sage is being extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. Check out the following documentation:
@@ -169,32 +201,54 @@ The codebase follows a modular structure:
 
 ```
 solar-sage/
-├── agents/            # Agent components
-│   ├── agent_engine.py        # Core agent logic
-│   ├── base_agent.py          # Base agent class
-│   ├── initialize.py          # Agent setup
-│   ├── memory_system.py       # Conversation memory
-│   ├── orchestrator.py        # Dual-agent workflow coordination
-│   ├── response_generator_agent.py # Response generation agent
-│   ├── retriever_agent.py     # Context retrieval agent
-│   ├── tool_registry.py       # Tool management
-│   ├── weather_agent.py       # Weather data fetching
-│   └── weather_integration.py # Weather processing
-├── api/               # API client and routes
-├── app/               # Application server
-│   └── agent_endpoints.py     # Agent API endpoints
-├── cli/               # Command-line interface
-│   ├── commands/             # CLI commands
-│   └── main.py               # CLI entry point
-├── config/            # Configuration
-│   ├── environments/         # Environment-specific settings
-│   ├── default.py            # Default configuration
-│   └── __init__.py           # Configuration loader
-├── core/              # Core functionality
-│   ├── config.py             # Configuration utilities
-│   ├── exceptions.py         # Custom exceptions
-│   ├── logging.py            # Logging setup
-│   └── utils/                # Shared utilities
+├── src/               # Backend source code (marked as source root)
+│   ├── agents/        # Agent components
+│   │   ├── agent_engine.py        # Core agent logic
+│   │   ├── base_agent.py          # Base agent class
+│   │   ├── initialize.py          # Agent setup
+│   │   ├── memory_system.py       # Conversation memory
+│   │   ├── orchestrator.py        # Dual-agent workflow coordination
+│   │   ├── response_generator_agent.py # Response generation agent
+│   │   ├── retriever_agent.py     # Context retrieval agent
+│   │   ├── tool_registry.py       # Tool management
+│   │   ├── weather_agent.py       # Weather data fetching
+│   │   └── weather_integration.py # Weather processing
+│   ├── api/           # API client and routes
+│   ├── app/           # Application server
+│   │   └── agent_endpoints.py     # Agent API endpoints
+│   ├── cli/           # Command-line interface
+│   │   ├── commands/             # CLI commands
+│   │   └── main.py               # CLI entry point
+│   ├── config/        # Configuration
+│   │   ├── environments/         # Environment-specific settings
+│   │   ├── default.py            # Default configuration
+│   │   └── __init__.py           # Configuration loader
+│   ├── core/          # Core functionality
+│   │   ├── config.py             # Configuration utilities
+│   │   ├── exceptions.py         # Custom exceptions
+│   │   ├── logging.py            # Logging setup
+│   │   └── utils/                # Shared utilities
+│   ├── ingestion/     # Document ingestion
+│   │   ├── chunking_strategy.py  # Chunking strategy pattern
+│   │   └── enhanced_pipeline.py  # Enhanced ingestion pipeline
+│   ├── llm/           # LLM integration
+│   ├── models/        # AI models
+│   ├── rag/           # Retrieval system
+│   │   ├── agent_enhanced_rag.py # Agent-enhanced RAG
+│   │   ├── rag_engine.py         # Dual-agent RAG implementation
+│   │   ├── weather_enhanced_rag.py # Weather-enhanced RAG
+│   │   ├── prompts/              # Prompt templates
+│   │   │   ├── dual_agent_rag.prompt # Dual-agent prompt template
+│   │   │   ├── solar_rag.prompt      # Basic RAG prompt template
+│   │   │   └── template_loader.py    # Template loading utilities
+│   ├── retriever/     # Document retrieval
+│   └── tools/         # Agent tools
+│       ├── integration_tools.py  # External system integration
+│       ├── notification_tools.py # Alerts and notifications
+│       ├── performance_tools.py  # Performance analysis
+│       ├── system_tools.py       # System configuration
+│       └── weather_tools.py      # Weather-related tools
+├── ui/                # Frontend interface (will be moved to separate repo later)
 ├── data/              # Knowledge database
 ├── deployment/        # Deployment configuration
 │   ├── docker/               # Docker configuration
@@ -207,32 +261,12 @@ solar-sage/
 │   ├── agentic_rag_roadmap.md # Project roadmap
 │   ├── implementation_status.md # Current status
 │   └── agentic_quickstart.md # Quick start guide
-├── ingestion/         # Document ingestion
-│   ├── chunking_strategy.py  # Chunking strategy pattern
-│   └── enhanced_pipeline.py  # Enhanced ingestion pipeline
-├── llm/               # LLM integration
-├── models/            # AI models
-├── rag/               # Retrieval system
-│   ├── agent_enhanced_rag.py # Agent-enhanced RAG
-│   ├── rag_engine.py         # Dual-agent RAG implementation
-│   └── weather_enhanced_rag.py # Weather-enhanced RAG
-│   ├── prompts/              # Prompt templates
-│   │   ├── dual_agent_rag.prompt # Dual-agent prompt template
-│   │   ├── solar_rag.prompt      # Basic RAG prompt template
-│   │   └── template_loader.py    # Template loading utilities
-├── retriever/         # Document retrieval
+├── evaluation/        # Evaluation scripts and data
 ├── scripts/           # Utility scripts
 ├── tests/             # Test suite
 │   ├── unit/                # Unit tests
 │   ├── integration/         # Integration tests
 │   └── e2e/                 # End-to-end tests
-├── tools/             # Agent tools
-│   ├── integration_tools.py  # External system integration
-│   ├── notification_tools.py # Alerts and notifications
-│   ├── performance_tools.py  # Performance analysis
-│   ├── system_tools.py       # System configuration
-│   └── weather_tools.py      # Weather-related tools
-├── ui/                # Frontend interface
 ├── .env.example       # Example environment variables
 ├── main.py            # Main entry point
 ├── pyproject.toml     # Python project configuration
@@ -263,6 +297,8 @@ For help on any command:
 python -m cli.main --help
 python -m cli.main COMMAND --help
 ```
+
+> **Note:** The CLI commands assume that you have added the `src` directory to your Python path or marked it as a source root in your IDE.
 
 ### Configuration System
 
