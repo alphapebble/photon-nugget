@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import uvicorn
 from typing import Optional
 
@@ -8,7 +8,7 @@ from core.config import get_config
 from core.logging import get_logger, setup_logging
 
 # Set up logging
-setup_logging()
+setup_logging(log_file="./logs/api_server.log")
 logger = get_logger(__name__)
 
 # Import weather-enhanced RAG if available, otherwise use a fallback
@@ -40,36 +40,67 @@ async def chat(request: ChatRequest):
     If weather data is requested and coordinates are provided,
     use the weather-enhanced RAG system.
     """
-    # Check if we should use weather-enhanced RAG
-    use_weather = (
-        hasattr(request, 'include_weather') and
-        request.include_weather and
-        hasattr(request, 'lat') and
-        request.lat is not None and
-        hasattr(request, 'lon') and
-        request.lon is not None
-    )
+    try:
+        logger.info(f"Received chat request: {request}")
 
-    # Use weather-enhanced RAG if requested or if query is weather-related
-    if WEATHER_RAG_AVAILABLE and (use_weather or is_weather_related_query(request.query)):
-        result = weather_enhanced_rag_answer(
-            user_query=request.query,
-            lat=request.lat if hasattr(request, 'lat') else None,
-            lon=request.lon if hasattr(request, 'lon') else None,
-            include_weather=True
+        # Check if we should use weather-enhanced RAG
+        use_weather = (
+            hasattr(request, 'include_weather') and
+            request.include_weather and
+            hasattr(request, 'lat') and
+            request.lat is not None and
+            hasattr(request, 'lon') and
+            request.lon is not None
         )
-        return ChatResponse(
-            response=result["response"],
-            has_weather_context=result["has_weather_context"],
-            weather_summary=result["weather_summary"]
-        )
-    else:
-        # Use standard RAG for non-weather queries
-        answer = rag_answer(request.query)
-        return ChatResponse(
-            response=answer,
-            has_weather_context=False
-        )
+
+        logger.info(f"Use weather: {use_weather}")
+        logger.info(f"WEATHER_RAG_AVAILABLE: {WEATHER_RAG_AVAILABLE}")
+        logger.info(f"Query: {request.query}")
+
+        if hasattr(request, 'lat') and hasattr(request, 'lon'):
+            logger.info(f"Location: lat={request.lat}, lon={request.lon}")
+
+        # Use weather-enhanced RAG if requested or if query is weather-related
+        if WEATHER_RAG_AVAILABLE and (use_weather or is_weather_related_query(request.query)):
+            logger.info("Using weather-enhanced RAG")
+            try:
+                result = weather_enhanced_rag_answer(
+                    user_query=request.query,
+                    lat=request.lat if hasattr(request, 'lat') else None,
+                    lon=request.lon if hasattr(request, 'lon') else None,
+                    include_weather=True
+                )
+                logger.info("Weather-enhanced RAG completed successfully")
+                return ChatResponse(
+                    response=result["response"],
+                    has_weather_context=result["has_weather_context"],
+                    weather_summary=result["weather_summary"]
+                )
+            except Exception as e:
+                logger.error(f"Error in weather-enhanced RAG: {e}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
+                raise HTTPException(status_code=500, detail=f"Error in weather-enhanced RAG: {str(e)}")
+        else:
+            # Use standard RAG for non-weather queries
+            logger.info("Using standard RAG")
+            try:
+                answer = rag_answer(request.query)
+                logger.info("Standard RAG completed successfully")
+                return ChatResponse(
+                    response=answer,
+                    has_weather_context=False
+                )
+            except Exception as e:
+                logger.error(f"Error in standard RAG: {e}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
+                raise HTTPException(status_code=500, detail=f"Error in standard RAG: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error in chat endpoint: {e}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 # Add a simple GET endpoint for testing
 @app.get("/")
@@ -92,9 +123,32 @@ def run_server(host: Optional[str] = None, port: Optional[int] = None) -> None:
     logger.info(f"Starting API server on {server_host}:{server_port}")
 
     # Run the server
-    uvicorn.run(
-        "app.server:app",
-        host=server_host,
-        port=server_port,
-        reload=get_config("debug", "False").lower() == "true"
-    )
+    try:
+        # Try to determine the correct module path
+        import inspect
+        import sys
+
+        # Get the current module's file path
+        current_file = inspect.getfile(inspect.currentframe())
+
+        # Always use app.server:app since we're setting PYTHONPATH correctly
+        module_path = "app.server:app"
+
+        logger.info(f"Using module path: {module_path}")
+
+        # Import uvicorn again to avoid shadowing
+        import uvicorn as uvicorn_run
+
+        uvicorn_run.run(
+            module_path,
+            host=server_host,
+            port=server_port,
+            reload=str(get_config("debug", "False")).lower() == "true"
+        )
+    except Exception as e:
+        logger.error(f"Error starting server: {e}")
+        # Fallback to running the app directly
+        import uvicorn.config
+        config = uvicorn.config.Config(app=app, host=server_host, port=server_port)
+        server = uvicorn.Server(config)
+        server.run()

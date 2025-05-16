@@ -69,6 +69,7 @@ class ChunkingStrategy(ABC):
 ```
 
 The system includes several chunking strategies:
+
 - **Word Count Chunking**: Splits documents into chunks of fixed word count
 - **Semantic Chunking**: Respects paragraph and section boundaries
 - **Sliding Window Chunking**: Uses overlapping windows for better context preservation
@@ -228,21 +229,25 @@ class WeatherToolkit:
 The Agentic RAG Chatbot will include the following tools:
 
 1. **Weather Analysis Tool**
+
    - Get current weather conditions
    - Forecast solar production based on weather
    - Recommend maintenance based on weather conditions
 
 2. **System Configuration Tool**
+
    - Calculate optimal panel tilt and orientation
    - Estimate system size based on energy needs
    - Recommend inverter configurations
 
 3. **Performance Analysis Tool**
+
    - Analyze uploaded SCADA data
    - Compare actual vs. expected production
    - Identify performance issues
 
 4. **Notification Tool**
+
    - Schedule weather alerts
    - Set up production monitoring alerts
    - Configure maintenance reminders
@@ -261,6 +266,74 @@ The Agentic RAG Chatbot will include the following tools:
 3. ⏳ Implement the Tool Registry
 4. ⏳ Develop the Memory System
 5. ✅ Integrate with existing RAG and Weather components
+
+### Recent Improvements
+
+1. **Fixed Embedding Model I/O Error**: The system was experiencing an I/O error with the embedding model when trying to encode queries. This has been fixed by disabling the progress bar in the `sentence_transformers` library. The RAG functionality is now working correctly.
+
+2. **Enhanced Logging Configuration**: Logs are now being written to the `logs` directory with separate log files for the API server (`api_server.log`), UI server (`ui_server.log`), and API client (`api_client.log`). This helps with debugging and troubleshooting.
+
+### Troubleshooting
+
+If you encounter any issues with the chat functionality, check the logs in the `logs` directory for more details. The API server logs are particularly useful for diagnosing issues with the RAG system.
+
+### Testing the API
+
+You can test the API directly using curl commands:
+
+```bash
+# Test the API server is running
+curl -X GET http://localhost:8000/
+
+# Test the chat endpoint with a basic query
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Tell me about solar panels"}'
+
+# Test the chat endpoint with weather data
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"query": "How will weather affect my solar production?", "lat": 37.7749, "lon": -122.4194, "include_weather": true}'
+
+# Verbose output for debugging
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"query": "Tell me about solar panels"}' -v
+```
+
+### Running the System
+
+The Solar Sage system can be started using the provided shell scripts:
+
+```bash
+# Start the API server
+./solar_sage.sh api start 8000
+
+# Start the UI server
+./solar_sage.sh ui start 8502 main
+
+# Check the status of the API server
+./solar_sage.sh api status 8000
+
+# Stop the API server
+./solar_sage.sh api stop 8000
+
+# Stop the UI server
+./solar_sage.sh ui stop 8502
+```
+
+You can also check the logs for debugging:
+
+```bash
+# Check the API server logs
+cat logs/api_server.log
+
+# Check the UI server logs
+cat logs/ui_server.log
+
+# Check the API client logs
+cat logs/api_client.log
+```
 
 ### Phase 2: Tool Implementation
 

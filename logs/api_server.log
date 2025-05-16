@@ -1,0 +1,119 @@
+2025-05-16 13:24:58 - app.server - INFO - Starting API server on 0.0.0.0:8000
+2025-05-16 13:24:58 - app.server - INFO - Using module path: app.server:app
+2025-05-16 13:43:47 - app.server - INFO - Starting API server on 0.0.0.0:8000
+2025-05-16 13:43:47 - app.server - INFO - Using module path: app.server:app
+2025-05-16 13:44:23 - app.server - INFO - Received chat request: query='Tell me about solar panels' lat=None lon=None include_weather=False
+2025-05-16 13:44:23 - app.server - INFO - Use weather: False
+2025-05-16 13:44:23 - app.server - INFO - WEATHER_RAG_AVAILABLE: True
+2025-05-16 13:44:23 - app.server - INFO - Query: Tell me about solar panels
+2025-05-16 13:44:23 - app.server - INFO - Location: lat=None, lon=None
+2025-05-16 13:44:23 - app.server - INFO - Using standard RAG
+2025-05-16 13:44:23 - app.server - ERROR - Error in standard RAG: [Errno 5] Input/output error
+2025-05-16 13:44:23 - app.server - ERROR - Traceback: Traceback (most recent call last):
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/app/server.py", line 88, in chat
+    answer = rag_answer(request.query)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/rag/rag_engine.py", line 23, in rag_answer
+    result = orchestrator.process_query(user_query)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/agents/orchestrator.py", line 43, in process_query
+    context = self.retriever_agent.fetch_context(query, max_documents)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/agents/retriever_agent.py", line 31, in fetch_context
+    return get_context_documents(query, n_results=max_documents)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/retriever/retriever_lancedb.py", line 59, in get_context_documents
+    query_embedding = embedding_model.encode([query])[0].tolist()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/sentence_transformers/SentenceTransformer.py", line 651, in encode
+    for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/tqdm/std.py", line 1524, in trange
+    return tqdm(range(*args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/tqdm/std.py", line 1096, in __init__
+    self.sp = self.status_printer(self.fp)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/tqdm/std.py", line 448, in status_printer
+    getattr(sys.stderr, 'flush', lambda: None)()
+OSError: [Errno 5] Input/output error
+
+2025-05-16 13:44:23 - app.server - ERROR - Unexpected error in chat endpoint: name 'HTTPException' is not defined
+2025-05-16 13:44:23 - app.server - ERROR - Traceback: Traceback (most recent call last):
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/app/server.py", line 88, in chat
+    answer = rag_answer(request.query)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/rag/rag_engine.py", line 23, in rag_answer
+    result = orchestrator.process_query(user_query)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/agents/orchestrator.py", line 43, in process_query
+    context = self.retriever_agent.fetch_context(query, max_documents)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/agents/retriever_agent.py", line 31, in fetch_context
+    return get_context_documents(query, n_results=max_documents)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/retriever/retriever_lancedb.py", line 59, in get_context_documents
+    query_embedding = embedding_model.encode([query])[0].tolist()
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/sentence_transformers/SentenceTransformer.py", line 651, in encode
+    for start_index in trange(0, len(sentences), batch_size, desc="Batches", disable=not show_progress_bar):
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/tqdm/std.py", line 1524, in trange
+    return tqdm(range(*args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/tqdm/std.py", line 1096, in __init__
+    self.sp = self.status_printer(self.fp)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/balijepalli/miniconda3/lib/python3.11/site-packages/tqdm/std.py", line 448, in status_printer
+    getattr(sys.stderr, 'flush', lambda: None)()
+OSError: [Errno 5] Input/output error
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/balijepalli/Documents/GitHub/solar-sage/src/app/server.py", line 98, in chat
+    raise HTTPException(status_code=500, detail=f"Error in standard RAG: {str(e)}")
+          ^^^^^^^^^^^^^
+NameError: name 'HTTPException' is not defined
+
+2025-05-16 13:46:08 - app.server - INFO - Starting API server on 0.0.0.0:8000
+2025-05-16 13:46:08 - app.server - INFO - Using module path: app.server:app
+2025-05-16 13:46:32 - app.server - INFO - Received chat request: query='Tell me about solar panels' lat=None lon=None include_weather=False
+2025-05-16 13:46:32 - app.server - INFO - Use weather: False
+2025-05-16 13:46:32 - app.server - INFO - WEATHER_RAG_AVAILABLE: True
+2025-05-16 13:46:32 - app.server - INFO - Query: Tell me about solar panels
+2025-05-16 13:46:32 - app.server - INFO - Location: lat=None, lon=None
+2025-05-16 13:46:32 - app.server - INFO - Using standard RAG
+2025-05-16 13:46:32 - app.server - INFO - Using mock response for debugging
+2025-05-16 13:46:32 - app.server - INFO - Mock response generated successfully
+2025-05-16 13:46:51 - app.server - INFO - Received chat request: query='tilt angle' lat=None lon=None include_weather=False
+2025-05-16 13:46:51 - app.server - INFO - Use weather: False
+2025-05-16 13:46:51 - app.server - INFO - WEATHER_RAG_AVAILABLE: True
+2025-05-16 13:46:51 - app.server - INFO - Query: tilt angle
+2025-05-16 13:46:51 - app.server - INFO - Location: lat=None, lon=None
+2025-05-16 13:46:51 - app.server - INFO - Using standard RAG
+2025-05-16 13:46:51 - app.server - INFO - Using mock response for debugging
+2025-05-16 13:46:51 - app.server - INFO - Mock response generated successfully
+2025-05-16 13:50:00 - app.server - INFO - Starting API server on 0.0.0.0:8000
+2025-05-16 13:50:00 - app.server - INFO - Using module path: app.server:app
+2025-05-16 13:50:29 - app.server - INFO - Received chat request: query='Tell me about solar panels' lat=None lon=None include_weather=False
+2025-05-16 13:50:29 - app.server - INFO - Use weather: False
+2025-05-16 13:50:29 - app.server - INFO - WEATHER_RAG_AVAILABLE: True
+2025-05-16 13:50:29 - app.server - INFO - Query: Tell me about solar panels
+2025-05-16 13:50:29 - app.server - INFO - Location: lat=None, lon=None
+2025-05-16 13:50:29 - app.server - INFO - Using standard RAG
+2025-05-16 13:51:03 - app.server - INFO - Standard RAG completed successfully
+2025-05-16 13:51:49 - app.server - INFO - Received chat request: query='best tilt angle' lat=None lon=None include_weather=False
+2025-05-16 13:51:49 - app.server - INFO - Use weather: False
+2025-05-16 13:51:49 - app.server - INFO - WEATHER_RAG_AVAILABLE: True
+2025-05-16 13:51:49 - app.server - INFO - Query: best tilt angle
+2025-05-16 13:51:49 - app.server - INFO - Location: lat=None, lon=None
+2025-05-16 13:51:49 - app.server - INFO - Using standard RAG
+2025-05-16 13:52:22 - app.server - INFO - Standard RAG completed successfully
+2025-05-16 13:52:22 - app.server - INFO - Received chat request: query='best tilt angle' lat=None lon=None include_weather=False
+2025-05-16 13:52:22 - app.server - INFO - Use weather: False
+2025-05-16 13:52:22 - app.server - INFO - WEATHER_RAG_AVAILABLE: True
+2025-05-16 13:52:22 - app.server - INFO - Query: best tilt angle
+2025-05-16 13:52:22 - app.server - INFO - Location: lat=None, lon=None
+2025-05-16 13:52:22 - app.server - INFO - Using standard RAG
+2025-05-16 13:52:48 - app.server - INFO - Standard RAG completed successfully
