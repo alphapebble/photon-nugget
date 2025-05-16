@@ -76,7 +76,7 @@ The system includes several chunking strategies:
 
 The Strategy Pattern allows selecting the optimal chunking approach based on document type or specific requirements, improving the quality and relevance of retrieved context.
 
-For implementation details, see the [Chunking Strategy Implementation](../ingestion/chunking_strategy.py) and [Enhanced Pipeline](../ingestion/enhanced_pipeline.py).
+For implementation details, see the Chunking Strategy Implementation in `src/ingestion/chunking_strategy.py` and Enhanced Pipeline in `src/ingestion/enhanced_pipeline.py`.
 
 ### 2. Dual-Agent Architecture
 
