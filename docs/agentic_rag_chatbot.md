@@ -312,6 +312,9 @@ The Solar Sage system can be started using the provided shell scripts:
 # Start the UI server
 ./solar_sage.sh ui start 8502 main
 
+# Start the evaluation dashboard
+./solar_sage.sh evaluation 8503
+
 # Check the status of the API server
 ./solar_sage.sh api status 8000
 
@@ -320,6 +323,19 @@ The Solar Sage system can be started using the provided shell scripts:
 
 # Stop the UI server
 ./solar_sage.sh ui stop 8502
+
+# Stop the evaluation dashboard
+./solar_sage.sh ui stop 8503
+```
+
+You can also start all components at once:
+
+```bash
+# Start everything with defaults
+./solar_sage.sh start
+
+# Start with custom ports
+./solar_sage.sh start --api-port 8001 --ui-port 8503
 ```
 
 You can also check the logs for debugging:

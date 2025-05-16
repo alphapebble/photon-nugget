@@ -20,6 +20,7 @@ show_usage() {
     echo "  api         Manage API server (start|stop|restart|status)"
     echo "  ollama      Manage Ollama (start|stop|restart|status|pull)"
     echo "  ui          Manage UI (start|stop|restart|status)"
+    echo "  evaluation  Start the evaluation dashboard (on port 8503 by default)"
     echo "  download    Download a model from Hugging Face"
     echo "  help        Show this help message"
     echo ""
@@ -39,6 +40,7 @@ show_usage() {
     echo "  $0 api start 8000                       # Start only the API server on port 8000"
     echo "  $0 ollama pull llama3                   # Pull the llama3 model"
     echo "  $0 ui start 8502 evaluation             # Start only the UI in evaluation mode"
+    echo "  $0 evaluation 8503                      # Start the evaluation dashboard on port 8503"
     echo "  $0 download mistralai/Mistral-7B-Instruct-v0.2 models/mistral-7b"
     echo ""
     echo "Note: Hugging Face models are stored in the 'models' directory at the project root."
@@ -216,6 +218,11 @@ main() {
             ;;
         ui)
             "$SCRIPT_DIR/scripts/ui_manager.sh" "${remaining_args[@]}"
+            ;;
+        evaluation)
+            # Start the evaluation dashboard on port 8503 by default
+            port=${remaining_args[0]:-8503}
+            "$SCRIPT_DIR/scripts/ui_manager.sh" start $port evaluation
             ;;
         download)
             "$SCRIPT_DIR/scripts/download_hf.sh" "${remaining_args[@]}"
