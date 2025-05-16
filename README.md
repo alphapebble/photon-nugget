@@ -396,6 +396,26 @@ The Docker setup includes:
 - Ollama container for local LLM support
 - Shared volume for data persistence
 
+### Testing
+
+Solar Sage includes a comprehensive test suite:
+
+```bash
+# Run all tests
+python -m unittest discover tests
+
+# Run specific test category
+python -m unittest discover tests/unit
+python -m unittest discover tests/integration
+
+# Run dual-agent architecture tests
+python tests/run_dual_agent_tests.py
+```
+
+#### AI Testing with Giskard
+
+We have a [planned integration with Giskard](docs/giskard_testing_plan.md), an open-source testing framework specifically designed for AI/ML models. This will help detect issues like bias, performance problems, and security vulnerabilities in our RAG system and LLM integration.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
