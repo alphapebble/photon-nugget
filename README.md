@@ -227,7 +227,6 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
-- [Shell Commands Documentation](docs/shell_commands.md) - Complete reference for all shell commands
 - [Chunking Strategy Implementation](ingestion/chunking_strategy.py) - Flexible document chunking strategies for RAG
 
 ### Project Structure
@@ -295,7 +294,8 @@ solar-sage/
 │   ├── agent_implementation_guide.md # Implementation guide
 │   ├── agentic_rag_roadmap.md # Project roadmap
 │   ├── implementation_status.md # Current status
-│   └── agentic_quickstart.md # Quick start guide
+│   ├── agentic_quickstart.md # Quick start guide
+│   └── shell_commands.md     # Shell commands reference
 ├── evaluation/        # Evaluation scripts and data
 ├── scripts/           # Utility scripts
 │   ├── api_server.sh         # API server management
