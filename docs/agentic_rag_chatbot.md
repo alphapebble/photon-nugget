@@ -353,6 +353,36 @@ docker run -p 8000:8000 -p 8502:8502 \
   solar-sage-agent
 ```
 
+## Implementation Files
+
+The dual-agent architecture is implemented in the following files:
+
+- `agents/base_agent.py`: Base class for all agents
+- `agents/retriever_agent.py`: Implementation of the Retriever Agent
+- `agents/response_generator_agent.py`: Implementation of the Response Generator Agent
+- `agents/orchestrator.py`: Coordination of the dual-agent workflow
+- `rag/rag_engine.py`: Updated RAG engine using the dual-agent architecture
+- `rag/prompts/dual_agent_rag.prompt`: Specialized prompt template for the dual-agent system
+
+## Configuration
+
+The dual-agent architecture can be configured through environment variables or the `.env` file:
+
+```
+SOLAR_SAGE_USE_DUAL_AGENT=true
+SOLAR_SAGE_MAX_CONTEXT_DOCUMENTS=5
+```
+
+## Future Enhancements
+
+The dual-agent architecture provides a foundation for future enhancements:
+
+1. **Additional Specialized Agents**: Add agents for specific tasks (e.g., data analysis)
+2. **Agent Memory**: Implement persistent memory for better context awareness
+3. **Tool Integration**: Add tools that agents can use to perform actions
+4. **Multi-Step Reasoning**: Implement more complex reasoning chains between agents
+5. **Model Switching**: Use different models for different agents based on their requirements
+
 ## Conclusion
 
 The Solar Sage Agentic RAG Chatbot extends the existing application with powerful agent capabilities, enabling it to not only provide information but also take actions to help users optimize their solar energy systems.
@@ -363,5 +393,6 @@ The implementation of the Dual-Agent Architecture with specialized Retriever and
 2. **Improved Modularity**: Easier to maintain and extend each component independently
 3. **Enhanced Flexibility**: Can add more specialized agents in the future
 4. **Better Context Management**: More control over how context is retrieved and used
+5. **Clearer Debugging**: Issues can be isolated to specific agents
 
 By leveraging the existing RAG and weather integration components, the agent can provide highly personalized and actionable insights while maintaining compatibility with the current LLM provider.

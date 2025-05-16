@@ -156,8 +156,7 @@ If you're a developer interested in the technical details or want to contribute 
 
 Solar Sage is being extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. Check out the following documentation:
 
-- [Agentic RAG Chatbot Architecture](docs/agentic_rag_chatbot.md) - Overview of the agentic architecture
-- [Dual-Agent Architecture](docs/dual_agent_architecture.md) - Specialized retriever and response generator agents
+- [Agentic RAG Chatbot Architecture](docs/agentic_rag_chatbot.md) - Complete architecture documentation including dual-agent implementation
 - [Implementation Guide](docs/agent_implementation_guide.md) - Detailed implementation instructions
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
