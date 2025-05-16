@@ -89,25 +89,7 @@ You can run the application using our convenient startup script:
 ./solar_sage.sh help
 ```
 
-You can also run each component script independently:
-
-```bash
-# Start the API server directly
-./scripts/api_server.sh start 8000
-
-# Start the UI directly
-./scripts/ui_manager.sh start 8502 main
-
-# Manage Ollama directly
-./scripts/ollama_manager.sh start
-./scripts/ollama_manager.sh pull llama3
-
-# Download models from Hugging Face
-./scripts/download_hf.sh mistralai/Mistral-7B-Instruct-v0.2 models/mistral-7b
-
-# Kill all running processes
-./scripts/kill_all.sh
-```
+For a complete reference of all available shell commands, see the [Shell Commands Documentation](docs/shell_commands.md).
 
 Keep the terminal windows open while using the application.
 
@@ -467,9 +449,14 @@ python -m src.cli.main evaluate --csv path/to/questions.csv --references path/to
 To view evaluation results in a dashboard:
 
 ```bash
-# Launch the evaluation dashboard
-python -m src.cli.main ui --mode evaluation
+# Launch the UI with the evaluation dashboard
+./solar_sage.sh ui start 8502 main
+
+# Then access the evaluation dashboard at:
+http://localhost:8502/?mode=evaluation
 ```
+
+You can also switch between the main UI and evaluation dashboard using the links in the header.
 
 #### AI Testing with Giskard
 

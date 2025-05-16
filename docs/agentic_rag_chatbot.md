@@ -277,79 +277,17 @@ The Agentic RAG Chatbot will include the following tools:
 
 If you encounter any issues with the chat functionality, check the logs in the `logs` directory for more details. The API server logs are particularly useful for diagnosing issues with the RAG system.
 
-### Testing the API
+### Running and Testing the System
 
-You can test the API directly using curl commands:
+For detailed instructions on running and testing the Solar Sage system, please refer to the [Shell Commands Documentation](shell_commands.md).
 
-```bash
-# Test the API server is running
-curl -X GET http://localhost:8000/
+This documentation includes:
 
-# Test the chat endpoint with a basic query
-curl -X POST http://localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Tell me about solar panels"}'
-
-# Test the chat endpoint with weather data
-curl -X POST http://localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"query": "How will weather affect my solar production?", "lat": 37.7749, "lon": -122.4194, "include_weather": true}'
-
-# Verbose output for debugging
-curl -X POST http://localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"query": "Tell me about solar panels"}' -v
-```
-
-### Running the System
-
-The Solar Sage system can be started using the provided shell scripts:
-
-```bash
-# Start the API server
-./solar_sage.sh api start 8000
-
-# Start the UI server
-./solar_sage.sh ui start 8502 main
-
-# Start the evaluation dashboard
-./solar_sage.sh evaluation 8503
-
-# Check the status of the API server
-./solar_sage.sh api status 8000
-
-# Stop the API server
-./solar_sage.sh api stop 8000
-
-# Stop the UI server
-./solar_sage.sh ui stop 8502
-
-# Stop the evaluation dashboard
-./solar_sage.sh ui stop 8503
-```
-
-You can also start all components at once:
-
-```bash
-# Start everything with defaults
-./solar_sage.sh start
-
-# Start with custom ports
-./solar_sage.sh start --api-port 8001 --ui-port 8503
-```
-
-You can also check the logs for debugging:
-
-```bash
-# Check the API server logs
-cat logs/api_server.log
-
-# Check the UI server logs
-cat logs/ui_server.log
-
-# Check the API client logs
-cat logs/api_client.log
-```
+- Starting and stopping the system
+- Managing individual components (API, UI, Ollama)
+- Testing the API with curl commands
+- Accessing the UI and evaluation dashboard
+- Checking logs for debugging
 
 ### Phase 2: Tool Implementation
 

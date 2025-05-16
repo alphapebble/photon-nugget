@@ -28,15 +28,44 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
     server_name = get_config("ui_host", "0.0.0.0")
     server_port = port or int(get_config("ui_port", "8502"))
 
-    logger.info(f"Starting UI in {mode} mode on {server_name}:{server_port}")
+    logger.info(f"Starting UI server on {server_name}:{server_port}")
 
-    # Create the appropriate UI based on the mode
-    if mode == "evaluation":
-        app = create_evaluation_dashboard()
-        logger.info("Launching RAG Evaluation Dashboard")
-    else:
-        app = create_ui()
-        logger.info("Launching main Solar Sage UI")
+    # Create a unified interface that can switch between modes
+    with gr.Blocks(title="Solar Sage") as app:
+        # Create state for the current mode
+        current_mode = gr.State(value=mode)
+
+        # Create the main UI
+        main_ui = create_ui()
+
+        # Create the evaluation dashboard
+        eval_ui = create_evaluation_dashboard()
+
+        # Add query parameter handling
+        @app.load(inputs=current_mode, outputs=None)
+        def router(default_mode):
+            # Check for mode parameter in URL
+            ctx = gr.Context.get()
+            requested_mode = None
+
+            # Extract mode from query parameters if available
+            if hasattr(ctx, 'request') and ctx.request:
+                query_params = getattr(ctx.request, 'query_params', None)
+                if query_params and 'mode' in query_params:
+                    requested_mode = query_params['mode']
+                    logger.info(f"Mode requested via URL: {requested_mode}")
+
+            # Use requested mode or default
+            mode_to_use = requested_mode if requested_mode in ["main", "evaluation"] else default_mode
+            logger.info(f"Using mode: {mode_to_use}")
+
+            # Update visibility based on mode
+            if mode_to_use == "evaluation":
+                logger.info("Showing evaluation dashboard")
+                return {main_ui: gr.update(visible=False), eval_ui: gr.update(visible=True)}
+            else:
+                logger.info("Showing main UI")
+                return {main_ui: gr.update(visible=True), eval_ui: gr.update(visible=False)}
 
     # Launch the combined app
     app.launch(
