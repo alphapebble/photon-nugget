@@ -102,11 +102,11 @@ class RAGEvaluator:
                 reference_answers = json.load(f)
 
         # Process each question
-        for idx, row in df.iterrows():
+        for i, (_, row) in enumerate(df.iterrows()):
             question = row['question']
             expected_keywords = [kw.strip().lower() for kw in row['expected_answer_keywords'].split(',')]
 
-            print(f"Processing question {idx+1}/{len(df)}: {question}")
+            print(f"Processing question {i+1}/{len(df)}: {question}")
 
             # Get reference answer if available
             reference_answer = reference_answers.get(question, "")
