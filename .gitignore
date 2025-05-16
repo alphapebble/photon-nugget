@@ -11,6 +11,8 @@ ingestion/solar_links.txt
 # Model files
 models/*
 !models/.gitkeep
+src/models/*
+!src/models/.gitkeep
 
 # Docker files
 *.tar
