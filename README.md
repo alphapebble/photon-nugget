@@ -9,6 +9,7 @@ Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides in
 ## 🌟 What Can It Do?
 
 ### Current Capabilities
+
 - Answer questions about solar panels, installation, and energy
 - Provide weather-enhanced solar insights
 - Work completely offline on your computer
@@ -17,6 +18,7 @@ Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides in
 - Switch between light and dark mode for comfortable viewing
 
 ### Upcoming Agentic Capabilities
+
 - Generate solar production forecasts based on weather data
 - Provide maintenance recommendations based on weather conditions
 - Identify optimal times for solar production
@@ -31,6 +33,7 @@ Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides in
 Before you begin, make sure you have:
 
 1. **Python 3.9+** installed on your computer
+
    - [Download Python](https://www.python.org/downloads/) if you don't have it
 
 2. **Git** to download the project
@@ -69,10 +72,10 @@ You can run the application using the CLI:
 
 ```bash
 # Run the API server
-python -m src.cli.main server
+python -m cli.main server
 
 # Run the UI
-python -m src.cli.main ui
+python -m cli.main ui
 ```
 
 Keep the terminal windows open while using the application.
@@ -119,6 +122,7 @@ Click the "Toggle Dark Mode" button to switch between light and dark themes.
 ### Feedback
 
 After receiving an answer, you can provide feedback by clicking:
+
 - 👍 Yes - if the answer was helpful
 - 👎 No - if the answer wasn't helpful
 
@@ -127,14 +131,17 @@ After receiving an answer, you can provide feedback by clicking:
 ### Common Issues and Solutions
 
 1. **"Connection Error" when asking a question**
+
    - Make sure the backend server is running (Step 3)
    - Check that you're using the correct URL in your browser
 
 2. **"Module not found" errors**
+
    - Make sure you've activated the virtual environment
    - Try reinstalling the requirements: `pip install -r requirements.txt`
 
 3. **Slow responses**
+
    - The AI model needs time to think, especially on the first question
    - Responses should get faster after the first few questions
 
@@ -145,6 +152,7 @@ After receiving an answer, you can provide feedback by clicking:
 ### Getting Help
 
 If you encounter problems not covered here:
+
 1. Check the [GitHub Issues](https://github.com/balijepalli/solar-sage/issues) page
 2. Create a new issue with details about your problem
 
@@ -159,10 +167,12 @@ If you're a developer interested in the technical details or want to contribute 
 The project uses a `src` directory as the source root. You should mark this directory as a source root in your IDE:
 
 **PyCharm:**
+
 1. Right-click on the `src` directory
 2. Select "Mark Directory as" > "Sources Root"
 
 **VS Code:**
+
 1. Add this to your `.vscode/settings.json`:
    ```json
    {
@@ -173,6 +183,7 @@ The project uses a `src` directory as the source root. You should mark this dire
 
 **Command Line:**
 If you're not using an IDE, you can add the `src` directory to your Python path:
+
 ```bash
 # Linux/macOS
 export PYTHONPATH=$PYTHONPATH:$(pwd)/src
@@ -311,11 +322,13 @@ Solar Sage uses a flexible configuration system that supports:
 To configure the application:
 
 1. Copy `.env.example` to `.env` and customize settings:
+
    ```bash
    cp .env.example .env
    ```
 
 2. Edit the `.env` file with your preferred settings:
+
    ```
    SOLAR_SAGE_ENV=development
    SOLAR_SAGE_LOG_LEVEL=INFO
@@ -327,6 +340,7 @@ To configure the application:
    ```
 
 3. Access configuration in code:
+
    ```python
    from core.config import get_config
 
@@ -368,6 +382,7 @@ bash deployment/scripts/deploy.sh
 > **Note:** The Docker Compose file is located in the `deployment/docker/` directory. There is no Docker Compose file in the root directory.
 
 The Docker setup includes:
+
 - API server container
 - UI container
 - Ollama container for local LLM support
