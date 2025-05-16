@@ -1,3 +1,0 @@
-"""
-Solar Sage API package.
-"""
