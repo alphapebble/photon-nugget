@@ -18,19 +18,19 @@ from agents.weather_integration import (
 def create_weather_forecast_plot(forecast_data: List[Dict[str, Any]]) -> go.Figure:
     """
     Create a weather forecast plot using Plotly.
-    
+
     Args:
         forecast_data: List of daily forecast data
-        
+
     Returns:
         Plotly figure object
     """
     # Convert to DataFrame for easier plotting
     df = pd.DataFrame(forecast_data)
-    
+
     # Create figure
     fig = go.Figure()
-    
+
     # Add production factor line
     fig.add_trace(go.Scatter(
         x=df['date'],
@@ -40,7 +40,7 @@ def create_weather_forecast_plot(forecast_data: List[Dict[str, Any]]) -> go.Figu
         line=dict(color='#f39c12', width=3),
         marker=dict(size=8)
     ))
-    
+
     # Add expected kWh line on secondary y-axis
     fig.add_trace(go.Scatter(
         x=df['date'],
@@ -51,7 +51,7 @@ def create_weather_forecast_plot(forecast_data: List[Dict[str, Any]]) -> go.Figu
         marker=dict(size=8),
         yaxis='y2'
     ))
-    
+
     # Add cloud cover as area chart
     fig.add_trace(go.Scatter(
         x=df['date'],
@@ -61,7 +61,7 @@ def create_weather_forecast_plot(forecast_data: List[Dict[str, Any]]) -> go.Figu
         fill='tozeroy',
         fillcolor='rgba(189, 195, 199, 0.5)'
     ))
-    
+
     # Update layout with dual y-axes
     fig.update_layout(
         title='7-Day Solar Production Forecast',
@@ -83,22 +83,22 @@ def create_weather_forecast_plot(forecast_data: List[Dict[str, Any]]) -> go.Figu
         legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
         height=500
     )
-    
+
     return fig
 
 def create_current_conditions_card(current_data: Dict[str, Any]) -> str:
     """
     Create an HTML card for current weather conditions.
-    
+
     Args:
         current_data: Current weather and production data
-        
+
     Returns:
         HTML string for the card
     """
     # Format production factor as percentage
     production_pct = current_data['production_factor'] * 100
-    
+
     # Determine color based on production factor
     if production_pct < 30:
         color_class = "poor"
@@ -106,7 +106,7 @@ def create_current_conditions_card(current_data: Dict[str, Any]) -> str:
         color_class = "moderate"
     else:
         color_class = "good"
-    
+
     html = f"""
     <div class="weather-card current-conditions">
         <h3>Current Solar Conditions</h3>
@@ -143,16 +143,16 @@ def create_current_conditions_card(current_data: Dict[str, Any]) -> str:
         </div>
     </div>
     """
-    
+
     return html
 
 def create_insights_card(insights: Dict[str, Any]) -> str:
     """
     Create an HTML card for weather insights.
-    
+
     Args:
         insights: Weather insights data
-        
+
     Returns:
         HTML string for the card
     """
@@ -163,7 +163,7 @@ def create_insights_card(insights: Dict[str, Any]) -> str:
         for insight in insights['maintenance_insights']:
             maintenance_html += f"<li>{insight}</li>"
         maintenance_html += "</ul>"
-    
+
     html = f"""
     <div class="weather-card insights-card">
         <h3>Solar Production Insights</h3>
@@ -179,16 +179,16 @@ def create_insights_card(insights: Dict[str, Any]) -> str:
         {maintenance_html}
     </div>
     """
-    
+
     return html
 
 def process_location_input(location_input: str) -> Tuple[Optional[float], Optional[float], str]:
     """
     Process location input and return coordinates.
-    
+
     Args:
         location_input: Location string (format: "latitude,longitude")
-        
+
     Returns:
         Tuple of (latitude, longitude, status_message)
     """
@@ -197,17 +197,17 @@ def process_location_input(location_input: str) -> Tuple[Optional[float], Option
         parts = location_input.strip().split(',')
         if len(parts) != 2:
             return None, None, "Invalid format. Please enter as 'latitude,longitude'"
-        
+
         # Parse coordinates
         lat = float(parts[0].strip())
         lon = float(parts[1].strip())
-        
+
         # Validate coordinates
         if lat < -90 or lat > 90:
             return None, None, "Latitude must be between -90 and 90"
         if lon < -180 or lon > 180:
             return None, None, "Longitude must be between -180 and 180"
-        
+
         return lat, lon, "Location set successfully"
     except ValueError:
         return None, None, "Invalid coordinates. Please enter numeric values."
@@ -215,38 +215,38 @@ def process_location_input(location_input: str) -> Tuple[Optional[float], Option
 def update_weather_dashboard(location_input: str) -> Tuple[str, Optional[go.Figure], str]:
     """
     Update the weather dashboard based on location input.
-    
+
     Args:
         location_input: Location string (format: "latitude,longitude")
-        
+
     Returns:
         Tuple of (current_conditions_html, forecast_plot, insights_html)
     """
     # Process location input
     lat, lon, status_message = process_location_input(location_input)
-    
+
     if lat is None or lon is None:
         return (
             f"<div class='error-message'>{status_message}</div>",
             None,
             ""
         )
-    
+
     try:
         # Fetch weather data
         weather_data = get_weather_for_location(lat, lon)
-        
+
         # Calculate production impact
         impact = estimate_production_impact(weather_data)
-        
+
         # Generate insights
         insights = generate_weather_insights(impact)
-        
+
         # Create UI components
         current_conditions_html = create_current_conditions_card(impact['current'])
         forecast_plot = create_weather_forecast_plot(impact['daily_forecast'])
         insights_html = create_insights_card(insights)
-        
+
         return (
             current_conditions_html,
             forecast_plot,
@@ -263,7 +263,7 @@ def update_weather_dashboard(location_input: str) -> Tuple[str, Optional[go.Figu
 def create_weather_dashboard_ui() -> List[gr.Component]:
     """
     Create weather dashboard UI components.
-    
+
     Returns:
         List of Gradio components
     """
@@ -273,36 +273,36 @@ def create_weather_dashboard_ui() -> List[gr.Component]:
         placeholder="37.7749,-122.4194",
         elem_id="location-input"
     )
-    
+
     # Update button
     update_btn = gr.Button(
         "Update Weather Data",
         elem_id="update-weather-btn"
     )
-    
+
     # Current conditions card
     current_conditions = gr.HTML(
         "",
         elem_id="current-conditions"
     )
-    
+
     # Forecast plot
     forecast_plot = gr.Plot(
         label="7-Day Solar Production Forecast",
         elem_id="forecast-plot"
     )
-    
+
     # Insights card
     insights_card = gr.HTML(
         "",
         elem_id="insights-card"
     )
-    
+
     # Connect components
     update_btn.click(
         fn=update_weather_dashboard,
         inputs=[location_input],
         outputs=[current_conditions, forecast_plot, insights_card]
     )
-    
+
     return [location_input, update_btn, current_conditions, forecast_plot, insights_card]

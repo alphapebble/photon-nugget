@@ -71,6 +71,11 @@ pip install -r requirements.txt
 You can run the application using the CLI:
 
 ```bash
+# First, add src to your Python path
+export PYTHONPATH=$PYTHONPATH:$(pwd)/src  # Linux/macOS
+# OR
+set PYTHONPATH=%PYTHONPATH%;%cd%\src     # Windows
+
 # Run the API server
 python -m cli.main server
 
@@ -79,6 +84,8 @@ python -m cli.main ui
 ```
 
 Keep the terminal windows open while using the application.
+
+> **Note:** The commands above assume you're running from the project root directory and have added the `src` directory to your Python path. See the [Setting Up Your Development Environment](#setting-up-your-development-environment) section for more details.
 
 ### Alternative: Start Components Separately
 
@@ -89,10 +96,11 @@ If you prefer to start the components separately:
 # On Windows:
 set SOLAR_SAGE_LLM_PROVIDER=ollama
 set SOLAR_SAGE_LLM_MODEL=mistral
+set PYTHONPATH=%PYTHONPATH%;%cd%\src
 python -m app.server
 
 # On macOS/Linux:
-SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral python -m app.server
+SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral PYTHONPATH=$PYTHONPATH:$(pwd)/src python -m app.server
 
 # Start the UI in another terminal
 python -m ui.app
@@ -353,11 +361,11 @@ To configure the application:
 You can use different AI models by setting the appropriate environment variables:
 
 ```bash
-# Using Mistral model
-SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral python -m cli.main server
+# Using Mistral model (with src in Python path)
+SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=mistral PYTHONPATH=$PYTHONPATH:$(pwd)/src python -m cli.main server
 
-# Using Llama model
-SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=llama python -m cli.main server
+# Using Llama model (with src in Python path)
+SOLAR_SAGE_LLM_PROVIDER=ollama SOLAR_SAGE_LLM_MODEL=llama PYTHONPATH=$PYTHONPATH:$(pwd)/src python -m cli.main server
 ```
 
 Or by editing your `.env` file:
