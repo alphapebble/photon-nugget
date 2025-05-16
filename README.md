@@ -227,7 +227,6 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
-- [Chunking Strategy Implementation](ingestion/chunking_strategy.py) - Flexible document chunking strategies for RAG
 
 ### Project Structure
 
