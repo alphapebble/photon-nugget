@@ -114,6 +114,15 @@ python -m cli.main ui
 
 This will start the web interface. You'll see a URL like `http://0.0.0.0:8502` or `http://127.0.0.1:8502` in the terminal.
 
+### Step 4: Access the UI
+
+Once the UI is running, you can access it in your web browser:
+
+- **Main UI**: http://localhost:8502
+- **Evaluation Dashboard**: http://localhost:8502/?mode=evaluation
+
+You can switch between the main UI and evaluation dashboard using the links in the header.
+
 ### Step 5: Use the Application
 
 1. Open your web browser and go to the URL shown in the terminal (usually http://127.0.0.1:8502)
@@ -218,6 +227,7 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
+- [Shell Commands Documentation](docs/shell_commands.md) - Complete reference for all shell commands
 - [Chunking Strategy Implementation](ingestion/chunking_strategy.py) - Flexible document chunking strategies for RAG
 
 ### Project Structure
