@@ -36,12 +36,9 @@ summary_metrics_*.csv
 
 # IDE and OS files
 .idea/
-.DS_Store
-**/.DS_Store
 
 # Documentation specific files
 docs/journals/2025_05_07.md
 docs/logseq/config.edn
 docs/logseq/custom.css
 docs/pages/contents.md
-logs/api_server.log
