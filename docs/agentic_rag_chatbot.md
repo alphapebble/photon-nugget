@@ -8,8 +8,8 @@ This document outlines the technical architecture and implementation details for
 
 The Agentic RAG Chatbot builds upon the existing Solar Sage architecture, extending it with:
 
-1. **Tool Integration Framework**: A system for defining, registering, and executing tools
-2. **Agent Decision Engine**: Logic for determining when to use tools vs. providing information
+1. **Dual-Agent Architecture**: Specialized Retriever and Response Generator agents
+2. **Tool Integration Framework**: A system for defining, registering, and executing tools
 3. **Memory System**: Short and long-term memory for maintaining conversation context
 4. **Action Execution Pipeline**: Secure execution of user-authorized actions
 
@@ -17,21 +17,40 @@ The Agentic RAG Chatbot builds upon the existing Solar Sage architecture, extend
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  User Interface │────▶│  Agent Router   │────▶│  RAG Engine     │
+│  User Interface │────▶│  Agent Router   │────▶│  Orchestrator   │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
-                               │  ▲                      │
-                               │  │                      │
-                               ▼  │                      ▼
+                                                    │     ▲
+                                                    │     │
+                 ┌───────────────────────────────┬─┘     └─┐
+                 │                               │         │
+                 ▼                               ▼         │
+┌─────────────────────────┐     ┌─────────────────────────┐
+│    Retriever Agent      │────▶│  Response Generator     │
+└─────────────────────────┘     └─────────────────────────┘
+        │                                    │
+        │                                    │
+        ▼                                    ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Tool Registry  │◀───▶│  Agent Engine   │◀───▶│  Weather API    │
+│  Vector Store   │     │  Tool Registry  │◀───▶│  Weather API    │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
-        │                       │                      │
-        │                       │                      │
-        ▼                       ▼                      ▼
+                               │                      │
+                               │                      │
+                               ▼                      ▼
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  External APIs  │     │  Memory System  │     │  Vector Store   │
+│  External APIs  │     │  Memory System  │     │  LLM Provider   │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
+
+### Dual-Agent Workflow
+
+The dual-agent architecture follows a specific workflow:
+
+1. **User Query**: The user submits a question about solar energy
+2. **Fetch Context**: The Retriever Agent searches for relevant information
+3. **Return Context**: The retrieved context is passed to the orchestrator
+4. **Generate Insights**: Optional step to add weather or other data
+5. **Generate Response**: The Response Generator Agent creates the answer
+6. **Output Response**: The final answer is returned to the user
 
 ## Core Components
 
@@ -58,27 +77,85 @@ The Strategy Pattern allows selecting the optimal chunking approach based on doc
 
 For implementation details, see the [Chunking Strategy Implementation](../ingestion/chunking_strategy.py) and [Enhanced Pipeline](../ingestion/enhanced_pipeline.py).
 
-### 2. Agent Engine
+### 2. Dual-Agent Architecture
 
-The Agent Engine is the central component that orchestrates the agentic capabilities:
+The Dual-Agent Architecture consists of specialized agents with distinct responsibilities:
+
+#### Base Agent
 
 ```python
-class AgentEngine:
-    def __init__(self, llm, tool_registry, memory_system):
-        self.llm = llm
-        self.tool_registry = tool_registry
-        self.memory_system = memory_system
+class BaseAgent:
+    def __init__(self, name, description):
+        self.name = name
+        self.description = description
+        self.llm = get_llm()
 
-    def process_query(self, query, user_context):
-        # 1. Analyze query to determine if it requires tool use
-        # 2. If tool use is needed, select appropriate tool
-        # 3. Execute tool with appropriate parameters
-        # 4. Process tool results and generate response
-        # 5. Update memory with interaction
-        pass
+    def run(self, *args, **kwargs):
+        """Run the agent. To be implemented by subclasses."""
+        raise NotImplementedError("Subclasses must implement run method")
 ```
 
-### 2. Tool Registry
+#### Retriever Agent
+
+```python
+class RetrieverAgent(BaseAgent):
+    def __init__(self):
+        super().__init__(
+            name="Retriever",
+            description="Retrieves relevant context for user queries"
+        )
+
+    def fetch_context(self, query, max_documents=5):
+        """Fetch relevant context for the query."""
+        return get_context_documents(query, n_results=max_documents)
+```
+
+#### Response Generator Agent
+
+```python
+class ResponseGeneratorAgent(BaseAgent):
+    def __init__(self):
+        super().__init__(
+            name="ResponseGenerator",
+            description="Generates responses based on context and query"
+        )
+
+    def generate_response(self, query, context, notes=None):
+        """Generate response based on query and context."""
+        # Load prompt template and generate response
+        # ...
+```
+
+#### Agent Orchestrator
+
+```python
+class AgentOrchestrator:
+    def __init__(self):
+        self.retriever_agent = RetrieverAgent()
+        self.response_generator_agent = ResponseGeneratorAgent()
+
+    def process_query(self, query, lat=None, lon=None, include_weather=False):
+        # Step 1: User Query (already received as input)
+
+        # Step 2: Fetch Context
+        context = self.retriever_agent.fetch_context(query)
+
+        # Step 3: Return Context (internal step)
+
+        # Step 4: Generate Insights (optional)
+        notes = []
+        if include_weather and lat is not None and lon is not None:
+            weather_context = get_weather_context_for_rag(lat, lon)
+            notes.append(weather_context)
+
+        # Step 5: Generate Response
+        response = self.response_generator_agent.generate_response(query, context, notes)
+
+        # Step 6: Output Response
+        return {"response": response, "has_weather_context": bool(notes)}
+```
+
+### 3. Tool Registry
 
 The Tool Registry manages the available tools and their specifications:
 
@@ -102,7 +179,7 @@ class ToolRegistry:
                 for name, tool in self.tools.items()]
 ```
 
-### 3. Memory System
+### 4. Memory System
 
 The Memory System maintains conversation history and user preferences:
 
@@ -124,7 +201,7 @@ class MemorySystem:
         pass
 ```
 
-### 4. Weather Integration
+### 5. Weather Integration
 
 Enhanced weather integration for solar-specific insights:
 
@@ -179,10 +256,11 @@ The Agentic RAG Chatbot will include the following tools:
 
 ### Phase 1: Core Agent Framework
 
-1. Implement the Tool Registry
-2. Create the Agent Engine with basic decision-making
-3. Develop the Memory System
-4. Integrate with existing RAG and Weather components
+1. ✅ Implement the Dual-Agent Architecture (Retriever and Response Generator)
+2. ✅ Create the Agent Orchestrator for workflow coordination
+3. ⏳ Implement the Tool Registry
+4. ⏳ Develop the Memory System
+5. ✅ Integrate with existing RAG and Weather components
 
 ### Phase 2: Tool Implementation
 
@@ -201,15 +279,15 @@ The Agentic RAG Chatbot will include the following tools:
 
 ## Usage Examples
 
-### Example 1: Weather-Based Production Forecast
+### Example 1: Weather-Based Production Forecast with Dual-Agent Architecture
 
 ```
 User: What will my solar production be like this week?
 
-System: [Identifies query as requiring the Weather Analysis Tool]
-[Retrieves user's system information from memory]
-[Executes weather forecast tool with user's location]
-[Generates production forecast]
+System: [Orchestrator receives the query]
+[Retriever Agent fetches relevant solar production documents]
+[Orchestrator detects weather-related query and fetches weather data]
+[Response Generator Agent combines context and weather data]
 
 Response: Based on the weather forecast for your location (37.7749, -122.4194),
 I estimate your 5kW system will produce:
@@ -220,19 +298,36 @@ I estimate your 5kW system will produce:
 The best production day will be today with clear skies and moderate temperatures.
 ```
 
-### Example 2: Maintenance Recommendation
+### Example 2: Maintenance Recommendation with Dual-Agent Architecture
 
 ```
 User: Should I clean my solar panels this week?
 
-System: [Identifies query as requiring the Weather Analysis Tool]
-[Retrieves user's maintenance history from memory]
-[Executes maintenance recommendation tool]
+System: [Orchestrator receives the query]
+[Retriever Agent fetches relevant panel maintenance documents]
+[Orchestrator detects maintenance-related query and fetches weather data]
+[Response Generator Agent combines context and weather data]
 
 Response: Based on your location's weather forecast, I don't recommend cleaning
 your panels this week. There's rain expected on Thursday which will naturally
 clean your panels. Your last recorded cleaning was 3 weeks ago, and the current
 dust accumulation is likely minimal. I'll remind you to check again in 2 weeks.
+```
+
+### Example 3: Basic Solar Information Query
+
+```
+User: How do solar panels work?
+
+System: [Orchestrator receives the query]
+[Retriever Agent fetches relevant solar panel technology documents]
+[Response Generator Agent creates response from context]
+
+Response: Solar panels work through the photovoltaic effect. When sunlight hits
+the semiconductor materials in solar cells (typically silicon), it excites electrons,
+creating an electric current. This direct current (DC) is then converted to alternating
+current (AC) by an inverter for use in your home. The efficiency of this conversion
+depends on factors like panel type, orientation, and weather conditions.
 ```
 
 ## Security Considerations
@@ -260,4 +355,13 @@ docker run -p 8000:8000 -p 8502:8502 \
 
 ## Conclusion
 
-The Solar Sage Agentic RAG Chatbot extends the existing application with powerful agent capabilities, enabling it to not only provide information but also take actions to help users optimize their solar energy systems. By leveraging the existing RAG and weather integration components, the agent can provide highly personalized and actionable insights.
+The Solar Sage Agentic RAG Chatbot extends the existing application with powerful agent capabilities, enabling it to not only provide information but also take actions to help users optimize their solar energy systems.
+
+The implementation of the Dual-Agent Architecture with specialized Retriever and Response Generator agents provides a solid foundation for the system. This architecture offers several benefits:
+
+1. **Separation of Concerns**: Each agent focuses on a specific task
+2. **Improved Modularity**: Easier to maintain and extend each component independently
+3. **Enhanced Flexibility**: Can add more specialized agents in the future
+4. **Better Context Management**: More control over how context is retrieved and used
+
+By leveraging the existing RAG and weather integration components, the agent can provide highly personalized and actionable insights while maintaining compatibility with the current LLM provider.

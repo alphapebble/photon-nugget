@@ -1,22 +1,49 @@
-from retriever.retriever_lancedb import get_context_documents
-from llm.llm_factory import get_llm
-from .prompts.template_loader import load_structured_prompt, render_prompt
+"""
+RAG Engine for Solar Sage.
 
-llm = get_llm()
+This module provides the core RAG functionality using the dual-agent architecture.
+"""
+from typing import Dict, Any, Optional
+from agents.orchestrator import AgentOrchestrator
+from core.config import get_config
+
+# Initialize the orchestrator
+orchestrator = AgentOrchestrator()
 
 def rag_answer(user_query: str) -> str:
-    # Retrieve top N relevant context chunks
-    context_docs = get_context_documents(user_query)
-    context = "\n".join(context_docs[:3])  # Use top 3 hits
+    """
+    Generate an answer for a user query using the dual-agent RAG workflow.
 
-    # Load YAML + prompt template from file
-    config, prompt_template = load_structured_prompt("solar_rag")
+    Args:
+        user_query: User query
 
-    # Fill in the template with user query and context
-    prompt = render_prompt(prompt_template, {
-        "query": user_query,
-        "context": context,
-    })
+    Returns:
+        Generated response
+    """
+    result = orchestrator.process_query(user_query)
+    return result["response"]
 
-    # Generate response from selected LLM
-    return llm.generate(prompt)
+def enhanced_rag_answer(
+    user_query: str,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    include_weather: bool = False
+) -> Dict[str, Any]:
+    """
+    Generate an enhanced answer with metadata using the dual-agent RAG workflow.
+
+    Args:
+        user_query: User query
+        lat: Latitude (optional)
+        lon: Longitude (optional)
+        include_weather: Whether to include weather context
+
+    Returns:
+        Dictionary with response and metadata
+    """
+    return orchestrator.process_query(
+        query=user_query,
+        lat=lat,
+        lon=lon,
+        include_weather=include_weather
+    )
