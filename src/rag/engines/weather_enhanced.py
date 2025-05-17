@@ -7,7 +7,7 @@ It uses the dual-agent architecture for improved separation of concerns.
 """
 
 from typing import Dict, Any, Optional
-from rag.rag_engine import enhanced_rag_answer
+from rag.engines.base import rag_answer as enhanced_rag_answer
 
 def is_weather_related_query(query: str) -> bool:
     """
