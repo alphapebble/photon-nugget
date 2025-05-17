@@ -3,11 +3,12 @@
 UI application entry point for Solar Sage.
 """
 import gradio as gr
+from gradio.routes import Request as GradioRequest
 import argparse
 from typing import Optional
 
-from ui.simple_ui import create_ui
-from ui.evaluation_dashboard import create_evaluation_dashboard
+from ui.components.simple_ui import create_ui
+from ui.components.evaluation_dashboard import create_evaluation_dashboard
 from core.config import get_config
 from core.logging import get_logger, setup_logging
 
@@ -31,7 +32,7 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
     logger.info(f"Starting UI server on {server_name}:{server_port}")
 
     # Get CSS from both UIs
-    from ui.template_loader import load_template
+    from ui.utils.template_loader import load_template
 
     # Load CSS from files
     main_css = load_template("css/simple.css")
@@ -40,58 +41,25 @@ def run_ui(port: Optional[int] = None, share: bool = False, mode: str = "main") 
     # Combine CSS
     combined_css = main_css + eval_css
 
-    # Create a unified interface that can switch between modes
-    with gr.Blocks(title="Solar Sage", css=combined_css) as app:
-        # Create state for the current mode
-        current_mode = gr.State(value=mode)
-
-        # Create the main UI
-        main_ui = create_ui()
-
-        # Create the evaluation dashboard
-        eval_ui = create_evaluation_dashboard()
-
-        # Add query parameter handling
-        @app.load(inputs=current_mode, outputs=None)
-        def router(default_mode):
-            # Check for mode parameter in URL
-            ctx = gr.Context.get()
-            requested_mode = None
-
-            # Extract mode from query parameters if available
-            if hasattr(ctx, 'request') and ctx.request:
-                query_params = getattr(ctx.request, 'query_params', None)
-                logger.info(f"Query params: {query_params}")
-
-                if query_params and 'mode' in query_params:
-                    requested_mode = query_params['mode']
-                    logger.info(f"Mode requested via URL: {requested_mode}")
-
-            # Use requested mode or default
-            mode_to_use = requested_mode if requested_mode in ["main", "evaluation"] else default_mode
-            logger.info(f"Using mode: {mode_to_use}")
-
-            # Update visibility based on mode
-            if mode_to_use == "evaluation":
-                logger.info("Showing evaluation dashboard")
-                # Make sure the evaluation dashboard is visible and the main UI is hidden
-                main_ui.visible = False
-                eval_ui.visible = True
-                return {main_ui: gr.update(visible=False), eval_ui: gr.update(visible=True)}
-            else:
-                logger.info("Showing main UI")
-                # Make sure the main UI is visible and the evaluation dashboard is hidden
-                main_ui.visible = True
-                eval_ui.visible = False
-                return {main_ui: gr.update(visible=True), eval_ui: gr.update(visible=False)}
-
-    # Launch the combined app
-    app.launch(
-        server_name=server_name,
-        server_port=server_port,
-        share=share,
-        show_error=True
-    )
+    # Launch the appropriate UI based on mode
+    if mode == "evaluation":
+        # Launch evaluation dashboard
+        dashboard = create_evaluation_dashboard()
+        dashboard.launch(
+            server_name=server_name,
+            server_port=server_port,
+            share=share,
+            show_error=True
+        )
+    else:
+        # Launch main UI
+        app = create_ui()
+        app.launch(
+            server_name=server_name,
+            server_port=server_port,
+            share=share,
+            show_error=True
+        )
 
 if __name__ == "__main__":
     # Parse command line arguments

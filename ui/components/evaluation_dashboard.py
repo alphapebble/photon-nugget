@@ -20,7 +20,7 @@ from ui.config import (
     KNOWLEDGE_INFO,
     GITHUB_LINK
 )
-from ui.template_loader import render_template, load_template, load_icon
+from ui.utils.template_loader import render_template, load_template, load_icon
 
 def load_evaluation_results(results_dir: str = "evaluation/results") -> Tuple[List[Dict], pd.DataFrame]:
     """Load evaluation results from the specified directory.

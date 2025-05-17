@@ -10,8 +10,8 @@ import os
 import logging
 from typing import Dict, Any, Optional, List, Tuple
 
-from ui.api_config import DEFAULT_API_URL, CHAT_ENDPOINT, MAX_RETRIES, RETRY_DELAY
-from ui.api_errors import format_api_error
+from ui.api.config import DEFAULT_API_URL, CHAT_ENDPOINT, MAX_RETRIES, RETRY_DELAY
+from ui.api.errors import format_api_error
 
 # Create logs directory if it doesn't exist
 os.makedirs("logs", exist_ok=True)

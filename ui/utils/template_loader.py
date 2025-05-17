@@ -5,7 +5,7 @@ import os
 from typing import Dict, Any
 
 # Base path for templates
-TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
+TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates")
 
 # Icon cache to avoid loading the same icon multiple times
 ICON_CACHE = {}

@@ -8,7 +8,7 @@ from typing import List, Tuple, Optional
 import logging
 
 # Import the API client
-from ui.api_client import get_model_response as client_get_model_response
+from ui.api.client import get_model_response as client_get_model_response
 
 # Configure logging
 logging.basicConfig(

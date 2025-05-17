@@ -21,17 +21,24 @@ solar-sage/
 │   ├── server.py             # API routes and logic using Pydantic
 │   └── prompt.py             # Prompt templates and formatting
 ├── ui/                       # Frontend interface
-│   ├── app.py                # Gradio-based UI for user interaction
-│   ├── api.py                # API communication interface
-│   ├── api_client.py         # API client implementation
-│   ├── api_config.py         # API client configuration
-│   ├── api_errors.py         # API error handling
+│   ├── app.py                # Main UI entry point
 │   ├── config.py             # UI configuration settings
-│   ├── simple_ui.py          # Main UI implementation
-│   ├── evaluation_dashboard.py # Evaluation dashboard UI
-│   ├── weather_dashboard.py  # Weather dashboard UI
-│   ├── scada.py              # SCADA data visualization
-│   └── template_loader.py    # Template loading utilities
+│   ├── theme.py              # UI theme and styling
+│   ├── api/                  # API client
+│   │   ├── client.py         # API client implementation
+│   │   ├── config.py         # API client configuration
+│   │   └── errors.py         # API error handling
+│   ├── components/           # UI components
+│   │   ├── simple_ui.py      # Main UI implementation
+│   │   ├── evaluation_dashboard.py # Evaluation dashboard UI
+│   │   ├── weather_dashboard.py # Weather dashboard UI
+│   │   └── scada.py          # SCADA data visualization
+│   ├── utils/                # Utility functions
+│   │   ├── template_loader.py # Template loading utilities
+│   │   ├── feedback.py       # Feedback handling
+│   │   ├── history.py        # Conversation history management
+│   │   └── messages.py       # Message formatting
+│   └── templates/            # HTML/CSS/JS templates
 ├── models/                   # Local pre-downloaded models (e.g., mistral-7b-instruct, gemma)
 ├── data/                     # Input/output artifacts for the pipeline
 │   ├── lancedb/              # LanceDB vector database files
@@ -133,21 +140,31 @@ The backend API is built with FastAPI and provides the following endpoints:
 
 The UI is built with Gradio and consists of the following main components:
 
+#### Core UI
+
 - `app.py` - Main application file that launches the UI
-- `simple_ui.py` - Main UI implementation with chat interface
-- `evaluation_dashboard.py` - Dashboard for RAG evaluation metrics
-- `weather_dashboard.py` - Weather data visualization dashboard
-- `scada.py` - SCADA data visualization components
-- `template_loader.py` - HTML/CSS/JS template loading utilities
+- `config.py` - UI configuration settings
+- `theme.py` - UI theme and styling
 
-#### API Client Components
+#### UI Components
 
-The API client is organized into the following components:
+- `components/simple_ui.py` - Main UI implementation with chat interface
+- `components/evaluation_dashboard.py` - Dashboard for RAG evaluation metrics
+- `components/weather_dashboard.py` - Weather data visualization dashboard
+- `components/scada.py` - SCADA data visualization components
 
-- `api.py` - Simplified API communication interface
-- `api_client.py` - Core API client implementation
-- `api_config.py` - API client configuration settings
-- `api_errors.py` - Error handling and formatting
+#### API Client
+
+- `api/client.py` - Core API client implementation
+- `api/config.py` - API client configuration settings
+- `api/errors.py` - API error handling
+
+#### Utilities
+
+- `utils/template_loader.py` - HTML/CSS/JS template loading utilities
+- `utils/feedback.py` - Feedback handling
+- `utils/history.py` - Conversation history management
+- `utils/messages.py` - Message formatting
 
 ## 🌟 Contributing
 

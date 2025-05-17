@@ -15,9 +15,9 @@ from ui.config import (
 )
 # Import the API client
 from ui.api import get_model_response
-from ui.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
-from ui.weather_dashboard import create_weather_dashboard_ui, update_weather_dashboard
-from ui.template_loader import render_template, load_template, load_icon
+from ui.components.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
+from ui.components.weather_dashboard import create_weather_dashboard_ui, update_weather_dashboard
+from ui.utils.template_loader import render_template, load_template, load_icon
 
 def respond(message: str, history: List[Tuple[str, str]], location_input: str = None, notification_html: gr.HTML = None) -> Generator[Tuple[str, List[Tuple[str, str]], str], None, None]:
     """Process user message and get response from the model."""
@@ -50,17 +50,8 @@ def respond(message: str, history: List[Tuple[str, str]], location_input: str = 
     # Update history
     history.append((message, reply))
 
-    # Show evaluation notification
-    eval_notification = """
-    <div class="eval-notification">
-        <span class="eval-icon">📊</span>
-        <span>Want to see how well the system is performing? Check out the
-        <a href="/?mode=evaluation" class="eval-link">Evaluation Dashboard</a>
-        </span>
-    </div>
-    """
-
-    yield "", history, eval_notification
+    # No evaluation notification
+    yield "", history, ""
 
 def process_scada_data(file_obj):
     """Process SCADA data file and generate visualizations."""

@@ -282,17 +282,24 @@ solar-sage/
 │       ├── system_tools.py       # System configuration
 │       └── weather_tools.py      # Weather-related tools
 ├── ui/                # Frontend interface (will be moved to separate repo later)
-│   ├── app.py                # Gradio-based UI for user interaction
-│   ├── api.py                # API communication interface
-│   ├── api_client.py         # API client implementation
-│   ├── api_config.py         # API client configuration
-│   ├── api_errors.py         # API error handling
+│   ├── app.py                # Main UI entry point
 │   ├── config.py             # UI configuration settings
-│   ├── simple_ui.py          # Main UI implementation
-│   ├── evaluation_dashboard.py # Evaluation dashboard UI
-│   ├── weather_dashboard.py  # Weather dashboard UI
-│   ├── scada.py              # SCADA data visualization
-│   └── template_loader.py    # Template loading utilities
+│   ├── theme.py              # UI theme and styling
+│   ├── api/                  # API client
+│   │   ├── client.py         # API client implementation
+│   │   ├── config.py         # API client configuration
+│   │   └── errors.py         # API error handling
+│   ├── components/           # UI components
+│   │   ├── simple_ui.py      # Main UI implementation
+│   │   ├── evaluation_dashboard.py # Evaluation dashboard UI
+│   │   ├── weather_dashboard.py # Weather dashboard UI
+│   │   └── scada.py          # SCADA data visualization
+│   ├── utils/                # Utility functions
+│   │   ├── template_loader.py # Template loading utilities
+│   │   ├── feedback.py       # Feedback handling
+│   │   ├── history.py        # Conversation history management
+│   │   └── messages.py       # Message formatting
+│   └── templates/            # HTML/CSS/JS templates
 ├── data/              # Knowledge database
 ├── deployment/        # Deployment configuration
 │   ├── docker/               # Docker configuration
