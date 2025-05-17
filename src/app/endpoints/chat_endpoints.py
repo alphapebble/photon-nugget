@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException
 from typing import Optional
 
 from app.models.prompt import ChatRequest, ChatResponse
-from rag.rag_engine import rag_answer
+from rag.engines.base import rag_answer
 from core.logging import get_logger
 
 # Set up logging
@@ -15,7 +15,7 @@ logger = get_logger(__name__)
 
 # Import weather-enhanced RAG if available, otherwise use a fallback
 try:
-    from rag.weather_enhanced_rag import weather_enhanced_rag_answer, is_weather_related_query
+    from rag.engines.weather_enhanced import weather_enhanced_rag_answer, is_weather_related_query
     WEATHER_RAG_AVAILABLE = True
 except ImportError:
     WEATHER_RAG_AVAILABLE = False
@@ -25,7 +25,7 @@ except ImportError:
         return False
 
     def weather_enhanced_rag_answer(user_query: str, lat=None, lon=None, include_weather=False):
-        answer = rag_answer(user_query)
+        contexts, answer = rag_answer(user_query)
         return {
             "response": answer,
             "has_weather_context": False,
