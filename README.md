@@ -231,107 +231,25 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 
 ### Project Structure
 
-The codebase follows a modular structure:
+The codebase follows a modular structure with a clean separation of concerns. The project is organized into several key components:
 
-```
-solar-sage/
-├── src/               # Backend source code (marked as source root)
-│   ├── agents/        # Agent components
-│   │   ├── agent_engine.py        # Core agent logic
-│   │   ├── base_agent.py          # Base agent class
-│   │   ├── initialize.py          # Agent setup
-│   │   ├── memory_system.py       # Conversation memory
-│   │   ├── orchestrator.py        # Dual-agent workflow coordination
-│   │   ├── response_generator_agent.py # Response generation agent
-│   │   ├── retriever_agent.py     # Context retrieval agent
-│   │   ├── tool_registry.py       # Tool management
-│   │   ├── weather_agent.py       # Weather data fetching
-│   │   └── weather_integration.py # Weather processing
-│   ├── app/           # Application server
-│   │   └── agent_endpoints.py     # Agent API endpoints
-│   ├── cli/           # Command-line interface
-│   │   ├── commands/             # CLI commands
-│   │   └── main.py               # CLI entry point
-│   ├── config/        # Configuration
-│   │   ├── environments/         # Environment-specific settings
-│   │   ├── default.py            # Default configuration
-│   │   └── __init__.py           # Configuration loader
-│   ├── core/          # Core functionality
-│   │   ├── config.py             # Configuration utilities
-│   │   ├── exceptions.py         # Custom exceptions
-│   │   ├── logging.py            # Logging setup
-│   │   └── utils/                # Shared utilities
-│   ├── ingestion/     # Document ingestion
-│   │   ├── chunking_strategy.py  # Chunking strategy pattern
-│   │   └── enhanced_pipeline.py  # Enhanced ingestion pipeline
-│   ├── llm/           # LLM integration
-│   ├── models/        # AI models
-│   ├── rag/           # Retrieval system
-│   │   ├── agent_enhanced_rag.py # Agent-enhanced RAG
-│   │   ├── rag_engine.py         # Dual-agent RAG implementation
-│   │   ├── weather_enhanced_rag.py # Weather-enhanced RAG
-│   │   ├── prompts/              # Prompt templates
-│   │   │   ├── dual_agent_rag.prompt # Dual-agent prompt template
-│   │   │   ├── solar_rag.prompt      # Basic RAG prompt template
-│   │   │   └── template_loader.py    # Template loading utilities
-│   ├── retriever/     # Document retrieval
-│   └── tools/         # Agent tools
-│       ├── integration_tools.py  # External system integration
-│       ├── notification_tools.py # Alerts and notifications
-│       ├── performance_tools.py  # Performance analysis
-│       ├── system_tools.py       # System configuration
-│       └── weather_tools.py      # Weather-related tools
-├── ui/                # Frontend interface (will be moved to separate repo later)
-│   ├── app.py                # Main UI entry point
-│   ├── config.py             # UI configuration settings
-│   ├── theme.py              # UI theme and styling
-│   ├── api/                  # API client
-│   │   ├── client.py         # API client implementation
-│   │   ├── config.py         # API client configuration
-│   │   └── errors.py         # API error handling
-│   ├── components/           # UI components
-│   │   ├── simple_ui.py      # Main UI implementation
-│   │   ├── evaluation_dashboard.py # Evaluation dashboard UI
-│   │   ├── weather_dashboard.py # Weather dashboard UI
-│   │   └── scada.py          # SCADA data visualization
-│   ├── utils/                # Utility functions
-│   │   ├── template_loader.py # Template loading utilities
-│   │   ├── feedback.py       # Feedback handling
-│   │   ├── history.py        # Conversation history management
-│   │   └── messages.py       # Message formatting
-│   └── templates/            # HTML/CSS/JS templates
-├── data/              # Knowledge database
-├── deployment/        # Deployment configuration
-│   ├── docker/               # Docker configuration
-│   ├── kubernetes/           # Kubernetes configuration
-│   └── scripts/              # Deployment scripts
-├── docs/              # Documentation
-│   ├── DEVELOPERS.md         # Developer guide
-│   ├── agentic_rag_chatbot.md # Agentic architecture
-│   ├── agent_implementation_guide.md # Implementation guide
-│   ├── agentic_rag_roadmap.md # Project roadmap
-│   ├── implementation_status.md # Current status
-│   ├── agentic_quickstart.md # Quick start guide
-│   ├── shell_commands.md     # Shell commands reference
-│   └── agentic_vision.md     # Future agentic vision
-├── evaluation/        # Evaluation scripts and data
-├── scripts/           # Utility scripts
-│   ├── api_server.sh         # API server management
-│   ├── download_hf.sh        # Hugging Face model download
-│   ├── kill_all.sh           # Process management
-│   ├── ollama_manager.sh     # Ollama management
-│   ├── ui_manager.sh         # UI management
-│   └── utils.sh              # Shared utilities
-├── tests/             # Test suite
-│   ├── unit/                # Unit tests
-│   ├── integration/         # Integration tests
-│   └── e2e/                 # End-to-end tests
-├── .env.example       # Example environment variables
-├── main.py            # Main entry point
-├── pyproject.toml     # Python project configuration
-├── README.md          # Project README
-└── solar_sage.sh      # Main startup script
-```
+- **src/** - Backend source code (marked as source root)
+
+  - **agents/** - Agent components for autonomous reasoning
+  - **app/** - FastAPI server and API endpoints
+  - **core/** - Core utilities and configuration
+  - **ingestion/** - Document processing pipeline
+  - **llm/** - LLM integration with various backends
+  - **rag/** - Retrieval-Augmented Generation system
+  - **retrieval/** - Vector database retrieval
+
+- **ui/** - Frontend interface with Gradio
+  - **api/** - API client for backend communication
+  - **components/** - UI components and views
+  - **utils/** - Utility functions
+  - **templates/** - HTML/CSS/JS templates
+
+For a detailed breakdown of the project structure, please see the [Developer Documentation](docs/DEVELOPERS.md).
 
 ### Command-Line Interface
 
