@@ -99,7 +99,7 @@ The Agent Engine is the core component that processes user queries and decides w
 
 Weather integration tools provide weather data and solar production forecasts.
 
-**Location**: `src/tools/weather_tools.py`
+**Location**: `src/agents/tools/weather_tools.py`
 
 **Key Features**:
 
@@ -111,7 +111,7 @@ Weather integration tools provide weather data and solar production forecasts.
 
 The API server exposes endpoints for interacting with the agent.
 
-**Location**: `src/api/server.py`
+**Location**: `src/app/server.py`
 
 **Key Features**:
 
@@ -158,9 +158,9 @@ The API server exposes endpoints for interacting with the agent.
 
 ## Next Steps
 
-After implementing the core components, you can:
+The core agent components are already implemented. Here are the next steps you can take:
 
-1. Implement additional tools in the `tools/` directory
+1. Implement additional tools in the `agents/tools/` directory
 2. Update the UI to support agent interactions
 3. Add user authentication and authorization
 4. Implement monitoring and logging for agent actions
@@ -193,6 +193,6 @@ After implementing the core components, you can:
 
 ## Conclusion
 
-This quick start guide provides the essential steps to begin implementing the Solar Sage Agentic RAG Chatbot. By following these steps, you can quickly set up the core agent framework and start adding tools to enhance the chatbot's capabilities.
+This quick start guide provides the essential steps to begin using the Solar Sage Agentic RAG Chatbot. The core agent framework is already implemented, and you can start adding additional tools to enhance the chatbot's capabilities.
 
 For more detailed information, refer to the comprehensive documentation in the `docs/` directory.

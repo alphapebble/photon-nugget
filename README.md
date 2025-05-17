@@ -4,7 +4,7 @@ Solar-Sage is a domain-aware AI assistant designed to support engineers, site op
 
 ## 🤖 Agentic RAG Chatbot
 
-Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides information but can also take actions, make decisions, and interact with external systems. By integrating weather data with RAG systems, it offers solar recommendations, insights, alerts, degradation estimates, and automation workflows. See the [Agentic RAG documentation](#agentic-rag-chatbot) for implementation details.
+Solar-Sage has evolved into an **Agentic RAG Chatbot** that not only provides information but can also take actions, make decisions, and interact with external systems. By integrating weather data with RAG systems, it offers solar recommendations, insights, alerts, degradation estimates, and automation workflows. The core agent framework has been implemented, including the Tool Registry, Memory System, Agent Engine, and Weather Tools. See the [Agentic RAG documentation](#agentic-rag-chatbot) for implementation details.
 
 ## 🌟 What Can It Do?
 
@@ -16,15 +16,18 @@ Solar-Sage is evolving into an **Agentic RAG Chatbot** that not only provides in
 - Provide accurate information from reliable solar energy sources
 - Remember your conversation history
 - Switch between light and dark mode for comfortable viewing
-
-### Upcoming Agentic Capabilities
-
 - Generate solar production forecasts based on weather data
 - Provide maintenance recommendations based on weather conditions
 - Identify optimal times for solar production
+- Analyze weather impact on solar production
+
+### Upcoming Agentic Capabilities
+
 - Analyze performance data and detect issues
 - Schedule alerts and notifications
 - Connect with smart home systems and inverter monitoring APIs
+- Provide system configuration recommendations
+- Implement user authorization for sensitive tools
 
 ## 🚀 Quick Start Guide (For Everyone)
 
@@ -220,13 +223,13 @@ $env:PYTHONPATH += ";$(Get-Location)\src"
 
 ### Agentic RAG Chatbot
 
-Solar Sage is being extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. Check out the following documentation:
+Solar Sage has been extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. The core agent framework has been implemented, including the Tool Registry, Memory System, Agent Engine, and Weather Tools. Check out the following documentation:
 
 - [Agentic RAG Chatbot Architecture](docs/agentic_rag_chatbot.md) - Complete architecture documentation including dual-agent implementation
-- [Implementation Guide](docs/agent_implementation_guide.md) - Detailed implementation instructions
+- [Implementation Reference](docs/agent_implementation_guide.md) - Reference guide for the implemented components
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
-- [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
+- [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with the agentic chatbot
 - [Agentic System Vision](docs/agentic_vision.md) - Future vision for true agentic capabilities
 
 ### Project Structure
@@ -236,6 +239,13 @@ The codebase follows a modular structure with a clean separation of concerns. Th
 - **src/** - Backend source code (marked as source root)
 
   - **agents/** - Agent components for autonomous reasoning
+    - **tools/** - Tool implementations for agent actions
+    - **integrations/** - Integration with external systems
+    - **types/** - Specialized agent types
+    - **tool_registry.py** - Tool registration and execution
+    - **memory_system.py** - Conversation history and preferences
+    - **agent_engine.py** - Core agent logic
+    - **initialize.py** - Agent initialization
   - **app/** - FastAPI server and API endpoints
   - **core/** - Core utilities and configuration
   - **ingestion/** - Document processing pipeline
