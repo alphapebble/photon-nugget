@@ -11,7 +11,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../src')))
 
-from agents.weather_integration import (
+from agents.integrations.weather import (
     get_weather_for_location,
     extract_solar_relevant_weather,
     estimate_irradiance,
@@ -64,7 +64,7 @@ class TestWeatherIntegration(unittest.TestCase):
             ]
         }
 
-    @patch('agents.weather_integration.fetch_weather')
+    @patch('agents.integrations.weather.fetch_weather')
     def test_get_weather_for_location(self, mock_fetch_weather):
         """Test that get_weather_for_location calls fetch_weather with correct parameters."""
         # Set up the mock
@@ -121,20 +121,20 @@ class TestWeatherIntegration(unittest.TestCase):
 
         for case in test_cases:
             irradiance = estimate_irradiance(case["cloud_cover"], case["uvi"])
-            
+
             if "expected_min" in case:
                 self.assertGreaterEqual(irradiance, case["expected_min"])
-            
+
             if "expected_max" in case:
                 self.assertLessEqual(irradiance, case["expected_max"])
-            
+
             if "expected_range" in case:
                 self.assertTrue(
                     case["expected_range"][0] <= irradiance <= case["expected_range"][1],
                     f"Irradiance {irradiance} not in expected range {case['expected_range']}"
                 )
 
-    @patch('agents.weather_integration.estimate_irradiance')
+    @patch('agents.integrations.weather.estimate_irradiance')
     def test_estimate_production_impact(self, mock_estimate_irradiance):
         """Test that estimate_production_impact calculates correct values."""
         # Set up the mock
@@ -261,9 +261,9 @@ class TestWeatherIntegration(unittest.TestCase):
         self.assertTrue(len(insights["weekly_potential"]) > 0)
         self.assertTrue(len(insights["best_production_day"]) > 0)
 
-    @patch('agents.weather_integration.get_weather_for_location')
-    @patch('agents.weather_integration.estimate_production_impact')
-    @patch('agents.weather_integration.generate_weather_insights')
+    @patch('agents.integrations.weather.get_weather_for_location')
+    @patch('agents.integrations.weather.estimate_production_impact')
+    @patch('agents.integrations.weather.generate_weather_insights')
     def test_get_weather_context_for_rag(self, mock_insights, mock_impact, mock_weather):
         """Test that get_weather_context_for_rag generates correct context."""
         # Set up the mocks
@@ -297,7 +297,7 @@ class TestWeatherIntegration(unittest.TestCase):
         self.assertIn("CURRENT WEATHER CONTEXT", context)
         self.assertIn("7-DAY FORECAST SUMMARY", context)
 
-    @patch('agents.weather_integration.get_weather_for_location')
+    @patch('agents.integrations.weather.get_weather_for_location')
     def test_get_weather_context_for_rag_error_handling(self, mock_weather):
         """Test that get_weather_context_for_rag handles errors gracefully."""
         # Set up the mock to raise an exception

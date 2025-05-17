@@ -10,7 +10,7 @@ import unittest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../src')))
 
-from agents.retriever_agent import RetrieverAgent
+from agents.types.retriever import RetrieverAgent
 
 class TestRetrieverAgent(unittest.TestCase):
     """Test cases for the Retriever Agent."""

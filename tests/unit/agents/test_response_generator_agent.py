@@ -10,7 +10,7 @@ import unittest
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../src')))
 
-from agents.response_generator_agent import ResponseGeneratorAgent
+from agents.types.response_generator import ResponseGeneratorAgent
 
 class TestResponseGeneratorAgent(unittest.TestCase):
     """Test cases for the Response Generator Agent."""
