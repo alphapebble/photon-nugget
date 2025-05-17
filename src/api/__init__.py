@@ -1,6 +1,5 @@
 """
-API client package for communicating with the backend server.
-"""
-from api.client import ApiClient, get_model_response
+API package for the Solar Sage backend server.
 
-__all__ = ["ApiClient", "get_model_response"]
+Note: The API client has been moved to the UI folder.
+"""

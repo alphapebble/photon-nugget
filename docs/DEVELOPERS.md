@@ -22,11 +22,16 @@ solar-sage/
 │   └── prompt.py             # Prompt templates and formatting
 ├── ui/                       # Frontend interface
 │   ├── app.py                # Gradio-based UI for user interaction
-│   ├── api.py                # API communication functions
+│   ├── api.py                # API communication interface
+│   ├── api_client.py         # API client implementation
+│   ├── api_config.py         # API client configuration
+│   ├── api_errors.py         # API error handling
 │   ├── config.py             # UI configuration settings
-│   ├── feedback.py           # Feedback handling
-│   ├── history.py            # Conversation history management
-│   └── theme.py              # Theme and styling
+│   ├── simple_ui.py          # Main UI implementation
+│   ├── evaluation_dashboard.py # Evaluation dashboard UI
+│   ├── weather_dashboard.py  # Weather dashboard UI
+│   ├── scada.py              # SCADA data visualization
+│   └── template_loader.py    # Template loading utilities
 ├── models/                   # Local pre-downloaded models (e.g., mistral-7b-instruct, gemma)
 ├── data/                     # Input/output artifacts for the pipeline
 │   ├── lancedb/              # LanceDB vector database files
@@ -85,6 +90,7 @@ uvicorn app.server:app --reload --host 0.0.0.0 --port 8000
 ### Code Style and Linting
 
 We use:
+
 - Black for code formatting
 - isort for import sorting
 - flake8 for linting
@@ -108,6 +114,7 @@ pytest
 ### Adding Tests
 
 Add new tests in the `tests/` directory, following the existing structure:
+
 - `tests/unit/` for unit tests
 - `tests/integration/` for integration tests
 - `tests/e2e/` for end-to-end tests
@@ -126,12 +133,21 @@ The backend API is built with FastAPI and provides the following endpoints:
 
 The UI is built with Gradio and consists of the following main components:
 
-- `app.py` - Main application file
-- `config.py` - Configuration settings
-- `api.py` - API communication
-- `theme.py` - Theme and styling
-- `feedback.py` - Feedback handling
-- `history.py` - Conversation history management
+- `app.py` - Main application file that launches the UI
+- `simple_ui.py` - Main UI implementation with chat interface
+- `evaluation_dashboard.py` - Dashboard for RAG evaluation metrics
+- `weather_dashboard.py` - Weather data visualization dashboard
+- `scada.py` - SCADA data visualization components
+- `template_loader.py` - HTML/CSS/JS template loading utilities
+
+#### API Client Components
+
+The API client is organized into the following components:
+
+- `api.py` - Simplified API communication interface
+- `api_client.py` - Core API client implementation
+- `api_config.py` - API client configuration settings
+- `api_errors.py` - Error handling and formatting
 
 ## 🌟 Contributing
 

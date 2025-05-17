@@ -13,11 +13,8 @@ from ui.config import (
     KNOWLEDGE_INFO,
     GITHUB_LINK
 )
-try:
-    from api import get_model_response
-except ImportError:
-    # Try to import from the src directory
-    from ui.api import get_model_response
+# Import the API client
+from ui.api import get_model_response
 from ui.scada import process_csv, create_daily_profile_plot, create_monthly_heatmap, create_performance_summary, format_performance_html
 from ui.weather_dashboard import create_weather_dashboard_ui, update_weather_dashboard
 from ui.template_loader import render_template, load_template, load_icon
