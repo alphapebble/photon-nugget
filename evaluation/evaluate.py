@@ -8,7 +8,8 @@ from typing import Dict, List, Tuple, Any, Optional, Union
 from collections import Counter
 
 # Import RAG components
-from rag.rag_engine import rag_answer, enhanced_rag_answer
+from rag.engines.base import rag_answer
+from rag.engines.weather_enhanced import weather_enhanced_rag_answer
 from agents.orchestrator import AgentOrchestrator
 
 # Try to import RAGAS for specialized RAG evaluation
@@ -163,10 +164,13 @@ class RAGEvaluator:
             # Try to get retrieved contexts if available
             contexts = result.get('contexts', [])
         else:
-            # Use basic RAG
-            response = rag_answer(question)
-            has_weather = False
-            contexts = []
+            # Use basic RAG or weather-enhanced RAG
+            if include_weather:
+                contexts, response = weather_enhanced_rag_answer(question)
+                has_weather = True
+            else:
+                contexts, response = rag_answer(question)
+                has_weather = False
 
         # Calculate response time
         response_time = time.time() - start_time
