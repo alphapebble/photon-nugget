@@ -231,6 +231,7 @@ Solar Sage has been extended with agentic capabilities to provide not just infor
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with the agentic chatbot
 - [Agentic System Vision](docs/agentic_vision.md) - Future vision for true agentic capabilities
+- [Testing Guide](docs/testing_guide.md) - Instructions for running tests and evaluations
 
 ### Project Structure
 
@@ -367,56 +368,13 @@ The Docker setup includes:
 
 ### Testing
 
-Solar Sage includes a comprehensive test suite:
+Solar Sage includes a comprehensive test suite and evaluation system:
 
-```bash
-# Run all tests
-python -m unittest discover tests
+- **Unit Tests**: Test individual components and functions
+- **RAG Evaluation**: Measure the quality of responses using multiple metrics
+- **AI Testing**: Planned integration with Giskard for specialized AI testing
 
-# Run specific test category
-python -m unittest discover tests/unit
-python -m unittest discover tests/integration
-
-# Run dual-agent architecture tests
-python tests/run_dual_agent_tests.py
-
-# Run tests with evaluation (may take longer)
-python tests/run_dual_agent_tests.py --with-evaluation
-```
-
-#### RAG Evaluation System
-
-Solar Sage includes a specialized RAG evaluation system that measures the quality of responses using multiple metrics:
-
-- **Basic Metrics**: Keyword matching, response time, response length
-- **RAGAS Metrics**: Faithfulness, answer relevancy, context relevancy, context precision/recall
-- **NLP Metrics**: BLEU, ROUGE, cosine similarity
-
-You can run the evaluation from the command line:
-
-```bash
-# Run evaluation with default settings
-python -m src.cli.main evaluate
-
-# Run with specific options
-python -m src.cli.main evaluate --csv path/to/questions.csv --references path/to/answers.json --no-dual-agent --weather
-```
-
-To view evaluation results in a dashboard:
-
-```bash
-# Launch the UI with the evaluation dashboard
-./solar_sage.sh ui start 8502 main
-
-# Then access the evaluation dashboard at:
-http://localhost:8502/?mode=evaluation
-```
-
-You can also switch between the main UI and evaluation dashboard using the links in the header.
-
-#### AI Testing with Giskard
-
-We have a [planned integration with Giskard](docs/giskard_testing_plan.md), an open-source testing framework specifically designed for AI/ML models. This will help detect issues like bias, performance problems, and security vulnerabilities in our RAG system and LLM integration.
+For detailed instructions on running tests and evaluations, see the [Testing Guide](docs/testing_guide.md).
 
 ## 📄 License
 

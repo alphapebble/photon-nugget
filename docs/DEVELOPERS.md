@@ -131,10 +131,20 @@ flake8
 
 ## 🧪 Testing
 
+For comprehensive testing instructions, see the [Testing Guide](testing_guide.md).
+
 ### Running Tests
 
 ```bash
-pytest
+# Run all unit tests
+python -m unittest discover tests/unit
+
+# Run specific test category
+python -m unittest discover tests/unit/agents
+python -m unittest discover tests/unit/rag
+
+# Run specific test file
+python -m unittest tests/unit/agents/test_tool_registry.py
 ```
 
 ### Adding Tests
@@ -144,6 +154,7 @@ Add new tests in the `tests/` directory, following the existing structure:
 - `tests/unit/` for unit tests
 - `tests/integration/` for integration tests
 - `tests/e2e/` for end-to-end tests
+- `tests/evaluation/` for RAG evaluation tests
 
 ## 🔄 API Reference
 
