@@ -6,20 +6,39 @@ This document provides technical details for developers who want to understand, 
 
 ```
 solar-sage/
-├── ingestion/                # Fetch, parse, and clean solar documents (raw → chunks → vector store)
-│   ├── fetcher.py            # Download PDFs, HTML pages from various sources
-│   ├── parser.py             # Extract readable text from documents
-│   ├── cleaner.py            # Clean, split, and preprocess text into knowledge units
-│   └── ingestion_runner.py   # Orchestrates the full ingestion pipeline
-├── retriever/                # Vector search layer (e.g., using LanceDB, FAISS)
-│   └── retriever_lancedb.py  # Store and retrieve documents from LanceDB
-├── llm/                      # LLM backends (Ollama, Transformers, etc.)
-│   └── llm_factory.py        # Unified interface to load and run local models like Mistral/LLaMA
-├── rag/                      # RAG pipeline components
-│   └── rag_engine.py         # Combines retrieval and generation
-├── app/                      # FastAPI server and request/response models
-│   ├── server.py             # API routes and logic using Pydantic
-│   └── prompt.py             # Prompt templates and formatting
+├── src/                      # Source code
+│   ├── agents/               # Agent components
+│   │   ├── types/            # Agent type implementations
+│   │   │   ├── retriever.py  # Retrieval agent
+│   │   │   └── response_generator.py # Response generation agent
+│   │   ├── integrations/     # External integrations
+│   │   │   └── weather.py    # Weather integration
+│   │   └── tools/            # Agent tools
+│   ├── app/                  # Application server
+│   │   ├── endpoints/        # API endpoints
+│   │   ├── middleware/       # API middleware
+│   │   ├── models/           # API models
+│   │   └── server.py         # FastAPI server
+│   ├── core/                 # Core functionality
+│   │   ├── config/           # Configuration management
+│   │   └── utils/            # Utility functions
+│   ├── ingestion/            # Document ingestion
+│   │   ├── processors/       # Document processors
+│   │   │   ├── cleaner.py    # Text cleaning
+│   │   │   └── parser.py     # Document parsing
+│   │   └── strategies/       # Chunking strategies
+│   ├── llm/                  # LLM backends
+│   │   ├── base.py           # Base LLM interface
+│   │   └── llm_factory.py    # LLM factory
+│   ├── rag/                  # RAG pipeline components
+│   │   ├── engines/          # RAG engine implementations
+│   │   │   ├── base.py       # Base RAG engine
+│   │   │   └── weather_enhanced.py # Weather-enhanced RAG
+│   │   └── prompts/          # Prompt templates
+│   └── retrieval/            # Document retrieval
+│       ├── base.py           # Base retriever interface
+│       └── providers/        # Retriever implementations
+│           └── lancedb.py    # LanceDB retriever
 ├── ui/                       # Frontend interface
 │   ├── app.py                # Main UI entry point
 │   ├── config.py             # UI configuration settings

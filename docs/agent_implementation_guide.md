@@ -9,21 +9,21 @@ Add the following directories and files to the existing project structure:
 ```
 solar-sage/
 ├── agents/                   # Existing agents directory
-│   ├── weather_agent.py      # Existing weather agent
-│   ├── weather_integration.py # Existing weather integration
+│   ├── types/weather.py      # Existing weather agent
+│   ├── integrations/weather.py # Existing weather integration
 │   ├── agent_engine.py       # New: Core agent logic
 │   ├── tool_registry.py      # New: Tool management
 │   └── memory_system.py      # New: Conversation memory
-├── tools/                    # New: Tool implementations
+├── agents/tools/             # New: Tool implementations
 │   ├── weather_tools.py      # Weather-related tools
 │   ├── system_tools.py       # System configuration tools
 │   ├── performance_tools.py  # Performance analysis tools
 │   ├── notification_tools.py # Alert and notification tools
 │   └── integration_tools.py  # External system integration
 ├── rag/                      # Existing RAG components
-│   ├── rag_engine.py         # Existing RAG engine
-│   ├── weather_enhanced_rag.py # Existing weather RAG
-│   └── agent_enhanced_rag.py # New: Agent-enhanced RAG
+│   ├── engines/base.py       # Existing RAG engine
+│   ├── engines/weather_enhanced.py # Existing weather RAG
+│   └── engines/agent_enhanced.py # New: Agent-enhanced RAG
 ```
 
 ## Step 1: Implement Tool Registry
@@ -40,15 +40,15 @@ from typing import Dict, Any, Callable, List, Optional
 
 class ToolRegistry:
     """Registry for agent tools."""
-    
+
     def __init__(self):
         """Initialize an empty tool registry."""
         self.tools: Dict[str, Dict[str, Any]] = {}
-    
+
     def register_tool(
-        self, 
-        tool_name: str, 
-        tool_function: Callable, 
+        self,
+        tool_name: str,
+        tool_function: Callable,
         tool_description: str,
         required_params: List[str],
         optional_params: Optional[List[str]] = None,
@@ -56,7 +56,7 @@ class ToolRegistry:
     ) -> None:
         """
         Register a new tool in the registry.
-        
+
         Args:
             tool_name: Unique identifier for the tool
             tool_function: Function to execute when tool is called
@@ -72,23 +72,23 @@ class ToolRegistry:
             "optional_params": optional_params or [],
             "authorization_required": authorization_required
         }
-    
+
     def get_tool(self, tool_name: str) -> Optional[Dict[str, Any]]:
         """
         Get a tool by name.
-        
+
         Args:
             tool_name: Name of the tool to retrieve
-            
+
         Returns:
             Tool configuration or None if not found
         """
         return self.tools.get(tool_name)
-    
+
     def list_tools(self) -> List[Dict[str, Any]]:
         """
         List all available tools.
-        
+
         Returns:
             List of tool configurations
         """
@@ -102,24 +102,24 @@ class ToolRegistry:
             }
             for name, tool in self.tools.items()
         ]
-    
+
     def execute_tool(
-        self, 
-        tool_name: str, 
+        self,
+        tool_name: str,
         params: Dict[str, Any],
         user_authorized: bool = False
     ) -> Dict[str, Any]:
         """
         Execute a tool with the given parameters.
-        
+
         Args:
             tool_name: Name of the tool to execute
             params: Parameters to pass to the tool
             user_authorized: Whether the user has authorized this action
-            
+
         Returns:
             Tool execution results
-            
+
         Raises:
             ValueError: If tool not found or missing required parameters
             PermissionError: If authorization required but not provided
@@ -127,23 +127,23 @@ class ToolRegistry:
         tool = self.get_tool(tool_name)
         if not tool:
             raise ValueError(f"Tool '{tool_name}' not found")
-        
+
         # Check required parameters
         missing_params = [
-            param for param in tool["required_params"] 
+            param for param in tool["required_params"]
             if param not in params
         ]
         if missing_params:
             raise ValueError(
                 f"Missing required parameters for tool '{tool_name}': {missing_params}"
             )
-        
+
         # Check authorization
         if tool["authorization_required"] and not user_authorized:
             raise PermissionError(
                 f"Tool '{tool_name}' requires user authorization"
             )
-        
+
         # Execute tool function with parameters
         try:
             result = tool["function"](**params)
@@ -175,32 +175,32 @@ from datetime import datetime
 
 class MemorySystem:
     """Memory system for agent conversations and user preferences."""
-    
+
     def __init__(self, storage_dir: str = "./data/memory"):
         """
         Initialize the memory system.
-        
+
         Args:
             storage_dir: Directory to store memory files
         """
         self.storage_dir = storage_dir
         os.makedirs(storage_dir, exist_ok=True)
-    
+
     def _get_user_file(self, user_id: str, file_type: str) -> str:
         """Get the path to a user's file."""
         return os.path.join(self.storage_dir, f"{user_id}_{file_type}.json")
-    
+
     def add_interaction(
-        self, 
-        user_id: str, 
-        query: str, 
-        response: str, 
+        self,
+        user_id: str,
+        query: str,
+        response: str,
         tools_used: Optional[List[str]] = None,
         context_used: Optional[str] = None
     ) -> None:
         """
         Add a new interaction to the user's history.
-        
+
         Args:
             user_id: User identifier
             query: User's query
@@ -209,14 +209,14 @@ class MemorySystem:
             context_used: Context information used for the response
         """
         history_file = self._get_user_file(user_id, "history")
-        
+
         # Load existing history or create new
         if os.path.exists(history_file):
             with open(history_file, "r") as f:
                 history = json.load(f)
         else:
             history = []
-        
+
         # Add new interaction
         history.append({
             "timestamp": datetime.now().isoformat(),
@@ -225,91 +225,91 @@ class MemorySystem:
             "tools_used": tools_used or [],
             "context_used": context_used
         })
-        
+
         # Save updated history
         with open(history_file, "w") as f:
             json.dump(history, f, indent=2)
-    
+
     def get_recent_interactions(
-        self, 
-        user_id: str, 
+        self,
+        user_id: str,
         limit: int = 5
     ) -> List[Dict[str, Any]]:
         """
         Get recent interactions for a user.
-        
+
         Args:
             user_id: User identifier
             limit: Maximum number of interactions to return
-            
+
         Returns:
             List of recent interactions
         """
         history_file = self._get_user_file(user_id, "history")
-        
+
         if not os.path.exists(history_file):
             return []
-        
+
         with open(history_file, "r") as f:
             history = json.load(f)
-        
+
         return history[-limit:]
-    
+
     def store_user_preference(
-        self, 
-        user_id: str, 
-        preference_key: str, 
+        self,
+        user_id: str,
+        preference_key: str,
         preference_value: Any
     ) -> None:
         """
         Store a user preference.
-        
+
         Args:
             user_id: User identifier
             preference_key: Preference name
             preference_value: Preference value
         """
         prefs_file = self._get_user_file(user_id, "preferences")
-        
+
         # Load existing preferences or create new
         if os.path.exists(prefs_file):
             with open(prefs_file, "r") as f:
                 preferences = json.load(f)
         else:
             preferences = {}
-        
+
         # Update preference
         preferences[preference_key] = preference_value
-        
+
         # Save updated preferences
         with open(prefs_file, "w") as f:
             json.dump(preferences, f, indent=2)
-    
+
     def get_user_preference(
-        self, 
-        user_id: str, 
-        preference_key: str, 
+        self,
+        user_id: str,
+        preference_key: str,
         default_value: Any = None
     ) -> Any:
         """
         Get a user preference.
-        
+
         Args:
             user_id: User identifier
             preference_key: Preference name
             default_value: Default value if preference not found
-            
+
         Returns:
             Preference value or default
         """
         prefs_file = self._get_user_file(user_id, "preferences")
-        
+
         if not os.path.exists(prefs_file):
             return default_value
-        
+
         with open(prefs_file, "r") as f:
             preferences = json.load(f)
-        
+
         return preferences.get(preference_key, default_value)
 ```
 
@@ -338,9 +338,9 @@ PARAM_PATTERN = r"(\w+)=(.*?)(?:,\s*\w+=|$)"
 
 class AgentEngine:
     """Core agent logic for Solar Sage."""
-    
+
     def __init__(
-        self, 
+        self,
         llm: LLMInterface,
         tool_registry: ToolRegistry,
         memory_system: MemorySystem,
@@ -348,7 +348,7 @@ class AgentEngine:
     ):
         """
         Initialize the agent engine.
-        
+
         Args:
             llm: Language model interface
             tool_registry: Tool registry
@@ -359,29 +359,29 @@ class AgentEngine:
         self.tool_registry = tool_registry
         self.memory_system = memory_system
         self.require_authorization = require_authorization
-    
+
     def _extract_tool_calls(self, text: str) -> List[Dict[str, Any]]:
         """
         Extract tool calls from text.
-        
+
         Args:
             text: Text to extract tool calls from
-            
+
         Returns:
             List of tool calls with name and parameters
         """
         tool_calls = []
-        
+
         for match in re.finditer(TOOL_PATTERN, text):
             tool_name = match.group(1)
             params_text = match.group(2)
-            
+
             # Extract parameters
             params = {}
             for param_match in re.finditer(PARAM_PATTERN, params_text):
                 param_name = param_match.group(1)
                 param_value = param_match.group(2).strip()
-                
+
                 # Convert parameter values to appropriate types
                 if param_value.lower() == "true":
                     params[param_name] = True
@@ -393,26 +393,26 @@ class AgentEngine:
                     params[param_name] = float(param_value)
                 else:
                     params[param_name] = param_value
-            
+
             tool_calls.append({
                 "tool_name": tool_name,
                 "params": params
             })
-        
+
         return tool_calls
-    
+
     def _generate_tool_decision(
-        self, 
-        query: str, 
+        self,
+        query: str,
         user_context: Dict[str, Any]
     ) -> str:
         """
         Generate a decision about whether to use tools.
-        
+
         Args:
             query: User query
             user_context: User context information
-            
+
         Returns:
             Decision text with tool calls if needed
         """
@@ -421,7 +421,7 @@ class AgentEngine:
             f"- {tool['name']}: {tool['description']} (Params: {', '.join(tool['required_params'])})"
             for tool in self.tool_registry.list_tools()
         ])
-        
+
         # Create prompt for tool decision
         prompt = f"""
 You are an intelligent solar energy assistant that can use tools to help users.
@@ -445,55 +445,55 @@ NO_TOOL_NEEDED
 
 Your decision:
 """
-        
+
         # Generate decision
         return self.llm.generate(prompt)
-    
+
     def process_query(
-        self, 
-        query: str, 
+        self,
+        query: str,
         user_id: str,
         user_context: Dict[str, Any],
         user_authorized: bool = False
     ) -> Dict[str, Any]:
         """
         Process a user query.
-        
+
         Args:
             query: User query
             user_id: User identifier
             user_context: User context information
             user_authorized: Whether the user has authorized tool usage
-            
+
         Returns:
             Response with text and metadata
         """
         # Get recent interactions for context
         recent_interactions = self.memory_system.get_recent_interactions(user_id)
-        
+
         # Decide whether to use tools
         tool_decision = self._generate_tool_decision(query, user_context)
-        
+
         # Extract tool calls
         tool_calls = self._extract_tool_calls(tool_decision)
-        
+
         # If tools are needed, execute them
         tools_used = []
         tool_results = []
-        
+
         if tool_calls:
             for tool_call in tool_calls:
                 tool_name = tool_call["tool_name"]
                 params = tool_call["params"]
-                
+
                 try:
                     # Execute tool
                     result = self.tool_registry.execute_tool(
-                        tool_name, 
+                        tool_name,
                         params,
                         user_authorized=user_authorized
                     )
-                    
+
                     tools_used.append(tool_name)
                     tool_results.append({
                         "tool": tool_name,
@@ -506,7 +506,7 @@ Your decision:
                         "params": params,
                         "error": str(e)
                     })
-        
+
         # Generate response based on tool results or RAG
         if tool_results:
             # Format tool results for prompt
@@ -516,7 +516,7 @@ Your decision:
                 f"RESULT: {result.get('result', {}).get('result', 'Error: ' + result.get('error', 'Unknown error'))}\n"
                 for result in tool_results
             ])
-            
+
             # Create prompt with tool results
             response_prompt = f"""
 You are an intelligent solar energy assistant that helps users with solar energy questions.
@@ -529,7 +529,7 @@ TOOL RESULTS:
 Based on the tool results above, provide a helpful and informative response to the user's query.
 Your response should be conversational and easy to understand.
 """
-            
+
             response_text = self.llm.generate(response_prompt)
         else:
             # Use RAG for information queries
@@ -547,7 +547,7 @@ Your response should be conversational and easy to understand.
                 # Use standard RAG
                 response_text = rag_answer(query)
                 context_used = "Standard RAG"
-        
+
         # Store interaction in memory
         self.memory_system.add_interaction(
             user_id=user_id,
@@ -556,7 +556,7 @@ Your response should be conversational and easy to understand.
             tools_used=tools_used,
             context_used=context_used if not tool_results else "Tool-based"
         )
-        
+
         # Return response with metadata
         return {
             "response": response_text,
@@ -587,33 +587,33 @@ from agents.weather_integration import (
 )
 
 def get_production_forecast(
-    lat: float, 
-    lon: float, 
+    lat: float,
+    lon: float,
     system_capacity_kw: float = 5.0
 ) -> Dict[str, Any]:
     """
     Get solar production forecast based on weather.
-    
+
     Args:
         lat: Latitude
         lon: Longitude
         system_capacity_kw: System capacity in kW
-        
+
     Returns:
         Production forecast data
     """
     # Get weather data
     weather_data = get_weather_for_location(lat, lon)
-    
+
     # Estimate production impact
     impact = estimate_production_impact(
-        weather_data, 
+        weather_data,
         system_capacity_kw=system_capacity_kw
     )
-    
+
     # Generate insights
     insights = generate_weather_insights(impact)
-    
+
     # Format response
     daily_forecast = []
     for day in impact["daily_forecast"]:
@@ -623,7 +623,7 @@ def get_production_forecast(
             "production_factor": round(day["production_factor"] * 100, 1),
             "weather": day["weather"]
         })
-    
+
     return {
         "current": {
             "expected_kwh": round(impact["current"]["expected_kwh"], 1),
@@ -654,10 +654,10 @@ from tools.weather_tools import get_production_forecast
 def initialize_agent(require_authorization: bool = True) -> AgentEngine:
     """
     Initialize the agent with tools and configuration.
-    
+
     Args:
         require_authorization: Whether to require user authorization for tools
-        
+
     Returns:
         Configured agent engine
     """
@@ -665,7 +665,7 @@ def initialize_agent(require_authorization: bool = True) -> AgentEngine:
     llm = get_llm()
     tool_registry = ToolRegistry()
     memory_system = MemorySystem()
-    
+
     # Register tools
     tool_registry.register_tool(
         tool_name="get_production_forecast",
@@ -675,7 +675,7 @@ def initialize_agent(require_authorization: bool = True) -> AgentEngine:
         optional_params=["system_capacity_kw"],
         authorization_required=False
     )
-    
+
     # Initialize agent engine
     agent = AgentEngine(
         llm=llm,
@@ -683,7 +683,7 @@ def initialize_agent(require_authorization: bool = True) -> AgentEngine:
         memory_system=memory_system,
         require_authorization=require_authorization
     )
-    
+
     return agent
 ```
 
@@ -715,7 +715,7 @@ async def agent_chat(request: AgentChatRequest):
         },
         user_authorized=request.authorized if hasattr(request, 'authorized') else False
     )
-    
+
     return AgentChatResponse(
         response=result["response"],
         tools_used=result["tools_used"],

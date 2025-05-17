@@ -76,7 +76,7 @@ The system includes several chunking strategies:
 
 The Strategy Pattern allows selecting the optimal chunking approach based on document type or specific requirements, improving the quality and relevance of retrieved context.
 
-For implementation details, see the Chunking Strategy Implementation in `src/ingestion/chunking_strategy.py` and Enhanced Pipeline in `src/ingestion/enhanced_pipeline.py`.
+For implementation details, see the Chunking Strategy Implementation in `src/ingestion/strategies/base.py` and Enhanced Pipeline in `src/ingestion/enhanced_pipeline.py`.
 
 ### 2. Dual-Agent Architecture
 
@@ -385,10 +385,10 @@ docker run -p 8000:8000 -p 8502:8502 \
 The dual-agent architecture is implemented in the following files:
 
 - `agents/base_agent.py`: Base class for all agents
-- `agents/retriever_agent.py`: Implementation of the Retriever Agent
-- `agents/response_generator_agent.py`: Implementation of the Response Generator Agent
+- `agents/types/retriever.py`: Implementation of the Retriever Agent
+- `agents/types/response_generator.py`: Implementation of the Response Generator Agent
 - `agents/orchestrator.py`: Coordination of the dual-agent workflow
-- `rag/rag_engine.py`: Updated RAG engine using the dual-agent architecture
+- `rag/engines/base.py`: Updated RAG engine using the dual-agent architecture
 - `rag/prompts/dual_agent_rag.prompt`: Specialized prompt template for the dual-agent system
 
 ## Configuration

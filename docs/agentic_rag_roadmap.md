@@ -9,19 +9,22 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ### Completed Components
 
 1. **Weather Data Integration**
-   - ✅ Weather data fetching from OpenWeather API (`agents/weather_agent.py`)
-   - ✅ Solar-specific weather data processing (`agents/weather_integration.py`)
-   - ✅ Weather-enhanced RAG system (`rag/weather_enhanced_rag.py`)
+
+   - ✅ Weather data fetching from OpenWeather API (`agents/types/weather.py`)
+   - ✅ Solar-specific weather data processing (`agents/integrations/weather.py`)
+   - ✅ Weather-enhanced RAG system (`rag/engines/weather_enhanced.py`)
 
 2. **RAG System**
-   - ✅ Vector database integration with LanceDB (`retriever/retriever_lancedb.py`)
+
+   - ✅ Vector database integration with LanceDB (`retrieval/providers/lancedb.py`)
    - ✅ Document ingestion pipeline (`ingestion/pipeline.py`)
-   - ✅ Basic RAG query processing (`rag/rag_engine.py`)
+   - ✅ Basic RAG query processing (`rag/engines/base.py`)
 
 3. **UI Components**
-   - ✅ Chat interface with Gradio (`ui/simple_ui.py`)
-   - ✅ Weather dashboard (`ui/weather_dashboard.py`)
-   - ✅ SCADA data visualization (`ui/scada.py`)
+
+   - ✅ Chat interface with Gradio (`ui/components/simple_ui.py`)
+   - ✅ Weather dashboard (`ui/components/weather_dashboard.py`)
+   - ✅ SCADA data visualization (`ui/components/scada.py`)
 
 4. **Backend API**
    - ✅ FastAPI server setup (`app/server.py`)
@@ -32,13 +35,14 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 1. **Agent Framework**
    - ✅ Architecture design (`docs/agentic_rag_chatbot.md`)
    - ✅ Implementation guide (`docs/agent_implementation_guide.md`)
-   - ✅ Sample weather tools design (`tools/weather_tools.py`)
+   - ✅ Sample weather tools design (`agents/tools/weather_tools.py`)
 
 ## Implementation Roadmap
 
 ### Phase 1: Core Agent Framework (Weeks 1-2)
 
 #### 1.1 Tool Registry Implementation
+
 - [ ] Create `agents/tool_registry.py` based on implementation guide
 - [ ] Implement tool registration mechanism
 - [ ] Implement tool execution with parameter validation
@@ -46,6 +50,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Write unit tests for Tool Registry
 
 #### 1.2 Memory System Implementation
+
 - [ ] Create `agents/memory_system.py` based on implementation guide
 - [ ] Implement conversation history storage
 - [ ] Implement user preferences storage
@@ -53,6 +58,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Write unit tests for Memory System
 
 #### 1.3 Agent Engine Implementation
+
 - [ ] Create `agents/agent_engine.py` based on implementation guide
 - [ ] Implement tool decision logic
 - [ ] Implement tool call extraction and execution
@@ -60,6 +66,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Write unit tests for Agent Engine
 
 #### 1.4 RAG Chunking Strategy Pattern
+
 - [ ] Create abstract `ChunkingStrategy` class
 - [ ] Implement concrete strategy classes (WordCount, Semantic, SlidingWindow)
 - [ ] Create `DocumentChunker` context class
@@ -69,6 +76,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Write unit tests for chunking strategies
 
 #### 1.5 Agent Initialization
+
 - [ ] Create `agents/initialize.py` for agent setup
 - [ ] Implement configuration loading
 - [ ] Add environment variable support for agent options
@@ -76,7 +84,8 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ### Phase 2: Tool Implementation (Weeks 3-4)
 
 #### 2.1 Weather Tools
-- [ ] Implement `tools/weather_tools.py` based on sample implementation
+
+- [ ] Implement `agents/tools/weather_tools.py` based on sample implementation
 - [ ] Add production forecast tool
 - [ ] Add maintenance recommendation tool
 - [ ] Add optimal production times tool
@@ -84,28 +93,32 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Write unit tests for Weather Tools
 
 #### 2.2 System Configuration Tools
-- [ ] Create `tools/system_tools.py`
+
+- [ ] Create `agents/tools/system_tools.py`
 - [ ] Implement panel tilt optimization tool
 - [ ] Implement system sizing tool
 - [ ] Implement shading analysis tool
 - [ ] Write unit tests for System Tools
 
 #### 2.3 Performance Analysis Tools
-- [ ] Create `tools/performance_tools.py`
+
+- [ ] Create `agents/tools/performance_tools.py`
 - [ ] Implement SCADA data analysis tool
 - [ ] Implement performance comparison tool
 - [ ] Implement degradation estimation tool
 - [ ] Write unit tests for Performance Tools
 
 #### 2.4 Notification Tools
-- [ ] Create `tools/notification_tools.py`
+
+- [ ] Create `agents/tools/notification_tools.py`
 - [ ] Implement weather alert scheduling
 - [ ] Implement production monitoring alerts
 - [ ] Implement maintenance reminders
 - [ ] Write unit tests for Notification Tools
 
 #### 2.5 External Integration Tools
-- [ ] Create `tools/integration_tools.py`
+
+- [ ] Create `agents/tools/integration_tools.py`
 - [ ] Implement smart home system integration
 - [ ] Implement inverter monitoring API integration
 - [ ] Implement data export functionality
@@ -114,6 +127,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ### Phase 3: API and Backend Integration (Weeks 5-6)
 
 #### 3.1 API Endpoints
+
 - [ ] Update `app/server.py` to include agent endpoints
 - [ ] Implement agent chat endpoint
 - [ ] Implement tool authorization endpoint
@@ -121,12 +135,14 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - [ ] Add request/response models for new endpoints
 
 #### 3.2 Authentication and Authorization
+
 - [ ] Implement user authentication system
 - [ ] Add role-based access control for tools
 - [ ] Implement secure token handling
 - [ ] Add audit logging for tool usage
 
 #### 3.3 Error Handling and Monitoring
+
 - [ ] Implement comprehensive error handling
 - [ ] Add telemetry for agent actions
 - [ ] Implement rate limiting for tool usage
@@ -135,24 +151,28 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ### Phase 4: UI Enhancement (Weeks 7-8)
 
 #### 4.1 Agent Chat Interface
+
 - [ ] Update chat interface to support agent interactions
 - [ ] Add tool authorization UI components
 - [ ] Implement tool result visualization
 - [ ] Add typing indicators for agent actions
 
 #### 4.2 Tool Dashboard
+
 - [ ] Create tool dashboard UI
 - [ ] Implement tool history visualization
 - [ ] Add tool favorites functionality
 - [ ] Implement tool suggestion UI
 
 #### 4.3 User Preferences
+
 - [ ] Add user preferences UI
 - [ ] Implement location management
 - [ ] Add system configuration UI
 - [ ] Implement notification preferences
 
 #### 4.4 Mobile Responsiveness
+
 - [ ] Ensure all new UI components are mobile-friendly
 - [ ] Optimize tool visualizations for small screens
 - [ ] Implement progressive enhancement for complex features
@@ -160,24 +180,28 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ### Phase 5: Testing and Deployment (Weeks 9-10)
 
 #### 5.1 Integration Testing
+
 - [ ] Develop end-to-end test suite
 - [ ] Test all agent tools with real data
 - [ ] Perform load testing on agent endpoints
 - [ ] Conduct security testing
 
 #### 5.2 User Acceptance Testing
+
 - [ ] Conduct internal UAT with stakeholders
 - [ ] Fix issues identified during testing
 - [ ] Document known limitations
 - [ ] Create user documentation
 
 #### 5.3 Deployment Preparation
+
 - [ ] Update Docker configuration
 - [ ] Create deployment scripts
 - [ ] Prepare database migration scripts
 - [ ] Document deployment process
 
 #### 5.4 Production Deployment
+
 - [ ] Deploy to staging environment
 - [ ] Conduct final verification
 - [ ] Deploy to production
@@ -186,12 +210,14 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ## Resource Requirements
 
 ### Development Team
+
 - 1 Backend Developer (Python, FastAPI, LLM integration)
 - 1 Frontend Developer (Gradio, UI/UX)
 - 1 DevOps Engineer (part-time, for deployment and infrastructure)
 - 1 QA Engineer (part-time, for testing)
 
 ### Infrastructure
+
 - Vector Database (LanceDB)
 - LLM Hosting (Ollama or local deployment)
 - API Server (FastAPI)
@@ -199,6 +225,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 - Weather API subscription (OpenWeather)
 
 ### External Dependencies
+
 - OpenWeather API
 - LLM models (Mistral, Llama, etc.)
 - Embedding models for vector search
@@ -207,12 +234,14 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ## Success Metrics
 
 ### Technical Metrics
+
 - Agent decision accuracy (>90% correct tool selection)
 - Response time (<2s for information queries, <5s for tool execution)
 - Tool execution success rate (>95%)
 - System uptime (>99.9%)
 
 ### User Experience Metrics
+
 - User satisfaction score (>4.5/5)
 - Tool usage frequency (>30% of interactions)
 - Return user rate (>70%)
@@ -221,12 +250,14 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 ## Risk Assessment
 
 ### Technical Risks
+
 - LLM performance variability
 - Weather API reliability
 - Tool execution errors
 - Data privacy concerns
 
 ### Mitigation Strategies
+
 - Implement fallback mechanisms for LLM and API failures
 - Comprehensive error handling and user feedback
 - Secure data handling and privacy controls
