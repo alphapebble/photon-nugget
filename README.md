@@ -227,6 +227,7 @@ Solar Sage is being extended with agentic capabilities to provide not just infor
 - [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
 - [Implementation Status](docs/implementation_status.md) - Current status and next steps
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with implementation
+- [Agentic System Roadmap](docs/agentic_roadmap.md) - Future vision for true agentic capabilities
 
 ### Project Structure
 
@@ -294,7 +295,8 @@ solar-sage/
 │   ├── agentic_rag_roadmap.md # Project roadmap
 │   ├── implementation_status.md # Current status
 │   ├── agentic_quickstart.md # Quick start guide
-│   └── shell_commands.md     # Shell commands reference
+│   ├── shell_commands.md     # Shell commands reference
+│   └── agentic_roadmap.md    # Future agentic vision
 ├── evaluation/        # Evaluation scripts and data
 ├── scripts/           # Utility scripts
 │   ├── api_server.sh         # API server management
