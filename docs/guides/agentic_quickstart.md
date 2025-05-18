@@ -19,7 +19,7 @@ Before you begin, make sure you have:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/balijepalli/solar-sage.git
+   git clone https://github.com/alphapebble/solar-sage.git
    cd solar-sage
    ```
 

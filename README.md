@@ -51,7 +51,7 @@ Before you begin, make sure you have:
 Open your terminal (Command Prompt on Windows) and run:
 
 ```bash
-git clone https://github.com/balijepalli/solar-sage.git
+git clone https://github.com/alphapebble/solar-sage.git
 cd solar-sage
 ```
 
@@ -230,7 +230,7 @@ The Chat page allows you to interact with the AI assistant:
 
 If you encounter problems not covered here:
 
-1. Check the [GitHub Issues](https://github.com/balijepalli/solar-sage/issues) page
+1. Check the [GitHub Issues](https://github.com/alphapebble/solar-sage/issues) page
 2. Create a new issue with details about your problem
 
 ## 📚 For Developers
