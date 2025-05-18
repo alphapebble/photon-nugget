@@ -17,7 +17,7 @@ logger = logging.getLogger("api_client")
 
 # API configuration
 DEFAULT_API_URL = os.environ.get("BACKEND_URL", "http://localhost:8000")
-CHAT_ENDPOINT = "/chat"
+CHAT_ENDPOINT = "/sage"
 
 # Retry configuration
 MAX_RETRIES = 3
