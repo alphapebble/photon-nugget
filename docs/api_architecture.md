@@ -44,7 +44,8 @@ The conversational API provides a chat interface with RAG (Retrieval-Augmented G
 #### Endpoints:
 
 - `GET /`: Root endpoint that confirms the API is running
-- `POST /chat`: Chat endpoint that processes natural language queries
+- `POST /sage`: Main endpoint that processes natural language queries
+- `POST /chat`: Legacy endpoint that redirects to /sage (for backward compatibility)
 
 ## RAG Engines
 
@@ -75,14 +76,14 @@ The semantic metric layer (`src/core/semantic_metric_layer.py`) provides a centr
 
 ## Usage Examples
 
-### Using the Chat Endpoint
+### Using the Sage Endpoint
 
-The chat endpoint is the primary way to interact with the Solar Sage system. It accepts natural language queries and returns contextually relevant responses.
+The sage endpoint is the primary way to interact with the Solar Sage system. It accepts natural language queries and returns contextually relevant responses.
 
 #### Basic Query
 
 ```bash
-curl -X POST "http://localhost:8000/chat" \
+curl -X POST "http://localhost:8000/sage" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "What factors affect solar panel efficiency?"
@@ -92,7 +93,7 @@ curl -X POST "http://localhost:8000/chat" \
 #### Weather-Enhanced Query
 
 ```bash
-curl -X POST "http://localhost:8000/chat" \
+curl -X POST "http://localhost:8000/sage" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "How will the weather affect my solar production today?",
@@ -105,7 +106,7 @@ curl -X POST "http://localhost:8000/chat" \
 #### Solar Forecast Query
 
 ```bash
-curl -X POST "http://localhost:8000/chat" \
+curl -X POST "http://localhost:8000/sage" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "How much solar energy can I expect to produce tomorrow?",
@@ -118,6 +119,8 @@ curl -X POST "http://localhost:8000/chat" \
     "include_solar_forecast": true
   }'
 ```
+
+> Note: The legacy `/chat` endpoint is still available for backward compatibility and redirects to the `/sage` endpoint.
 
 ### Using the Solar Forecast Endpoint
 

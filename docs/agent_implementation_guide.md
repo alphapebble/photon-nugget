@@ -139,7 +139,8 @@ User Query
 
 The Agent Engine is integrated with the API server through the following endpoints:
 
-- `/chat` - Processes user queries and returns responses
+- `/sage` - Processes user queries and returns responses (primary endpoint)
+- `/chat` - Legacy endpoint that redirects to `/sage` (for backward compatibility)
 - `/tools` - Lists available tools and their descriptions
 - `/tools/{tool_name}` - Executes a specific tool with parameters
 

@@ -139,10 +139,10 @@ The API server exposes endpoints for interacting with the agent.
    curl -X GET http://localhost:8000/
    ```
 
-4. Test the chat endpoint:
+4. Test the sage endpoint:
 
    ```bash
-   curl -X POST http://localhost:8000/chat \
+   curl -X POST http://localhost:8000/sage \
      -H "Content-Type: application/json" \
      -d '{
        "query": "What will my solar production be like tomorrow?",

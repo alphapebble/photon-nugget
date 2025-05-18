@@ -28,9 +28,9 @@ usage() {
     echo ""
     echo "Test Names:"
     echo "  health                   Test the health endpoint"
-    echo "  chat                     Test the basic chat endpoint"
-    echo "  weather-chat             Test the weather-enhanced chat endpoint"
-    echo "  solar-chat               Test the solar-enhanced chat endpoint"
+    echo "  chat                     Test the basic sage endpoint"
+    echo "  weather-chat             Test the weather-enhanced sage endpoint"
+    echo "  solar-chat               Test the solar-enhanced sage endpoint"
     echo "  solar-forecast           Test the solar forecast endpoint"
     echo "  all                      Run all tests"
     echo ""
@@ -98,10 +98,10 @@ test_health() {
     echo ""
 }
 
-# Function to test the basic chat endpoint
+# Function to test the basic sage endpoint
 test_chat() {
-    echo "Testing basic chat endpoint..."
-    curl -X POST "$BASE_URL/chat" \
+    echo "Testing basic sage endpoint..."
+    curl -X POST "$BASE_URL/sage" \
         -H "Content-Type: application/json" \
         -d "{
             \"query\": \"What factors affect solar panel efficiency?\"
@@ -109,10 +109,10 @@ test_chat() {
     echo ""
 }
 
-# Function to test the weather-enhanced chat endpoint
+# Function to test the weather-enhanced sage endpoint
 test_weather_chat() {
-    echo "Testing weather-enhanced chat endpoint..."
-    curl -X POST "$BASE_URL/chat" \
+    echo "Testing weather-enhanced sage endpoint..."
+    curl -X POST "$BASE_URL/sage" \
         -H "Content-Type: application/json" \
         -d "{
             \"query\": \"How will the weather affect my solar production today?\",
@@ -123,10 +123,10 @@ test_weather_chat() {
     echo ""
 }
 
-# Function to test the solar-enhanced chat endpoint
+# Function to test the solar-enhanced sage endpoint
 test_solar_chat() {
-    echo "Testing solar-enhanced chat endpoint..."
-    curl -X POST "$BASE_URL/chat" \
+    echo "Testing solar-enhanced sage endpoint..."
+    curl -X POST "$BASE_URL/sage" \
         -H "Content-Type: application/json" \
         -d "{
             \"query\": \"How much solar energy can I expect to produce tomorrow?\",

@@ -166,9 +166,10 @@ The backend API is built with FastAPI and provides the following endpoints:
 
 #### Conversational API (`src/app/`)
 
-- `POST /chat` - Send a message to the chatbot
+- `POST /sage` - Send a message to the chatbot (primary endpoint)
   - Request body: `{"query": "your question here"}`
   - Response: `{"response": "AI response here"}`
+- `POST /chat` - Legacy endpoint that redirects to `/sage` (for backward compatibility)
 
 #### Traditional REST API (`src/api/`)
 
