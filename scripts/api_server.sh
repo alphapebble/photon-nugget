@@ -21,52 +21,17 @@ start_api() {
         # Make sure Python path is set correctly
         set_python_path
 
-        # Use the src directory structure
-        if [ -f "src/app/server.py" ]; then
-            # Structure with app in src
-            print_info "Using app module path from src directory"
+        # Use the new run_api.py script
+        if [ -f "scripts/run_api.py" ]; then
+            print_info "Using run_api.py script"
 
-            # Create a temporary Python script to run the API server
-            TMP_SCRIPT=$(mktemp)
-            cat > $TMP_SCRIPT << 'EOF'
-import sys
-import os
-
-# Get the current directory
-current_dir = os.getcwd()
-
-# Add the src directory to the Python path
-src_dir = os.path.join(current_dir, "src")
-sys.path.insert(0, src_dir)
-
-# Try to import the server module from src
-try:
-    from app.server import run_server
-    print("Successfully imported app.server module from src")
-    import sys
-    run_server(port=int(sys.argv[1]) if len(sys.argv) > 1 else 8000)
-except ImportError as e:
-    print(f"Error importing app.server from src: {e}")
-    print("Python path:", sys.path)
-    print("Current directory:", os.getcwd())
-    print("Available modules in src/app:", os.listdir(os.path.join(src_dir, "app")) if os.path.exists(os.path.join(src_dir, "app")) else "src/app directory not found")
-    sys.exit(1)
-EOF
-
-            # Run the temporary script
-            print_info "Running API server with custom script (src directory)"
-            python $TMP_SCRIPT $api_port &
+            # Run the API server
+            python scripts/run_api.py &
 
             # Store the PID
             API_PID=$!
-
-            # Wait a moment before cleaning up
-            sleep 2
-
-            # Clean up the temporary script
-            rm $TMP_SCRIPT
         else
-            print_error "Could not find server.py in src/app directory. Please check your project structure."
+            print_error "Could not find scripts/run_api.py. Please check your project structure."
             return 1
         fi
 

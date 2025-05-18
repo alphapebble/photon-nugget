@@ -289,6 +289,62 @@ We're implementing advanced RAG techniques based on the [langchain-ai/rag-from-s
 
 See the [RAG Improvements Plan](docs/rag_improvements_plan.md) for a detailed roadmap and energy sector applications.
 
+### Solar Energy Forecasting
+
+Solar Sage includes a comprehensive solar energy forecasting system that provides:
+
+1. **Solar Production Forecasts**: Predict energy production based on weather and system specifications
+2. **Energy Demand Forecasts**: Analyze historical usage patterns to predict future demand
+3. **Cost Savings Analysis**: Calculate financial benefits based on electricity rates and feed-in tariffs
+
+The forecasting system integrates:
+
+- **Weather Data**: Cloud cover, temperature, and precipitation forecasts
+- **Solar Irradiance Models**: Calculate expected solar radiation based on location and time
+- **Historical Usage Patterns**: Analyze past energy consumption to predict future needs
+- **Financial Analysis**: Calculate ROI and payback periods for solar installations
+
+#### Using the Solar Forecasting API
+
+```bash
+# Get a solar energy forecast
+curl -X POST "http://localhost:8000/solar/forecast" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "location_id": "home",
+    "system_capacity_kw": 5.0
+  }'
+
+# Get a cost savings analysis
+curl -X POST "http://localhost:8000/solar/cost-savings" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "location_id": "home",
+    "system_capacity_kw": 5.0,
+    "electricity_rate": 0.15,
+    "feed_in_tariff": 0.08
+  }'
+
+# Get a solar-enhanced RAG response
+curl -X POST "http://localhost:8000/solar/rag" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "How much money will I save with a 5kW solar system?",
+    "latitude": 37.7749,
+    "longitude": -122.4194,
+    "location_id": "home",
+    "system_capacity_kw": 5.0,
+    "electricity_rate": 0.15,
+    "feed_in_tariff": 0.08
+  }'
+```
+
+The Solar Forecasting UI provides an interactive interface for exploring forecasts and cost savings.
+
 ### Command-Line Interface
 
 Solar Sage provides a command-line interface (CLI) for common tasks:

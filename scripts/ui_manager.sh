@@ -23,18 +23,12 @@ start_ui() {
         # Make sure Python path is set correctly
         set_python_path
 
-        # Start the UI
-        if [ -f "ui/app.py" ]; then
-            # UI in root directory
-            print_info "Using UI module path (ui.app)"
-            python -m ui.app --mode $ui_mode --port $ui_port &
-        elif [ -f "src/ui/app.py" ]; then
-            # UI in src directory
-            print_info "Using UI module path from src (ui.app)"
-            # Set current directory to src and run from there
-            (cd src && PYTHONPATH="${PYTHONPATH}" python -m ui.app --mode $ui_mode --port $ui_port) &
+        # Start the UI using the run_ui.py script
+        if [ -f "scripts/run_ui.py" ]; then
+            print_info "Using run_ui.py script"
+            python scripts/run_ui.py &
         else
-            print_error "Could not find UI module. Please check your project structure."
+            print_error "Could not find scripts/run_ui.py. Please check your project structure."
             return 1
         fi
         UI_PID=$!

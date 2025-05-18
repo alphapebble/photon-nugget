@@ -16,6 +16,7 @@ from agents.tools.weather_tools import (
     get_production_forecast,
     get_weather_alerts
 )
+from agents.tools.solar_forecasting_tool import SolarForecastingTool
 
 
 def initialize_tools(registry: ToolRegistry) -> None:
@@ -65,6 +66,19 @@ def initialize_tools(registry: ToolRegistry) -> None:
 
     # TODO: Register additional tools as they are implemented
     # System tools, notification tools, performance tools, etc.
+
+    # Solar forecasting tool
+    solar_forecasting_tool = SolarForecastingTool()
+    registry.register_tool(
+        tool_name=solar_forecasting_tool.name,
+        tool_function=solar_forecasting_tool.run,
+        tool_description=solar_forecasting_tool.description,
+        required_params=[field for field, info in solar_forecasting_tool.input_schema.__annotations__.items()
+                         if not hasattr(info, "default")],
+        optional_params=[field for field, info in solar_forecasting_tool.input_schema.__annotations__.items()
+                         if hasattr(info, "default")],
+        authorization_required=False
+    )
 
 
 def initialize_agent(
