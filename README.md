@@ -384,7 +384,7 @@ The forecasting system integrates:
 - **Solar Irradiance Models**: Calculate expected solar radiation based on location and time
 - **Historical Usage Patterns**: Analyze past energy consumption to predict future needs
 - **Financial Analysis**: Calculate ROI and payback periods for solar installations
-- **Semantic Metric Layer**: All calculations use a [semantic layer of metrics and formulas](docs/semantic_metric_layer.md) for transparency and consistency
+- **Semantic Metric Layer**: All calculations use a [semantic layer of metrics and formulas](docs/architecture/semantic_metric_layer.md) for transparency and consistency
 
 #### Using the Solar Forecasting API
 
@@ -492,7 +492,7 @@ To configure the application:
    api_port = get_config("api_port", 8000)
    ```
 
-For information about the semantic metric layer used for calculations, see the [Semantic Metric Layer Documentation](docs/semantic_metric_layer.md).
+For information about the semantic metric layer used for calculations, see the [Semantic Metric Layer Documentation](docs/architecture/semantic_metric_layer.md).
 
 ### Running with Different Models
 
