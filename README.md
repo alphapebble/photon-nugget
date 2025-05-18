@@ -542,7 +542,7 @@ Solar Sage includes a comprehensive test suite and evaluation system:
 - **RAG Evaluation**: Measure the quality of responses using multiple metrics
 - **AI Testing**: Planned integration with Giskard for specialized AI testing
 
-For detailed instructions on running tests and evaluations, see the [Testing Guide](docs/testing_guide.md).
+For detailed instructions on running tests and evaluations, see the [Testing Guide](docs/guides/testing_guide.md).
 
 ## 📄 License
 
