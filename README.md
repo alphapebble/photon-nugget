@@ -342,7 +342,7 @@ The codebase follows a modular structure with a clean separation of concerns. Th
   - **public/** - Static assets
   - **styles/** - CSS and styling
 
-For a detailed breakdown of the project structure, please see the [Developer Documentation](docs/DEVELOPERS.md).
+For a detailed breakdown of the project structure, please see the [Developer Documentation](docs/development/DEVELOPERS.md).
 
 ### RAG System
 
