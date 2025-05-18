@@ -135,15 +135,30 @@ cd frontend
 npm run dev
 ```
 
-### Step 5: Access the UI
+### Step 5: Access the UIs
 
-Once all components are running, you can access the UI in your web browser:
+Once all components are running, you can access the UIs in your web browser:
+
+#### Next.js Frontend (Primary UI)
 
 - **Main UI**: http://localhost:3000
+- **Chat Interface**: http://localhost:3000/chat
+- **Solar Forecast**: http://localhost:3000/solar-forecast
+- **Evaluation Dashboard**: http://localhost:3000/evaluation
+
+#### Gradio UI (Alternative)
+
+- **Main UI**: http://localhost:7860
+- **Evaluation Dashboard**: http://localhost:7860/?view=evaluation
+
+#### API Documentation
+
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
 
 ### Step 6: Use the Application
 
-#### Next.js UI
+#### Next.js UI (Primary)
 
 1. Open your web browser and go to http://localhost:3000
 2. Navigate to the Chat page to ask questions about solar energy
@@ -153,10 +168,10 @@ Once all components are running, you can access the UI in your web browser:
 
 #### Gradio UI (Alternative)
 
-1. Run the Gradio UI with `python ui_app.py`
-2. Open your web browser and go to http://localhost:7860
-3. Use the chat interface to ask questions about solar energy
-4. Adjust system settings in the sidebar
+1. Open your web browser and go to http://localhost:7860
+2. Use the chat interface to ask questions about solar energy
+3. Adjust system settings in the sidebar
+4. Access the evaluation dashboard by clicking the "Evaluation" link
 
 ## 🔍 Using Advanced Features
 
@@ -259,16 +274,36 @@ $env:PYTHONPATH += ";$(Get-Location)\src"
 
 ### Agentic RAG Chatbot
 
-Solar Sage has been extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. The core agent framework has been implemented, including the Tool Registry, Memory System, Agent Engine, and Weather Tools. Check out the following documentation:
+Solar Sage has been extended with agentic capabilities to provide not just information but also take actions, make decisions, and interact with external systems. The core agent framework has been implemented, including the Tool Registry, Memory System, Agent Engine, and Weather Tools.
 
-- [Agentic RAG Chatbot Architecture](docs/agentic_rag_chatbot.md) - Complete architecture documentation including dual-agent implementation
-- [Implementation Reference](docs/agent_implementation_guide.md) - Reference guide for the implemented components
-- [Project Roadmap](docs/agentic_rag_roadmap.md) - Implementation timeline and phases
-- [Implementation Status](docs/implementation_status.md) - Current status and next steps
-- [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with the agentic chatbot
-- [Agentic System Vision](docs/agentic_vision.md) - Future vision for true agentic capabilities
-- [Testing Guide](docs/testing_guide.md) - Instructions for running tests and evaluations
-- [RAG Improvements Plan](docs/rag_improvements_plan.md) - Advanced RAG techniques for energy sector applications
+#### Documentation
+
+Comprehensive documentation is available in the `docs/` directory, organized by category:
+
+##### Architecture Documentation
+
+- [Agentic RAG Chatbot Architecture](docs/architecture/agentic_rag_chatbot.md) - Complete architecture documentation including dual-agent implementation
+- [UI Architecture](docs/architecture/ui_architecture.md) - Overview of the dual UI architecture
+  - [Next.js Frontend Architecture](docs/architecture/nextjs_frontend.md) - Detailed documentation for the Next.js frontend
+  - [Gradio UI Architecture](docs/architecture/gradio_ui.md) - Detailed documentation for the Gradio UI
+- [API Architecture](docs/architecture/api_architecture.md) - Overview of the API architecture
+
+##### Guides
+
+- [Quick Start Guide](docs/guides/agentic_quickstart.md) - Get started quickly with the agentic chatbot
+- [Testing Guide](docs/guides/testing_guide.md) - Instructions for running tests and evaluations
+
+##### Reference Documentation
+
+- [Shell Commands Reference](docs/reference/shell_commands.md) - Comprehensive reference for all shell commands
+- [Implementation Reference](docs/reference/agent_implementation_guide.md) - Reference guide for the implemented components
+
+##### Development Documentation
+
+- [Project Roadmap](docs/development/agentic_rag_roadmap.md) - Implementation timeline and phases
+- [Implementation Status](docs/development/implementation_status.md) - Current status and next steps
+- [Agentic System Vision](docs/development/agentic_vision.md) - Future vision for true agentic capabilities
+- [RAG Improvements Plan](docs/development/rag_improvements_plan.md) - Advanced RAG techniques for energy sector applications
 
 ### Project Structure
 
@@ -291,15 +326,19 @@ The codebase follows a modular structure with a clean separation of concerns. Th
   - **rag/** - Retrieval-Augmented Generation system
   - **retrieval/** - Vector database retrieval
 
-- **ui/** - Alternative Gradio UI components
+- **ui/** - Gradio UI components (alternative UI)
 
   - **api/** - API client for backend communication
   - **components/** - UI components and views
   - **utils/** - Utility functions
   - **templates/** - HTML/CSS/JS templates
 
-- **frontend/** - Next.js frontend
+- **frontend/** - Next.js frontend (primary UI)
+
   - **src/** - React components and pages
+    - **api/** - API client and types
+    - **components/** - React components
+    - **pages/** - Next.js pages
   - **public/** - Static assets
   - **styles/** - CSS and styling
 
