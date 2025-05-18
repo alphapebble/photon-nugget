@@ -77,8 +77,8 @@ except ImportError:
 
 router = APIRouter()
 
-@router.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+@router.post("/sage", response_model=ChatResponse)
+async def sage(request: ChatRequest):
     """
     Process a chat request and return a response.
 
@@ -198,3 +198,12 @@ async def chat(request: ChatRequest):
 @router.get("/")
 async def root():
     return {"message": "Solar Sage API is running"}
+
+# Keep the /chat endpoint for backward compatibility
+@router.post("/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest):
+    """
+    Process a chat request and return a response (for backward compatibility).
+    This endpoint calls the sage endpoint.
+    """
+    return await sage(request)
