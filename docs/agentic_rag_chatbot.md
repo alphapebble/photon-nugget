@@ -202,9 +202,9 @@ class MemorySystem:
         pass
 ```
 
-### 5. Weather Integration
+### 5. Weather and Solar Forecasting Integration
 
-Enhanced weather integration for solar-specific insights:
+Enhanced weather and solar forecasting integration for solar-specific insights:
 
 ```python
 class WeatherToolkit:
@@ -223,6 +223,27 @@ class WeatherToolkit:
         # Identify optimal production times based on forecast
         pass
 ```
+
+### 6. Semantic Metric Layer
+
+The semantic metric layer provides a centralized repository for all metrics, formulas, and constants used throughout the system:
+
+```python
+from core.semantic_metric_layer import get_constant, evaluate_formula
+
+# Get a constant metric
+irradiance = get_constant('solar_panel.stc.irradiance')  # Returns 1000.0
+
+# Evaluate a calculated metric
+params = {
+    'day_of_year': 180,
+    'radians': math.radians,
+    'sin': math.sin
+}
+declination = evaluate_formula('solar_irradiance.declination_angle', params)
+```
+
+The semantic metric layer uses numexpr for efficient and safe formula evaluation, with automatic fallback to Python's eval for complex expressions.
 
 ## Implemented Tools
 
@@ -306,15 +327,16 @@ This documentation includes:
 
 ## Usage Examples
 
-### Example 1: Weather-Based Production Forecast with Dual-Agent Architecture
+### Example 1: Solar Forecast with Dual-Agent Architecture
 
 ```
 User: What will my solar production be like this week?
 
 System: [Orchestrator receives the query]
 [Retriever Agent fetches relevant solar production documents]
-[Orchestrator detects weather-related query and fetches weather data]
-[Response Generator Agent combines context and weather data]
+[Orchestrator detects solar forecast-related query]
+[Solar-Enhanced RAG Engine fetches weather data and generates solar forecast]
+[Response Generator Agent combines context and forecast data]
 
 Response: Based on the weather forecast for your location (37.7749, -122.4194),
 I estimate your 5kW system will produce:
@@ -323,6 +345,10 @@ I estimate your 5kW system will produce:
 - Wednesday: 12.5 kWh (50% of optimal) - Cloudy with rain
 ...
 The best production day will be today with clear skies and moderate temperatures.
+
+Your estimated savings this week will be approximately $28.75 based on your
+electricity rate of $0.25/kWh. The system will cover about 85% of your
+expected energy demand during this period.
 ```
 
 ### Example 2: Maintenance Recommendation with Dual-Agent Architecture
@@ -389,15 +415,32 @@ The dual-agent architecture is implemented in the following files:
 - `agents/types/response_generator.py`: Implementation of the Response Generator Agent
 - `agents/orchestrator.py`: Coordination of the dual-agent workflow
 - `rag/engines/base.py`: Updated RAG engine using the dual-agent architecture
+- `rag/engines/weather_enhanced.py`: Weather-enhanced RAG engine
+- `rag/engines/solar_enhanced.py`: Solar-enhanced RAG engine
 - `rag/prompts/dual_agent_rag.prompt`: Specialized prompt template for the dual-agent system
+- `core/semantic_metric_layer.py`: Semantic metric layer for calculations
+- `agents/integrations/weather.py`: Weather integration
+- `agents/integrations/solar_forecasting.py`: Solar forecasting integration
+- `agents/integrations/solar_irradiance.py`: Solar irradiance calculations
 
 ## Configuration
 
 The dual-agent architecture can be configured through environment variables or the `.env` file:
 
 ```
+# Dual-Agent Configuration
 SOLAR_SAGE_USE_DUAL_AGENT=true
 SOLAR_SAGE_MAX_CONTEXT_DOCUMENTS=5
+
+# Weather Integration
+OPENWEATHER_API_KEY=your_api_key
+
+# Solar Forecasting
+SOLAR_SAGE_FORECAST_HORIZON_DAYS=7
+SOLAR_SAGE_DATA_RESOLUTION_HOURS=1.0
+
+# Semantic Metric Layer
+SOLAR_SAGE_FORMULAS_PATH=src/config/formulas.yaml
 ```
 
 ## Future Enhancements
@@ -409,6 +452,10 @@ The dual-agent architecture provides a foundation for future enhancements:
 3. **Tool Integration**: Add tools that agents can use to perform actions
 4. **Multi-Step Reasoning**: Implement more complex reasoning chains between agents
 5. **Model Switching**: Use different models for different agents based on their requirements
+6. **Enhanced Semantic Metric Layer**: Add more metrics and formulas for solar energy calculations
+7. **Advanced Solar Forecasting**: Implement more sophisticated solar forecasting algorithms
+8. **Financial Analysis**: Add financial analysis tools for ROI and payback period calculations
+9. **Integration with Smart Home Systems**: Connect with smart home systems for energy optimization
 
 ## Conclusion
 
@@ -422,4 +469,8 @@ The implementation of the Dual-Agent Architecture with specialized Retriever and
 4. **Better Context Management**: More control over how context is retrieved and used
 5. **Clearer Debugging**: Issues can be isolated to specific agents
 
-By leveraging the existing RAG and weather integration components, the agent can provide highly personalized and actionable insights while maintaining compatibility with the current LLM provider.
+The integration of the semantic metric layer provides a centralized repository for all metrics, formulas, and constants used throughout the system. This ensures consistency in calculations and makes it easy to modify formulas without changing code.
+
+The solar forecasting integration enables the system to provide accurate predictions of solar energy production based on weather forecasts and system characteristics. This helps users optimize their energy usage and maximize the benefits of their solar energy systems.
+
+By leveraging the existing RAG, weather integration, and semantic metric layer components, the agent can provide highly personalized and actionable insights while maintaining compatibility with the current LLM provider.

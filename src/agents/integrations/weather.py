@@ -17,14 +17,10 @@ from typing import Dict, List, Any, Tuple, Optional
 from dotenv import load_dotenv
 
 from agents.types.weather import fetch_weather
+from core.semantic_metric_layer import get_constant, evaluate_formula
 
 # Load environment variables
 load_dotenv()
-
-# Constants for solar energy calculations
-STANDARD_TEST_CONDITIONS_IRRADIANCE = 1000  # W/m²
-TEMPERATURE_COEFFICIENT = -0.004  # Typical value for silicon panels (% per °C)
-STANDARD_TEST_CONDITIONS_TEMP = 25  # °C
 
 def get_weather_for_location(lat: float, lon: float, units: str = "metric") -> Dict[str, Any]:
     """
@@ -91,9 +87,12 @@ def estimate_irradiance(cloud_cover: float, uvi: float) -> float:
     Returns:
         Estimated irradiance in W/m²
     """
-    # Simple model: clear sky irradiance reduced by cloud cover
-    clear_sky_irradiance = min(1000, 100 + (uvi * 100))  # Base estimate from UV index
-    return clear_sky_irradiance * (1 - (cloud_cover / 100))
+    # Use formulas from YAML
+    params = {'uvi': uvi}
+    clear_sky_irradiance = evaluate_formula('weather.uv_irradiance_estimate', params)
+
+    params = {'clear_sky_irradiance': clear_sky_irradiance, 'cloud_cover': cloud_cover}
+    return evaluate_formula('weather.cloud_adjusted_irradiance', params)
 
 def estimate_production_impact(weather_data: Dict[str, Any],
                               system_capacity_kw: float = 5.0) -> Dict[str, Any]:
@@ -113,19 +112,33 @@ def estimate_production_impact(weather_data: Dict[str, Any],
     current = solar_weather["current"]
     current_irradiance = estimate_irradiance(current["clouds"], current["uvi"])
 
-    # Temperature impact on efficiency
-    temp_impact = 1 + (TEMPERATURE_COEFFICIENT * (current["temp"] - STANDARD_TEST_CONDITIONS_TEMP))
+    # Get constants from YAML
+    stc_irradiance = get_constant('solar_panel.stc.irradiance')
+    stc_temperature = get_constant('solar_panel.stc.temperature')
+
+    # Temperature impact on efficiency using formula from YAML
+    params = {
+        'temperature_coefficient': get_constant('solar_panel.characteristics.temperature_coefficient'),
+        'temperature': current["temp"],
+        'stc_temperature': stc_temperature
+    }
+    temp_impact = evaluate_formula('energy.temperature_impact', params)
 
     # Current production estimate (relative to ideal conditions)
-    current_production_factor = (current_irradiance / STANDARD_TEST_CONDITIONS_IRRADIANCE) * temp_impact
+    params = {
+        'irradiance': current_irradiance,
+        'stc_irradiance': stc_irradiance,
+        'temperature_impact': temp_impact
+    }
+    current_production_factor = evaluate_formula('energy.production_factor', params)
 
     # Adjust for weather conditions
     if current["weather_main"] in ["Rain", "Drizzle", "Thunderstorm"]:
-        current_production_factor *= 0.7  # Additional 30% reduction for rain
+        current_production_factor *= get_constant('solar_panel.weather_impact.rain_factor')
     elif current["weather_main"] in ["Snow", "Sleet"]:
-        current_production_factor *= 0.5  # Additional 50% reduction for snow
+        current_production_factor *= get_constant('solar_panel.weather_impact.snow_factor')
     elif current["weather_main"] == "Fog":
-        current_production_factor *= 0.8  # Additional 20% reduction for fog
+        current_production_factor *= get_constant('solar_panel.weather_impact.fog_factor')
 
     # Calculate expected kWh for current hour
     current_expected_kwh = system_capacity_kw * current_production_factor
@@ -134,24 +147,41 @@ def estimate_production_impact(weather_data: Dict[str, Any],
     daily_forecast = []
     for day in solar_weather["daily"]:
         day_irradiance = estimate_irradiance(day["clouds"], day["uvi"])
-        day_temp_impact = 1 + (TEMPERATURE_COEFFICIENT * (day["temp_day"] - STANDARD_TEST_CONDITIONS_TEMP))
+
+        # Temperature impact on efficiency using formula from YAML
+        params = {
+            'temperature_coefficient': get_constant('solar_panel.characteristics.temperature_coefficient'),
+            'temperature': day["temp_day"],
+            'stc_temperature': stc_temperature
+        }
+        day_temp_impact = evaluate_formula('energy.temperature_impact', params)
 
         # Base production factor
-        day_production_factor = (day_irradiance / STANDARD_TEST_CONDITIONS_IRRADIANCE) * day_temp_impact
+        params = {
+            'irradiance': day_irradiance,
+            'stc_irradiance': stc_irradiance,
+            'temperature_impact': day_temp_impact
+        }
+        day_production_factor = evaluate_formula('energy.production_factor', params)
 
         # Adjust for weather conditions
         weather_adjustment = 1.0
         if day["weather_main"] in ["Rain", "Drizzle", "Thunderstorm"]:
-            weather_adjustment = 0.7 - (0.2 * day["pop"])  # Reduce based on precipitation probability
+            rain_factor = get_constant('solar_panel.weather_impact.rain_factor')
+            rain_impact = get_constant('solar_panel.weather_impact.precipitation_impact.rain')
+            weather_adjustment = rain_factor - (rain_impact * day["pop"])
         elif day["weather_main"] in ["Snow", "Sleet"]:
-            weather_adjustment = 0.5 - (0.3 * day["pop"])
+            snow_factor = get_constant('solar_panel.weather_impact.snow_factor')
+            snow_impact = get_constant('solar_panel.weather_impact.precipitation_impact.snow')
+            weather_adjustment = snow_factor - (snow_impact * day["pop"])
         elif day["weather_main"] == "Fog":
-            weather_adjustment = 0.8
+            weather_adjustment = get_constant('solar_panel.weather_impact.fog_factor')
 
         day_production_factor *= weather_adjustment
 
-        # Calculate expected kWh for the day (assuming 5 peak sun hours)
-        day_expected_kwh = system_capacity_kw * day_production_factor * 5
+        # Calculate expected kWh for the day (using peak sun hours from YAML)
+        peak_sun_hours = get_constant('solar_panel.peak_sun_hours')
+        day_expected_kwh = system_capacity_kw * day_production_factor * peak_sun_hours
 
         # Convert timestamp to date
         date = datetime.fromtimestamp(day["dt"]).strftime("%Y-%m-%d")
@@ -230,11 +260,15 @@ def generate_weather_insights(weather_impact: Dict[str, Any]) -> Dict[str, str]:
             break
         dry_days += 1
 
-    if rain_coming and dry_days > 3:
+    # Get maintenance thresholds from YAML
+    dry_days_threshold = get_constant('weather.maintenance.dry_days_threshold')
+    high_temp_threshold = get_constant('weather.maintenance.high_temperature_threshold')
+
+    if rain_coming and dry_days > dry_days_threshold:
         maintenance_insights.append(f"Rain expected on {rain_date} after {dry_days} dry days - this may naturally clean your panels.")
 
     # Check for extreme temperatures
-    hot_days = [day for day in forecast[:7] if day["temp"] > 30]
+    hot_days = [day for day in forecast[:7] if day["temp"] > high_temp_threshold]
     if hot_days:
         maintenance_insights.append(f"High temperatures expected on {len(hot_days)} days this week, which may reduce panel efficiency.")
 
@@ -244,6 +278,77 @@ def generate_weather_insights(weather_impact: Dict[str, Any]) -> Dict[str, str]:
         "best_production_day": best_day_insight,
         "maintenance_insights": maintenance_insights
     }
+
+def get_weather_forecast(lat: float, lon: float, days: int = 7) -> List[Dict[str, Any]]:
+    """
+    Get weather forecast for a location.
+
+    Args:
+        lat: Latitude
+        lon: Longitude
+        days: Number of days to forecast
+
+    Returns:
+        Weather forecast for the specified number of days
+    """
+    try:
+        weather_data = get_weather_for_location(lat, lon)
+        solar_weather = extract_solar_relevant_weather(weather_data)
+
+        forecast = []
+        for day in solar_weather["daily"][:days]:
+            # Convert timestamp to date
+            date = datetime.fromtimestamp(day["dt"]).strftime("%Y-%m-%d")
+
+            forecast.append({
+                "date": date,
+                "temperature": day["temp_day"],
+                "cloud_cover": day["clouds"],
+                "weather_description": day["weather_description"],
+                "uvi": day["uvi"],
+                "humidity": day["humidity"],
+                "wind_speed": day["wind_speed"],
+                "precipitation": day["pop"] * 10  # Convert probability to mm (rough estimate)
+            })
+
+        return forecast
+    except Exception as e:
+        print(f"Error getting weather forecast: {e}")
+        # Return mock data
+        return _get_mock_weather_forecast(days)
+
+def _get_mock_weather_forecast(days: int = 7) -> List[Dict[str, Any]]:
+    """
+    Get mock weather forecast when real data is unavailable.
+
+    Args:
+        days: Number of days to forecast
+
+    Returns:
+        Mock weather forecast
+    """
+    forecast = []
+    today = datetime.now().date()
+
+    for i in range(days):
+        date = today + timedelta(days=i)
+
+        # Create some variation in the forecast
+        temp_base = 22.5 + 2 * (i % 3 - 1)
+        cloud_cover = 25 + 10 * (i % 5)
+
+        forecast.append({
+            "date": date.isoformat(),
+            "temperature": temp_base,
+            "cloud_cover": cloud_cover,
+            "weather_description": "Partly cloudy" if cloud_cover < 50 else "Cloudy",
+            "uvi": 5.0 - (cloud_cover / 20),
+            "humidity": 65 + (i % 3) * 5,
+            "wind_speed": 3.5 + (i % 4),
+            "precipitation": 0 if cloud_cover < 70 else 2.5
+        })
+
+    return forecast
 
 def get_weather_context_for_rag(lat: float, lon: float) -> str:
     """

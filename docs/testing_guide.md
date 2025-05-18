@@ -6,6 +6,7 @@ This document provides instructions for running tests and evaluations for the So
 
 - [Unit Tests](#unit-tests)
 - [RAG Evaluation](#rag-evaluation)
+- [API Testing](#api-testing)
 - [Adding New Tests](#adding-new-tests)
 - [Continuous Integration](#continuous-integration)
 
@@ -102,6 +103,97 @@ If RAGAS is installed, the following additional metrics are calculated:
 - **Context Recall**: Recall of the retrieved contexts
 - **Harmfulness**: Assessment of potential harmful content in the response
 
+## API Testing
+
+The Solar Sage project includes a shell script for testing the API endpoints. This script allows you to test various endpoints with different parameters.
+
+### Running API Tests
+
+To run API tests, first make sure the API server is running:
+
+```bash
+# Start the API server
+./scripts/api_server.sh start
+```
+
+Then, use the test script to test different endpoints:
+
+```bash
+# Make the script executable (if needed)
+chmod +x scripts/test_api.sh
+
+# Test the health endpoint
+./scripts/test_api.sh health
+
+# Test the basic chat endpoint
+./scripts/test_api.sh chat
+
+# Test the weather-enhanced chat endpoint
+./scripts/test_api.sh weather-chat
+
+# Test the solar-enhanced chat endpoint
+./scripts/test_api.sh solar-chat
+
+# Test the solar forecast endpoint
+./scripts/test_api.sh solar-forecast
+
+# Run all tests
+./scripts/test_api.sh all
+```
+
+### Customizing API Tests
+
+The test script supports various options to customize the test parameters:
+
+```bash
+# Test with custom location
+./scripts/test_api.sh --lat 40.7128 --lon -74.0060 solar-chat
+
+# Test with custom system capacity
+./scripts/test_api.sh --capacity 10.0 solar-forecast
+
+# Test with custom electricity rate
+./scripts/test_api.sh --rate 0.30 --feed-in 0.15 solar-chat
+```
+
+For a full list of options, run:
+
+```bash
+./scripts/test_api.sh --help
+```
+
+### Adding New API Tests
+
+To add new API tests, edit the `scripts/test_api.sh` file. Add a new function for your test and update the case statement at the end of the file.
+
+Example:
+
+```bash
+# Function to test a new endpoint
+test_new_endpoint() {
+    echo "Testing new endpoint..."
+    curl -X POST "$BASE_URL/new/endpoint" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"param1\": \"value1\",
+            \"param2\": \"value2\"
+        }"
+    echo ""
+}
+
+# Update the case statement
+case "$TEST_NAME" in
+    # ... existing cases ...
+    new-endpoint)
+        test_new_endpoint
+        ;;
+    all)
+        # ... existing tests ...
+        test_new_endpoint
+        ;;
+esac
+```
+
 ## Adding New Tests
 
 ### Adding Unit Tests
@@ -118,12 +210,12 @@ class TestMyFunction(unittest.TestCase):
     def setUp(self):
         # Set up test fixtures
         pass
-        
+
     def test_basic_functionality(self):
         # Test basic functionality
         result = FunctionToTest(input_data)
         self.assertEqual(result, expected_output)
-        
+
     def test_edge_case(self):
         # Test edge case
         result = FunctionToTest(edge_case_input)

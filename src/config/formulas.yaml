@@ -1,0 +1,157 @@
+# Solar Sage Formulas and Constants
+# This file contains all mathematical formulas and constants used in the system
+
+# Solar panel and system constants
+solar_panel:
+  # Standard Test Conditions (STC) values
+  stc:
+    irradiance: 1000.0  # W/m²
+    temperature: 25.0  # °C
+  
+  # Panel characteristics
+  characteristics:
+    temperature_coefficient: -0.004  # Typical value for silicon panels (% per °C)
+    efficiency: 0.18  # Typical efficiency (18%)
+    area_per_kw: 7.0  # m² per kW of capacity
+  
+  # Weather impact factors
+  weather_impact:
+    rain_factor: 0.7  # Production factor during rain (70%)
+    snow_factor: 0.5  # Production factor during snow (50%)
+    fog_factor: 0.8  # Production factor during fog (80%)
+    precipitation_impact:
+      rain: 0.2  # Additional reduction per precipitation probability
+      snow: 0.3  # Additional reduction per precipitation probability
+  
+  # Peak sun hours assumption
+  peak_sun_hours: 5.0  # Hours per day
+
+# Solar irradiance constants and formulas
+solar_irradiance:
+  # Physical constants
+  solar_constant: 1361.0  # W/m² at top of atmosphere
+  atmospheric_transmittance: 0.7  # Typical clear sky value
+  altitude_scale_height: 8000.0  # meters, for air mass adjustment
+  
+  # Solar position formulas
+  declination_angle:
+    formula: "23.45 * sin(radians(360 * (284 + day_of_year) / 365))"
+    description: "Solar declination angle calculation"
+  
+  hour_angle:
+    formula: "15 * (hour - 12)"
+    description: "Hour angle calculation (15 degrees per hour)"
+  
+  solar_elevation:
+    formula: "asin(sin(lat_rad) * sin(declination_rad) + cos(lat_rad) * cos(declination_rad) * cos(hour_angle_rad))"
+    description: "Solar elevation angle calculation"
+  
+  solar_azimuth:
+    formula: "atan2(cos(declination_rad) * sin(hour_angle_rad), sin(declination_rad) - sin(lat_rad) * sin(elevation_rad)) / (cos(lat_rad) * cos(elevation_rad))"
+    description: "Solar azimuth angle calculation"
+  
+  # Irradiance formulas
+  clear_sky_irradiance:
+    formula: "solar_constant * transmittance^air_mass * sin(elevation_rad)"
+    description: "Clear sky irradiance calculation"
+  
+  air_mass:
+    formula: "1 / sin(elevation_rad) * exp(-altitude / altitude_scale_height)"
+    description: "Air mass calculation with altitude adjustment"
+  
+  cloud_impact:
+    formula: "1 - (cloud_cover / 100) * 0.75"
+    description: "Cloud cover impact on irradiance (75% max reduction)"
+  
+  daytime_irradiance_pattern:
+    formula: "1000 * sin(pi * (hour - 6) / 12)"
+    description: "Daytime irradiance pattern with peak at noon"
+    valid_hours: [6, 18]  # Valid from 6am to 6pm
+
+# Energy production and demand formulas
+energy:
+  # Production calculation
+  production:
+    formula: "(irradiance * efficiency * area_per_kw * system_capacity_kw) / 1000"
+    description: "Energy production calculation in kWh"
+    units: "kWh"
+  
+  # Temperature impact on efficiency
+  temperature_impact:
+    formula: "1 + (temperature_coefficient * (temperature - stc_temperature))"
+    description: "Temperature impact on panel efficiency"
+  
+  # Production factor calculation
+  production_factor:
+    formula: "(irradiance / stc_irradiance) * temperature_impact"
+    description: "Production factor relative to STC"
+  
+  # Demand adjustment factors
+  demand_factors:
+    weekend: 0.7  # Demand factor for weekends (70% of weekday)
+    weekday: 1.0  # Demand factor for weekdays (100%)
+    base_demand: 100.0  # Base demand in kWh
+
+# Financial calculations
+financial:
+  # Default feed-in tariff if not provided
+  default_feed_in_tariff_factor: 0.5  # 50% of electricity rate
+  
+  # Grid calculations
+  grid_purchases:
+    formula: "max(0, demand - production)"
+    description: "Energy purchased from grid when demand exceeds production"
+  
+  grid_exports:
+    formula: "max(0, production - demand)"
+    description: "Energy exported to grid when production exceeds demand"
+  
+  # Cost calculations
+  consumption_cost:
+    formula: "demand * electricity_rate"
+    description: "Cost of energy consumption"
+  
+  production_value:
+    formula: "production * electricity_rate"
+    description: "Value of energy production"
+  
+  grid_purchase_cost:
+    formula: "grid_purchases * electricity_rate"
+    description: "Cost of energy purchased from grid"
+  
+  grid_export_revenue:
+    formula: "grid_exports * feed_in_tariff"
+    description: "Revenue from energy exported to grid"
+  
+  net_savings:
+    formula: "production_value - grid_purchase_cost + grid_export_revenue"
+    description: "Net savings from solar system"
+  
+  # ROI calculations
+  system_cost_estimate:
+    formula: "system_capacity_kw * 1000"
+    description: "Estimated system cost ($1000 per kW)"
+  
+  annual_savings_estimate:
+    formula: "daily_savings * 365"
+    description: "Estimated annual savings"
+  
+  simple_payback_years:
+    formula: "system_cost_estimate / annual_savings_estimate"
+    description: "Simple payback period in years"
+
+# Weather estimation formulas
+weather:
+  # UV-based irradiance estimation
+  uv_irradiance_estimate:
+    formula: "min(1000, 100 + (uvi * 100))"
+    description: "Base irradiance estimate from UV index"
+  
+  cloud_adjusted_irradiance:
+    formula: "clear_sky_irradiance * (1 - (cloud_cover / 100))"
+    description: "Cloud-adjusted irradiance"
+  
+  # Maintenance thresholds
+  maintenance:
+    dry_days_threshold: 3  # Days without rain before panel cleaning might be needed
+    high_temperature_threshold: 30  # °C, threshold for high temperature warning

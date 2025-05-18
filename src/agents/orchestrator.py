@@ -22,7 +22,8 @@ class AgentOrchestrator:
         query: str,
         lat: Optional[float] = None,
         lon: Optional[float] = None,
-        include_weather: bool = False
+        include_weather: bool = False,
+        additional_context: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Process a user query through the dual-agent workflow.
@@ -32,6 +33,7 @@ class AgentOrchestrator:
             lat: Latitude (optional)
             lon: Longitude (optional)
             include_weather: Whether to include weather context
+            additional_context: Additional context to include (optional)
 
         Returns:
             Dictionary with response and metadata
@@ -58,12 +60,16 @@ class AgentOrchestrator:
             except Exception as e:
                 weather_summary = [f"Error fetching weather data: {str(e)}"]
 
+        # Add any additional context if provided
+        if additional_context:
+            notes.append(additional_context)
+
         # Step 5: Generate Response
         response = self.response_generator_agent.generate_response(query, context, notes)
 
         # Step 6: Output Response
         return {
             "response": response,
-            "has_weather_context": bool(notes),
+            "has_weather_context": bool(weather_summary),
             "weather_summary": weather_summary
         }

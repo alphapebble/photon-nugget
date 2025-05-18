@@ -158,13 +158,23 @@ Add new tests in the `tests/` directory, following the existing structure:
 
 ## 🔄 API Reference
 
+For a comprehensive overview of the API architecture, see the [API Architecture Documentation](api_architecture.md).
+
 ### Backend API
 
 The backend API is built with FastAPI and provides the following endpoints:
 
+#### Conversational API (`src/app/`)
+
 - `POST /chat` - Send a message to the chatbot
   - Request body: `{"query": "your question here"}`
   - Response: `{"response": "AI response here"}`
+
+#### Traditional REST API (`src/api/`)
+
+- `POST /solar/forecast` - Generate a solar energy forecast
+  - Request body: `{"latitude": 37.7749, "longitude": -122.4194, "location_id": "home", "system_capacity_kw": 5.0}`
+  - Response: Detailed solar forecast data
 
 ### UI Components
 

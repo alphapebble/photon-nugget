@@ -23,9 +23,17 @@ def main():
     """Run the Solar Sage API."""
     host = get_config("api_host", "0.0.0.0")
     port = int(get_config("api_port", 8000))
-    
+
     logger.info(f"Starting Solar Sage API on {host}:{port}")
-    uvicorn.run("api.main:app", host=host, port=port, reload=True)
+
+    # Try to run the app.server module first
+    try:
+        logger.info("Trying to run app.server module")
+        uvicorn.run("app.server:app", host=host, port=port, reload=True)
+    except Exception as e:
+        logger.error(f"Error running app.server module: {e}")
+        logger.info("Falling back to api.main module")
+        uvicorn.run("api.main:app", host=host, port=port, reload=True)
 
 if __name__ == "__main__":
     main()

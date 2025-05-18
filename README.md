@@ -303,6 +303,7 @@ The forecasting system integrates:
 - **Solar Irradiance Models**: Calculate expected solar radiation based on location and time
 - **Historical Usage Patterns**: Analyze past energy consumption to predict future needs
 - **Financial Analysis**: Calculate ROI and payback periods for solar installations
+- **Semantic Metric Layer**: All calculations use a [semantic layer of metrics and formulas](docs/semantic_metric_layer.md) for transparency and consistency
 
 #### Using the Solar Forecasting API
 
@@ -379,6 +380,7 @@ Solar Sage uses a flexible configuration system that supports:
 1. **Environment Variables**: Set variables with the `SOLAR_SAGE_` prefix
 2. **Configuration Files**: Environment-specific settings in `config/environments/`
 3. **Default Values**: Fallback values defined in `config/default.py`
+4. **Formula Definitions**: Mathematical formulas and constants defined in `config/formulas.yaml`
 
 To configure the application:
 
@@ -408,6 +410,8 @@ To configure the application:
    # Get a configuration value with a default fallback
    api_port = get_config("api_port", 8000)
    ```
+
+For information about the semantic metric layer used for calculations, see the [Semantic Metric Layer Documentation](docs/semantic_metric_layer.md).
 
 ### Running with Different Models
 
