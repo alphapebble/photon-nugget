@@ -300,7 +300,7 @@ If you encounter any issues with the chat functionality, check the logs in the `
 
 ### Running and Testing the System
 
-For detailed instructions on running and testing the Solar Sage system, please refer to the [Shell Commands Documentation](shell_commands.md).
+For detailed instructions on running and testing the Solar Sage system, please refer to the [Shell Commands Documentation](../reference/shell_commands.md).
 
 This documentation includes:
 

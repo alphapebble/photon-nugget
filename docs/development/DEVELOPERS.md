@@ -131,7 +131,7 @@ flake8
 
 ## 🧪 Testing
 
-For comprehensive testing instructions, see the [Testing Guide](testing_guide.md).
+For comprehensive testing instructions, see the [Testing Guide](../guides/testing_guide.md).
 
 ### Running Tests
 
@@ -158,7 +158,7 @@ Add new tests in the `tests/` directory, following the existing structure:
 
 ## 🔄 API Reference
 
-For a comprehensive overview of the API architecture, see the [API Architecture Documentation](api_architecture.md).
+For a comprehensive overview of the API architecture, see the [API Architecture Documentation](../architecture/api_architecture.md).
 
 ### Backend API
 
