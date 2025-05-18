@@ -235,7 +235,7 @@ If you encounter problems not covered here:
 
 ## 📚 For Developers
 
-If you're a developer interested in the technical details or want to contribute to the project, check out the [Developer Documentation](docs/DEVELOPERS.md).
+If you're a developer interested in the technical details or want to contribute to the project, check out the [Developer Documentation](docs/development/DEVELOPERS.md).
 
 ### Setting Up Your Development Environment
 
