@@ -232,6 +232,7 @@ Solar Sage has been extended with agentic capabilities to provide not just infor
 - [Quick Start Guide](docs/agentic_quickstart.md) - Get started quickly with the agentic chatbot
 - [Agentic System Vision](docs/agentic_vision.md) - Future vision for true agentic capabilities
 - [Testing Guide](docs/testing_guide.md) - Instructions for running tests and evaluations
+- [RAG Improvements Plan](docs/rag_improvements_plan.md) - Advanced RAG techniques for energy sector applications
 
 ### Project Structure
 
@@ -261,6 +262,32 @@ The codebase follows a modular structure with a clean separation of concerns. Th
   - **templates/** - HTML/CSS/JS templates
 
 For a detailed breakdown of the project structure, please see the [Developer Documentation](docs/DEVELOPERS.md).
+
+### RAG System
+
+Solar Sage uses a Retrieval Augmented Generation (RAG) system to provide accurate, up-to-date information about solar energy. The RAG system:
+
+1. Retrieves relevant information from a knowledge base
+2. Augments the LLM's context with this information
+3. Generates accurate, contextual responses
+
+The system includes:
+
+- **Vector Database**: LanceDB for efficient similarity search
+- **Embedding Model**: Sentence transformers for document and query embedding
+- **Chunking Strategy**: Optimized document splitting for better retrieval
+- **Weather Enhancement**: Integration of real-time weather data for location-specific insights
+
+#### Planned RAG Improvements
+
+We're implementing advanced RAG techniques based on the [langchain-ai/rag-from-scratch](https://github.com/langchain-ai/rag-from-scratch) repository to enhance our system for energy sector applications:
+
+- **Query Expansion**: Generate multiple query variations to improve recall
+- **Reranking**: Apply a second-stage ranking to improve precision
+- **Hybrid Search**: Combine semantic and keyword search for better results
+- **FLARE**: Implement iterative retrieval for complex energy sector queries
+
+See the [RAG Improvements Plan](docs/rag_improvements_plan.md) for a detailed roadmap and energy sector applications.
 
 ### Command-Line Interface
 
