@@ -40,7 +40,11 @@ Before you begin, make sure you have:
    - [Download Python](https://www.python.org/downloads/) if you don't have it
 
 2. **Git** to download the project
+
    - [Download Git](https://git-scm.com/downloads) if you don't have it
+
+3. **Node.js 16+** for the frontend
+   - [Download Node.js](https://nodejs.org/) if you don't have it
 
 ### Step 1: Download the Project
 
@@ -51,7 +55,7 @@ git clone https://github.com/balijepalli/solar-sage.git
 cd solar-sage
 ```
 
-### Step 2: Set Up the Environment
+### Step 2: Set Up the Backend Environment
 
 Create a virtual environment and install the required packages:
 
@@ -69,18 +73,32 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Step 3: Start the Application
+### Step 3: Set Up the Frontend Environment
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Return to the project root
+cd ..
+```
+
+### Step 4: Start the Application
 
 You can run the application using our convenient startup script:
 
 ```bash
-# Start all components (API, Ollama, UI)
+# Start all components (API, Next.js, Ollama)
 ./solar_sage.sh start
 
 # Or start components individually
-./solar_sage.sh api start 8000  # Start API server on port 8000
-./solar_sage.sh ui start 8502   # Start UI on port 8502
-./solar_sage.sh ollama start    # Start Ollama
+./solar_sage.sh api start 8000    # Start FastAPI server on port 8000
+./solar_sage.sh next start 3000   # Start Next.js on port 3000
+./solar_sage.sh ui start 7860     # Start Gradio UI on port 7860
+./solar_sage.sh ollama start      # Start Ollama
 
 # Check status of all components
 ./solar_sage.sh status
@@ -98,11 +116,12 @@ Keep the terminal windows open while using the application.
 
 > **Note:** All scripts automatically set up the Python path and environment variables for you. If you need to customize settings, you can create a `.env` file in the project root.
 
-### Alternative: Start Components Using CLI
+### Alternative: Start Components Manually
 
-If you prefer to use the CLI directly:
+If you prefer to start the components manually:
 
 ```bash
+# Start the FastAPI backend (in one terminal)
 # First, add src to your Python path
 export PYTHONPATH=$PYTHONPATH:$(pwd)/src  # Linux/macOS
 # OR
@@ -111,46 +130,63 @@ set PYTHONPATH=%PYTHONPATH%;%cd%\src     # Windows
 # Run the API server
 python -m cli.main server
 
-# Run the UI
-python -m cli.main ui
+# Start the Next.js frontend (in another terminal)
+cd frontend
+npm run dev
 ```
 
-This will start the web interface. You'll see a URL like `http://0.0.0.0:8502` or `http://127.0.0.1:8502` in the terminal.
+### Step 5: Access the UI
 
-### Step 4: Access the UI
+Once all components are running, you can access the UI in your web browser:
 
-Once the UI is running, you can access it in your web browser:
+- **Main UI**: http://localhost:3000
 
-- **Main UI**: http://localhost:8502
-- **Evaluation Dashboard**: http://localhost:8502/?mode=evaluation
+### Step 6: Use the Application
 
-You can switch between the main UI and evaluation dashboard using the links in the header.
+#### Next.js UI
 
-### Step 5: Use the Application
+1. Open your web browser and go to http://localhost:3000
+2. Navigate to the Chat page to ask questions about solar energy
+3. Use the Solar Forecast page to generate solar production forecasts
+4. Explore the Evaluation page to view system performance metrics
+5. Explore the About page to learn more about the system
 
-1. Open your web browser and go to the URL shown in the terminal (usually http://127.0.0.1:8502)
-2. Type your solar energy question in the text box
-3. Click "Ask" or press Enter to get an answer
-4. Enjoy your conversation with the AI assistant!
+#### Gradio UI (Alternative)
+
+1. Run the Gradio UI with `python ui_app.py`
+2. Open your web browser and go to http://localhost:7860
+3. Use the chat interface to ask questions about solar energy
+4. Adjust system settings in the sidebar
 
 ## 🔍 Using Advanced Features
 
-### Dark Mode
+### Location Settings
 
-Click the "Toggle Dark Mode" button to switch between light and dark themes.
+In the Chat and Solar Forecast pages, you can customize your location settings:
 
-### Conversation History
+- **Latitude and Longitude**: Set your geographical coordinates
+- **Location ID**: Provide a name for your location
+- **System Capacity**: Specify the size of your solar system in kW
+- **Electricity Rate**: Set your electricity rate in $/kWh
+- **Feed-in Tariff**: Set your feed-in tariff in $/kWh
 
-- **Save History**: Click "Save History" to save your current conversation
-- **Load History**: Click "Load History" to restore a previously saved conversation
-- **Clear Chat**: Click "Clear Chat" to start a new conversation
+### Solar Forecasting
 
-### Feedback
+The Solar Forecast page provides detailed information about your solar system's performance:
 
-After receiving an answer, you can provide feedback by clicking:
+- **Daily Forecast**: View expected production and demand for each day
+- **Hourly Forecast**: See hourly production and demand patterns
+- **Cost Savings**: Analyze financial benefits and ROI
+- **Insights**: Get actionable insights based on the forecast data
 
-- 👍 Yes - if the answer was helpful
-- 👎 No - if the answer wasn't helpful
+### Chat Interface
+
+The Chat page allows you to interact with the AI assistant:
+
+- **Natural Language**: Ask questions in plain English
+- **Context-Aware**: The assistant remembers your conversation history
+- **Weather-Enhanced**: Get location-specific insights based on weather data
+- **Solar-Enhanced**: Receive solar production forecasts and recommendations
 
 ## 🛠️ Troubleshooting
 
@@ -255,11 +291,17 @@ The codebase follows a modular structure with a clean separation of concerns. Th
   - **rag/** - Retrieval-Augmented Generation system
   - **retrieval/** - Vector database retrieval
 
-- **ui/** - Frontend interface with Gradio
+- **ui/** - Alternative Gradio UI components
+
   - **api/** - API client for backend communication
   - **components/** - UI components and views
   - **utils/** - Utility functions
   - **templates/** - HTML/CSS/JS templates
+
+- **frontend/** - Next.js frontend
+  - **src/** - React components and pages
+  - **public/** - Static assets
+  - **styles/** - CSS and styling
 
 For a detailed breakdown of the project structure, please see the [Developer Documentation](docs/DEVELOPERS.md).
 
@@ -469,6 +511,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with [Gradio](https://gradio.app/) for the user interface
+- Built with [Next.js](https://nextjs.org/) and [Gradio](https://gradio.app/) for the user interfaces
 - Powered by [Mistral AI](https://mistral.ai/) models
 - Uses [LanceDB](https://lancedb.github.io/lancedb/) for knowledge retrieval

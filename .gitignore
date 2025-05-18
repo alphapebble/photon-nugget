@@ -42,3 +42,7 @@ docs/journals/2025_05_07.md
 docs/logseq/config.edn
 docs/logseq/custom.css
 docs/pages/contents.md
+
+# Frontend specific files
+frontend/node_modules/
+frontend/.next/
