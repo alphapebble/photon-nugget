@@ -34,7 +34,7 @@ The Solar Sage Agentic RAG Chatbot project aims to transform the existing Solar 
 
 1. **Agent Framework**
    - ✅ Architecture design (`docs/agentic_rag_chatbot.md`)
-   - ✅ Implementation guide (`docs/agent_implementation_guide.md`)
+   - ✅ Implementation guide (`docs/reference/agent_implementation_guide.md`)
    - ✅ Tool Registry implementation (`agents/tool_registry.py`)
    - ✅ Memory System implementation (`agents/memory_system.py`)
    - ✅ Agent Engine implementation (`agents/agent_engine.py`)

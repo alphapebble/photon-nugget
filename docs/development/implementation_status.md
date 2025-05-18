@@ -8,13 +8,13 @@ This document provides a summary of the current implementation status of the Sol
 
 ### Documentation
 
-| Component               | Status      | Description                                                                  |
-| ----------------------- | ----------- | ---------------------------------------------------------------------------- |
-| Architecture Overview   | ✅ Complete | High-level architecture design in `docs/agentic_rag_chatbot.md`              |
-| Implementation Guide    | ✅ Complete | Detailed implementation instructions in `docs/agent_implementation_guide.md` |
-| Project Roadmap         | ✅ Complete | Comprehensive roadmap in `docs/agentic_rag_roadmap.md`                       |
-| Implementation Status   | ✅ Complete | This document tracking progress                                              |
-| Dual-Agent Architecture | ✅ Complete | Dual-agent design in `docs/dual_agent_architecture.md`                       |
+| Component               | Status      | Description                                                                            |
+| ----------------------- | ----------- | -------------------------------------------------------------------------------------- |
+| Architecture Overview   | ✅ Complete | High-level architecture design in `docs/agentic_rag_chatbot.md`                        |
+| Implementation Guide    | ✅ Complete | Detailed implementation instructions in `docs/reference/agent_implementation_guide.md` |
+| Project Roadmap         | ✅ Complete | Comprehensive roadmap in `docs/agentic_rag_roadmap.md`                                 |
+| Implementation Status   | ✅ Complete | This document tracking progress                                                        |
+| Dual-Agent Architecture | ✅ Complete | Dual-agent design in `docs/dual_agent_architecture.md`                                 |
 
 ### Code Components
 
