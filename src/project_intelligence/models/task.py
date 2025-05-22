@@ -6,17 +6,17 @@ It includes audit trail integration to track changes to tasks.
 """
 
 import logging
+from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Set
-
-from pydantic import BaseModel, Field, root_validator
 
 from project_intelligence.audit.audit_trail import default_audit_manager
 
 logger = logging.getLogger(__name__)
 
 
-class Task(BaseModel):
+@dataclass
+class Task:
     """
     Task model representing a project task.
     
@@ -29,39 +29,31 @@ class Task(BaseModel):
     status: str = "todo"  # todo, in_progress, blocked, completed, cancelled
     priority: Optional[str] = None  # low, medium, high, critical
     owner: Optional[str] = None
-    assignees: List[str] = Field(default_factory=list)
-    created_at: datetime = Field(default_factory=datetime.now)
+    assignees: List[str] = field(default_factory=list)
+    created_at: datetime = field(default_factory=datetime.now)
     updated_at: Optional[datetime] = None
     due_date: Optional[datetime] = None
     start_date: Optional[datetime] = None
     completion_date: Optional[datetime] = None
-    tags: List[str] = Field(default_factory=list)
+    tags: List[str] = field(default_factory=list)
     story_points: Optional[float] = None
     completion_percentage: float = 0.0
-    blockers: List[str] = Field(default_factory=list)
-    subtasks: Dict[str, "Task"] = Field(default_factory=dict)
+    blockers: List[str] = field(default_factory=list)
+    subtasks: Dict[str, "Task"] = field(default_factory=dict)
     parent_id: Optional[str] = None
-    dependencies: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    dependencies: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     
     # Audit trail fields
     last_modified_by: Optional[str] = None
-    status_change_history: List[Dict[str, Any]] = Field(default_factory=list)
+    status_change_history: List[Dict[str, Any]] = field(default_factory=list)
     
-    class Config:
-        """Pydantic configuration."""
-        
-        arbitrary_types_allowed = True
-    
-    @root_validator(pre=True)
-    def set_defaults(cls, values):
-        """Set default values based on other fields."""
+    def __post_init__(self):
+        """Set default values after initialization."""
         # Set completion_percentage to 100 if status is completed
-        if values.get("status") == "completed" and values.get("completion_percentage", 0) < 100:
-            values["completion_percentage"] = 100.0
-            values["completion_date"] = values.get("completion_date") or datetime.now()
-        
-        return values
+        if self.status == "completed" and self.completion_percentage < 100:
+            self.completion_percentage = 100.0
+            self.completion_date = self.completion_date or datetime.now()
     
     async def update(
         self, 
@@ -287,7 +279,8 @@ class Task(BaseModel):
         Returns:
             Dictionary representation of task
         """
-        task_dict = self.dict(exclude={"subtasks"})
+        task_dict = asdict(self)
+        del task_dict["subtasks"]
         
         # Convert datetime objects to strings
         for key, value in task_dict.items():
@@ -310,17 +303,20 @@ class Task(BaseModel):
         Returns:
             Task instance
         """
+        # Make a copy to avoid modifying the input
+        data_copy = data.copy()
+        
         # Handle datetime fields
-        for field in ["created_at", "updated_at", "due_date", "start_date", "completion_date"]:
-            if field in data and isinstance(data[field], str):
+        for field_name in ["created_at", "updated_at", "due_date", "start_date", "completion_date"]:
+            if field_name in data_copy and isinstance(data_copy[field_name], str):
                 try:
-                    data[field] = datetime.fromisoformat(data[field])
+                    data_copy[field_name] = datetime.fromisoformat(data_copy[field_name])
                 except ValueError:
-                    data[field] = None
+                    data_copy[field_name] = None
         
         # Handle subtasks
-        subtasks_data = data.pop("subtasks", {})
-        task = cls(**data)
+        subtasks_data = data_copy.pop("subtasks", {})
+        task = cls(**data_copy)
         
         for subtask_id, subtask_data in subtasks_data.items():
             task.subtasks[subtask_id] = cls.from_dict(subtask_data)

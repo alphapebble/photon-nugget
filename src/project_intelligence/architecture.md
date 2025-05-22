@@ -65,12 +65,20 @@ A specialized crew of agents handles different aspects of project intelligence:
 - **Risk Predictor**: Identifies potential future blockers based on patterns
 - **Timeline Analyzer**: Detects schedule slippage and recommends adjustments
 - **Performance Analyzer**: Identifies high and low-performing aspects of projects
+- **Audit Trail Manager**: Records and retrieves comprehensive history of all changes
+- **PII Masker**: Detects and masks personally identifiable information for GDPR compliance
 
 ### 5. Dashboard and Notification Layer
 
 - **Real-time Dashboard**: Web-based visualization of project status
+  - Intelligent features: automated alerts, rescheduling recommendations, assignment assistance
+  - Burn-down charts and velocity trend analysis
+  - Audit trail visualization and last modifier tracking
 - **Alert System**: Proactive notifications for critical events
 - **Integration APIs**: For connecting with other project management tools
+  - Enhanced API endpoints for all intelligent features
+  - Audit trail access endpoints
+  - GDPR-compliant data handling
 - **Natural Language Interface**: For querying project status via chat
 
 ## Data Flow
@@ -120,8 +128,14 @@ The system can be deployed in three configurations:
 
 - Data encryption at rest and in transit
 - Role-based access control for dashboard and notifications
-- Audit logging of all system actions
-- Privacy-preserving processing of sensitive information
+- Comprehensive audit trails for all system actions
+  - Tracking of who changed what and when
+  - Full history of task status changes
+  - API access logging
+- GDPR-compliant PII detection and masking
+  - Automatic detection of personally identifiable information
+  - Configurable masking levels (none, partial, full, hash, pseudonymize)
+  - Safe logging mechanisms that prevent PII exposure
 - Configurable data retention policies
 
 ## Future Extensions
@@ -131,3 +145,54 @@ The system can be deployed in three configurations:
 - Integration with voice assistants for verbal updates
 - Automated report generation
 - Cross-project intelligence and pattern recognition
+- Enhanced compliance features for regulated industries
+- Multi-tenant audit isolation for enterprise deployments
+
+## Data Models
+
+The system uses the following core data models:
+
+### Project Model
+```python
+@dataclass
+class Project:
+    name: str
+    description: str
+    status: str  # active, completed, on_hold, cancelled
+    tasks: Dict[str, Task]
+    team_members: List[str]
+    start_date: Optional[datetime]
+    end_date: Optional[datetime]
+    last_modified_by: Optional[str]  # For audit trails
+    status_change_history: List[Dict]  # Status audit history
+```
+
+### Task Model
+```python
+@dataclass
+class Task:
+    id: str
+    name: str
+    description: str
+    status: str  # todo, in_progress, blocked, completed
+    owner: Optional[str]
+    due_date: Optional[datetime]
+    blockers: List[str]
+    story_points: Optional[float]
+    last_modified_by: Optional[str]  # For audit trails
+    status_change_history: List[Dict]  # Status audit history
+```
+
+### Audit Record Model
+```python
+@dataclass
+class AuditRecord:
+    id: str
+    timestamp: datetime
+    user_id: str
+    action: str  # create, update, delete, etc.
+    entity_type: str  # project, task, etc.
+    entity_id: str
+    changes: Dict[str, Dict]  # Field changes with old/new values
+    metadata: Dict
+```

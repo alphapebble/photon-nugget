@@ -8,47 +8,43 @@ for actions taken in the system, with a focus on tracking changes to project ent
 import logging
 import uuid
 from datetime import datetime
+from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Union
-
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 
-class AuditRecord(BaseModel):
+@dataclass
+class AuditRecord:
     """Model for an audit trail record."""
 
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = Field(default_factory=datetime.now)
     user_id: str
     action: str
     entity_type: str
     entity_id: str
-    changes: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = field(default_factory=datetime.now)
+    changes: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
 
-    class Config:
-        """Pydantic configuration."""
-
-        schema_extra = {
-            "example": {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "timestamp": "2023-07-01T12:30:45.123456",
-                "user_id": "user123",
-                "action": "update",
-                "entity_type": "task",
-                "entity_id": "task456",
-                "changes": {
-                    "status": {"old": "in_progress", "new": "completed"},
-                    "assigned_to": {"old": "user789", "new": "user321"},
-                },
-                "metadata": {"source": "web_app", "request_id": "req123"},
-                "ip_address": "192.168.1.1",
-                "user_agent": "Mozilla/5.0...",
-            }
-        }
+    # Example:
+    # {
+    #     "id": "550e8400-e29b-41d4-a716-446655440000",
+    #     "timestamp": "2023-07-01T12:30:45.123456",
+    #     "user_id": "user123",
+    #     "action": "update",
+    #     "entity_type": "task",
+    #     "entity_id": "task456",
+    #     "changes": {
+    #         "status": {"old": "in_progress", "new": "completed"},
+    #         "assigned_to": {"old": "user789", "new": "user321"},
+    #     },
+    #     "metadata": {"source": "web_app", "request_id": "req123"},
+    #     "ip_address": "192.168.1.1",
+    #     "user_agent": "Mozilla/5.0...",
+    # }
 
 
 class AuditTrailManager:
