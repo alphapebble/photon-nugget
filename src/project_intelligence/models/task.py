@@ -6,9 +6,12 @@ It includes audit trail integration to track changes to tasks.
 """
 
 import logging
-from dataclasses import dataclass, field, asdict
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Set
+
+from pydantic.dataclasses import dataclass
+from pydantic import Field
+from dataclasses import field, asdict
 
 from project_intelligence.audit.audit_trail import default_audit_manager
 
@@ -29,24 +32,24 @@ class Task:
     status: str = "todo"  # todo, in_progress, blocked, completed, cancelled
     priority: Optional[str] = None  # low, medium, high, critical
     owner: Optional[str] = None
-    assignees: List[str] = field(default_factory=list)
-    created_at: datetime = field(default_factory=datetime.now)
+    assignees: List[str] = Field(default_factory=list)
+    created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = None
     due_date: Optional[datetime] = None
     start_date: Optional[datetime] = None
     completion_date: Optional[datetime] = None
-    tags: List[str] = field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
     story_points: Optional[float] = None
     completion_percentage: float = 0.0
-    blockers: List[str] = field(default_factory=list)
-    subtasks: Dict[str, "Task"] = field(default_factory=dict)
+    blockers: List[str] = Field(default_factory=list)
+    subtasks: Dict[str, "Task"] = Field(default_factory=dict)
     parent_id: Optional[str] = None
-    dependencies: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    dependencies: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
     
     # Audit trail fields
     last_modified_by: Optional[str] = None
-    status_change_history: List[Dict[str, Any]] = field(default_factory=list)
+    status_change_history: List[Dict[str, Any]] = Field(default_factory=list)
     
     def __post_init__(self):
         """Set default values after initialization."""
@@ -54,6 +57,10 @@ class Task:
         if self.status == "completed" and self.completion_percentage < 100:
             self.completion_percentage = 100.0
             self.completion_date = self.completion_date or datetime.now()
+            
+    class Config:
+        """Pydantic configuration."""
+        arbitrary_types_allowed = True
     
     async def update(
         self, 

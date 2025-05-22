@@ -150,49 +150,58 @@ The system can be deployed in three configurations:
 
 ## Data Models
 
-The system uses the following core data models:
+The system uses the following core data models with Pydantic dataclasses for validation:
 
 ### Project Model
 ```python
+from pydantic.dataclasses import dataclass
+from pydantic import Field
+
 @dataclass
 class Project:
     name: str
     description: str
     status: str  # active, completed, on_hold, cancelled
-    tasks: Dict[str, Task]
-    team_members: List[str]
-    start_date: Optional[datetime]
-    end_date: Optional[datetime]
-    last_modified_by: Optional[str]  # For audit trails
-    status_change_history: List[Dict]  # Status audit history
+    tasks: Dict[str, Task] = Field(default_factory=dict)
+    team_members: List[str] = Field(default_factory=list)
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+    last_modified_by: Optional[str] = None  # For audit trails
+    status_change_history: List[Dict] = Field(default_factory=list)  # Status audit history
 ```
 
 ### Task Model
 ```python
+from pydantic.dataclasses import dataclass
+from pydantic import Field
+
 @dataclass
 class Task:
     id: str
     name: str
     description: str
     status: str  # todo, in_progress, blocked, completed
-    owner: Optional[str]
-    due_date: Optional[datetime]
-    blockers: List[str]
-    story_points: Optional[float]
-    last_modified_by: Optional[str]  # For audit trails
-    status_change_history: List[Dict]  # Status audit history
+    owner: Optional[str] = None
+    due_date: Optional[datetime] = None
+    blockers: List[str] = Field(default_factory=list)
+    story_points: Optional[float] = None
+    last_modified_by: Optional[str] = None  # For audit trails
+    status_change_history: List[Dict] = Field(default_factory=list)  # Status audit history
 ```
 
 ### Audit Record Model
 ```python
+from pydantic.dataclasses import dataclass
+from pydantic import Field
+
 @dataclass
 class AuditRecord:
-    id: str
-    timestamp: datetime
     user_id: str
     action: str  # create, update, delete, etc.
     entity_type: str  # project, task, etc.
     entity_id: str
-    changes: Dict[str, Dict]  # Field changes with old/new values
-    metadata: Dict
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = Field(default_factory=datetime.now)
+    changes: Dict[str, Dict] = Field(default_factory=dict)  # Field changes with old/new values
+    metadata: Dict = Field(default_factory=dict)
 ```

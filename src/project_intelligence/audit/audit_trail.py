@@ -8,8 +8,10 @@ for actions taken in the system, with a focus on tracking changes to project ent
 import logging
 import uuid
 from datetime import datetime
-from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, List, Optional, Union
+
+from pydantic.dataclasses import dataclass
+from pydantic import Field
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +24,10 @@ class AuditRecord:
     action: str
     entity_type: str
     entity_id: str
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    timestamp: datetime = field(default_factory=datetime.now)
-    changes: Dict[str, Dict[str, Any]] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    timestamp: datetime = Field(default_factory=datetime.now)
+    changes: Dict[str, Dict[str, Any]] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
 
