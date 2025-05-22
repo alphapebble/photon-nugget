@@ -44,6 +44,10 @@ class DashboardManager:
         self.theme = self.config.get("theme", "light")
         self.last_update = None
         
+        # Initialize metrics calculator
+        from project_intelligence.intelligence.metrics_calculator import MetricsCalculator
+        self.metrics_calculator = MetricsCalculator()
+        
     async def initialize(self) -> None:
         """Initialize the dashboard."""
         if self.dashboard_type == "web":
@@ -111,6 +115,16 @@ class DashboardManager:
                         logger.info("API dashboard initialized successfully")
                     else:
                         logger.warning(f"API dashboard returned status {response.status}")
+            
+            # Initialize API manager if using local API
+            if self.dashboard_url.startswith("http://localhost") or self.dashboard_url.startswith("http://127.0.0.1"):
+                from project_intelligence.api.api_manager import APIManager
+                self.api_manager = APIManager(
+                    host=self.dashboard_url.split("//")[1].split(":")[0],
+                    port=int(self.dashboard_url.split(":")[-1].split("/")[0]),
+                    enable_cors=True
+                )
+                logger.info("Local API manager initialized")
         except Exception as e:
             logger.error(f"Error initializing API dashboard: {str(e)}")
     
@@ -204,7 +218,43 @@ class DashboardManager:
             return
         
         try:
-            # Convert projects to JSON
+            # Generate intelligent data
+            alerts = []
+            recommendations = []
+            assignments = []
+            metrics = self.metrics_calculator.calculate_all_metrics(projects)
+            
+            # Generate alerts using AlertGenerator
+            if hasattr(self, 'alert_generator'):
+                alerts = await self.alert_generator.generate_alerts(projects)
+            else:
+                # Initialize alert generator if needed
+                from project_intelligence.intelligence.alerts import AlertGenerator
+                self.alert_generator = AlertGenerator()
+                alerts = await self.alert_generator.generate_alerts(projects)
+            
+            # Generate rescheduling recommendations
+            if hasattr(self, 'rescheduling_recommender'):
+                recommendations = await self.rescheduling_recommender.generate_recommendations(projects)
+            else:
+                # Initialize rescheduling recommender if needed
+                from project_intelligence.intelligence.alerts import ReschedulingRecommender
+                self.rescheduling_recommender = ReschedulingRecommender()
+                recommendations = await self.rescheduling_recommender.generate_recommendations(projects)
+            
+            # If using local API manager, update directly
+            if hasattr(self, 'api_manager'):
+                await self.api_manager.update(
+                    projects=projects,
+                    alerts=alerts,
+                    recommendations=recommendations,
+                    assignments=assignments,
+                    metrics=metrics
+                )
+                logger.info("Local API dashboard updated successfully")
+                return
+                
+            # Otherwise, use HTTP API
             import json
             import aiohttp
             
@@ -212,14 +262,41 @@ class DashboardManager:
             
             # Send data to API
             async with aiohttp.ClientSession() as session:
+                # Update projects
                 async with session.post(
-                    f"{self.dashboard_url}/update",
+                    f"{self.dashboard_url}/api/projects/update",
                     json={"projects": projects_data}
                 ) as response:
-                    if response.status == 200:
-                        logger.info("API dashboard updated successfully")
-                    else:
-                        logger.warning(f"API dashboard update returned status {response.status}")
+                    if response.status != 200:
+                        logger.warning(f"API projects update returned status {response.status}")
+                
+                # Update alerts
+                if alerts:
+                    async with session.post(
+                        f"{self.dashboard_url}/api/alerts/update",
+                        json={"alerts": alerts}
+                    ) as response:
+                        if response.status != 200:
+                            logger.warning(f"API alerts update returned status {response.status}")
+                
+                # Update recommendations
+                if recommendations:
+                    async with session.post(
+                        f"{self.dashboard_url}/api/recommendations/update",
+                        json={"recommendations": recommendations}
+                    ) as response:
+                        if response.status != 200:
+                            logger.warning(f"API recommendations update returned status {response.status}")
+                
+                # Update metrics
+                async with session.post(
+                    f"{self.dashboard_url}/api/metrics/update",
+                    json={"metrics": metrics}
+                ) as response:
+                    if response.status != 200:
+                        logger.warning(f"API metrics update returned status {response.status}")
+                
+                logger.info("API dashboard updated successfully")
         except Exception as e:
             logger.error(f"Error updating API dashboard: {str(e)}")
     
