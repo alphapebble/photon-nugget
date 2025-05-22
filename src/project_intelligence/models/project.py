@@ -2,11 +2,17 @@
 Project data models for the Project Intelligence System.
 
 This module provides data models for projects, tasks, updates, and resources.
+Includes audit trail integration to track changes to project entities.
 """
 
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Union
+import logging
+
+from project_intelligence.audit.audit_trail import default_audit_manager
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -27,19 +33,77 @@ class Task:
     priority: str = "medium"
     completion_percentage: Optional[float] = None
     parent_id: Optional[str] = None
+    last_modified_by: Optional[str] = None
+    status_change_history: List[Dict[str, Any]] = field(default_factory=list)
     
-    def update(self, **kwargs) -> None:
+    async def update(self, user_id: str = "system", **kwargs) -> None:
         """
-        Update task attributes.
+        Update task attributes with audit trail tracking.
         
         Args:
+            user_id: ID of the user making the update
             **kwargs: Attributes to update
         """
+        changes = {}
+        status_changed = False
+        old_status = self.status
+        
         for key, value in kwargs.items():
-            if hasattr(self, key):
+            if hasattr(self, key) and getattr(self, key) != value:
+                # Record change for audit trail
+                changes[key] = {
+                    "old": getattr(self, key),
+                    "new": value
+                }
+                
+                # Special handling for status changes
+                if key == "status" and value != old_status:
+                    status_changed = True
+                
+                # Update the attribute
                 setattr(self, key, value)
         
-        self.updated_at = datetime.now()
+        if changes:
+            # Update the updated_at timestamp
+            self.updated_at = datetime.now()
+            self.last_modified_by = user_id
+            
+            # Handle status change history
+            if status_changed:
+                self.status_change_history.append({
+                    "timestamp": self.updated_at,
+                    "user_id": user_id,
+                    "old_status": old_status,
+                    "new_status": self.status
+                })
+            
+            # Record in audit trail
+            try:
+                await default_audit_manager.record(
+                    user_id=user_id,
+                    action="update",
+                    entity_type="task",
+                    entity_id=self.id,
+                    changes=changes,
+                    metadata={
+                        "task_name": self.name,
+                        "status": self.status
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Error recording audit trail for task update: {str(e)}")
+    
+    def get_last_status_change(self) -> Optional[Dict[str, Any]]:
+        """
+        Get information about the last status change.
+        
+        Returns:
+            Dictionary with status change information or None
+        """
+        if not self.status_change_history:
+            return None
+        
+        return self.status_change_history[-1]
 
 
 @dataclass
@@ -86,47 +150,149 @@ class Project:
     resources: Dict[str, ResourceStatus] = field(default_factory=dict)
     tags: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
+    last_modified_by: Optional[str] = None
+    status_change_history: List[Dict[str, Any]] = field(default_factory=list)
     
-    def add_or_update_task(self, task: Task) -> None:
+    async def add_or_update_task(self, task: Task, user_id: str = "system") -> None:
         """
         Add a new task or update an existing one.
         
         Args:
             task: The task to add or update
+            user_id: ID of the user making the change
         """
+        is_new = task.id not in self.tasks
         self.tasks[task.id] = task
         self.updated_at = datetime.now()
+        self.last_modified_by = user_id
+        
+        # Record in audit trail
+        try:
+            await default_audit_manager.record(
+                user_id=user_id,
+                action="create_task" if is_new else "update_task",
+                entity_type="project",
+                entity_id=self.name,
+                changes={
+                    "tasks": {
+                        "task_id": task.id,
+                        "operation": "add" if is_new else "update"
+                    }
+                },
+                metadata={
+                    "task_name": task.name,
+                    "task_status": task.status
+                }
+            )
+        except Exception as e:
+            logger.error(f"Error recording audit trail for task addition/update: {str(e)}")
     
-    def remove_task(self, task_id: str) -> None:
+    async def remove_task(self, task_id: str, user_id: str = "system") -> None:
         """
         Remove a task.
         
         Args:
             task_id: ID of the task to remove
+            user_id: ID of the user making the change
         """
         if task_id in self.tasks:
+            task_name = self.tasks[task_id].name
+            task_status = self.tasks[task_id].status
+            
             del self.tasks[task_id]
             self.updated_at = datetime.now()
+            self.last_modified_by = user_id
+            
+            # Record in audit trail
+            try:
+                await default_audit_manager.record(
+                    user_id=user_id,
+                    action="remove_task",
+                    entity_type="project",
+                    entity_id=self.name,
+                    changes={
+                        "tasks": {
+                            "task_id": task_id,
+                            "operation": "remove"
+                        }
+                    },
+                    metadata={
+                        "task_name": task_name,
+                        "task_status": task_status
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Error recording audit trail for task removal: {str(e)}")
     
-    def add_update(self, update: ProjectUpdate) -> None:
+    async def add_update(self, update: ProjectUpdate, user_id: str = "system") -> None:
         """
         Add a project update.
         
         Args:
             update: The update to add
+            user_id: ID of the user making the change
         """
         self.updates.append(update)
         self.updated_at = datetime.now()
+        self.last_modified_by = user_id
+        
+        # Record in audit trail
+        try:
+            await default_audit_manager.record(
+                user_id=user_id,
+                action="add_update",
+                entity_type="project",
+                entity_id=self.name,
+                metadata={
+                    "update_type": update.update_type,
+                    "author": update.author,
+                    "timestamp": update.timestamp.isoformat()
+                }
+            )
+        except Exception as e:
+            logger.error(f"Error recording audit trail for update addition: {str(e)}")
     
-    def update_resource_status(self, resource: ResourceStatus) -> None:
+    async def update_resource_status(self, resource: ResourceStatus, user_id: str = "system") -> None:
         """
         Update resource status.
         
         Args:
             resource: The resource status
+            user_id: ID of the user making the change
         """
+        old_resource = self.resources.get(resource.resource_type)
         self.resources[resource.resource_type] = resource
         self.updated_at = datetime.now()
+        self.last_modified_by = user_id
+        
+        # Record in audit trail
+        try:
+            changes = {}
+            if old_resource:
+                changes = {
+                    "status": {
+                        "old": old_resource.status,
+                        "new": resource.status
+                    },
+                    "quantity": {
+                        "old": old_resource.quantity,
+                        "new": resource.quantity
+                    }
+                }
+            
+            await default_audit_manager.record(
+                user_id=user_id,
+                action="update_resource",
+                entity_type="project",
+                entity_id=self.name,
+                changes=changes,
+                metadata={
+                    "resource_type": resource.resource_type,
+                    "resource_status": resource.status
+                }
+            )
+        except Exception as e:
+            logger.error(f"Error recording audit trail for resource update: {str(e)}")
     
     def get_task_by_id(self, task_id: str) -> Optional[Task]:
         """
@@ -202,6 +368,60 @@ class Project:
         
         return max(self.updates, key=lambda update: update.timestamp)
     
+    async def update_status(self, new_status: str, user_id: str = "system") -> None:
+        """
+        Update project status with audit trail.
+        
+        Args:
+            new_status: New status value
+            user_id: ID of the user making the change
+        """
+        if self.status != new_status:
+            old_status = self.status
+            self.status = new_status
+            self.updated_at = datetime.now()
+            self.last_modified_by = user_id
+            
+            # Add to status change history
+            self.status_change_history.append({
+                "timestamp": self.updated_at,
+                "user_id": user_id,
+                "old_status": old_status,
+                "new_status": new_status
+            })
+            
+            # Record in audit trail
+            try:
+                await default_audit_manager.record(
+                    user_id=user_id,
+                    action="update_status",
+                    entity_type="project",
+                    entity_id=self.name,
+                    changes={
+                        "status": {
+                            "old": old_status,
+                            "new": new_status
+                        }
+                    },
+                    metadata={
+                        "project_name": self.name
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Error recording audit trail for status update: {str(e)}")
+    
+    def get_last_status_change(self) -> Optional[Dict[str, Any]]:
+        """
+        Get information about the last status change.
+        
+        Returns:
+            Dictionary with status change information or None
+        """
+        if not self.status_change_history:
+            return None
+        
+        return self.status_change_history[-1]
+    
     def to_dict(self) -> Dict[str, Any]:
         """
         Convert project to dictionary.
@@ -219,6 +439,7 @@ class Project:
             "status": self.status,
             "owner": self.owner,
             "team_members": self.team_members,
+            "last_modified_by": self.last_modified_by,
             "tasks": {
                 task_id: {
                     "id": task.id,
@@ -233,7 +454,9 @@ class Project:
                     "tags": task.tags,
                     "priority": task.priority,
                     "completion_percentage": task.completion_percentage,
-                    "parent_id": task.parent_id
+                    "parent_id": task.parent_id,
+                    "last_modified_by": getattr(task, "last_modified_by", None),
+                    "last_status_change": task.get_last_status_change() if hasattr(task, "get_last_status_change") else None
                 } for task_id, task in self.tasks.items()
             },
             "updates": [

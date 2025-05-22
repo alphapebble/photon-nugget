@@ -8,6 +8,7 @@ of the Project Intelligence API.
 from project_intelligence.api.routers import (
     alerts_router,
     assignments_router,
+    audit_router,
     metrics_router,
     projects_router,
     recommendations_router,
@@ -16,6 +17,7 @@ from project_intelligence.api.routers import (
 __all__ = [
     "alerts_router",
     "assignments_router",
+    "audit_router",
     "metrics_router",
     "projects_router",
     "recommendations_router",

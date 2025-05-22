@@ -9,6 +9,7 @@ from project_intelligence.api.api_manager import APIManager
 from project_intelligence.api.routers import (
     alerts_router,
     assignments_router,
+    audit_router,
     metrics_router,
     projects_router,
     recommendations_router,
@@ -18,6 +19,7 @@ __all__ = [
     "APIManager",
     "alerts_router",
     "assignments_router",
+    "audit_router",
     "metrics_router",
     "projects_router",
     "recommendations_router",
